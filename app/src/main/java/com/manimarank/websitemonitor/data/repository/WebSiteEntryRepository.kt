@@ -9,6 +9,7 @@ import com.manimarank.websitemonitor.data.db.DbHelper
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.data.db.WebSiteEntryDao
 import com.manimarank.websitemonitor.data.model.WebSiteStatus
+import com.manimarank.websitemonitor.utils.Utils.currentDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -67,6 +68,7 @@ class WebSiteEntryRepository(application: Application) {
          withContext(Dispatchers.IO) {
 
              allWebSiteEntry.value?.forEach {
+                 var status = 404
                  try {
                      //val webSiteStatus = apiClient(it.url).getWebsiteStatus()
                      val inputStream: InputStream
@@ -81,6 +83,7 @@ class WebSiteEntryRepository(application: Application) {
                      // make GET request to the given URL
                      conn.connect()
 
+                     status = conn.responseCode
                      statusList.add(
                          WebSiteStatus(
                              it.name,
@@ -95,12 +98,17 @@ class WebSiteEntryRepository(application: Application) {
                          WebSiteStatus(
                              it.name,
                              it.url,
-                             404,
+                             status,
                              false,
                              e.localizedMessage ?: "Please check"
                          )
                      )
                  }
+
+                 updateWebSiteEntry(it.apply {
+                     it.status = status
+                     it.updatedAt = currentDateTime()
+                 })
              }
          }
         return statusList

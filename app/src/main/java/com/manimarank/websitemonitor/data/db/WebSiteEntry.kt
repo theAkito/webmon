@@ -11,5 +11,7 @@ import kotlinx.android.parcel.Parcelize
 data class WebSiteEntry(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
     @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "url") val url: String
+    @ColumnInfo(name = "url") val url: String,
+    @ColumnInfo(name = "status") var status: Int? = null,
+    @ColumnInfo(name = "updated_at") var updatedAt: String? = null
 ) : Parcelable

@@ -1,12 +1,9 @@
 package com.manimarank.websitemonitor.ui.home
 
-import android.R.id
 import android.app.*
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
@@ -69,21 +66,22 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         })
     }
 
-    fun showNotification(title: String, message: String) {
+    private fun showNotification(title: String, message: String) {
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("YOUR_CHANNEL_ID",
-                "YOUR_CHANNEL_NAME",
+            val channel = NotificationChannel("WEB_SITE_MONITOR_CHANNEL_ID",
+                "WEB_SITE_MONITOR_CHANNEL_NAME",
                 NotificationManager.IMPORTANCE_DEFAULT)
             channel.description = "YOUR_NOTIFICATION_CHANNEL_DESCRIPTION"
             mNotificationManager.createNotificationChannel(channel)
         }
-        val mBuilder = NotificationCompat.Builder(applicationContext, "YOUR_CHANNEL_ID")
+        val mBuilder = NotificationCompat.Builder(applicationContext, "WEB_SITE_MONITOR_CHANNEL_ID")
             .setSmallIcon(R.drawable.ic_alert) // notification icon
             .setContentTitle(title) // title for notification
             .setContentText(message)// message for notification
-            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setDefaults(Notification.DEFAULT_SOUND)
             .setAutoCancel(true) // clear notification after click
+        
         val intent = Intent(applicationContext, MainActivity::class.java)
         val pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         mBuilder.setContentIntent(pi)
@@ -127,7 +125,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         {
             setTitle("Confirmation")
             setMessage("Do you want to remove?")
-            setPositiveButton("Yes") { _, _ -> viewModel.deleteTodo(webSiteEntry) }
+            setPositiveButton("Yes") { _, _ -> viewModel.deleteWebSiteEntry(webSiteEntry) }
             setNegativeButton("No") {_, _ -> }
             show()
         }
@@ -162,10 +160,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             val webSiteEntry = data?.getParcelableExtra<WebSiteEntry>(Constants.INTENT_OBJECT)!!
             when (requestCode) {
                 Constants.INTENT_CREATE_ENTRY -> {
-                    viewModel.saveTodo(webSiteEntry)
+                    viewModel.saveWebSiteEntry(webSiteEntry)
                 }
                 Constants.INTENT_UPDATE_ENTRY -> {
-                    viewModel.updateTodo(webSiteEntry)
+                    viewModel.updateWebSiteEntry(webSiteEntry)
                 }
             }
         }

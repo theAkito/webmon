@@ -1,13 +1,16 @@
 package com.manimarank.websitemonitor.ui.home
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
+import com.manimarank.websitemonitor.utils.Utils.currentDateTime
 import kotlinx.android.synthetic.main.item_website_row.view.*
 import java.util.*
 
@@ -33,9 +36,14 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        @SuppressLint("SetTextI18n")
         fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents) {
             itemView.txtWebSite.text = webSiteEntry.name
             itemView.txtUrl.text = webSiteEntry.url
+
+            itemView.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "---"}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+            itemView.imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
 
             itemView.imgPlayPause.setOnClickListener {
                 listener.onDeleteClicked(webSiteEntry)

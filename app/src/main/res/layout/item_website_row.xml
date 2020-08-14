@@ -11,17 +11,25 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
+        android:padding="8dp"
         >
+
+        <ImageView
+            android:id="@+id/imgIndicator"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_success" />
 
         <ImageView
             android:id="@+id/imgPlayPause"
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_alignParentEnd="true"
+            android:layout_marginStart="4dp"
             android:layout_centerVertical="true"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_delete" />
@@ -30,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toStartOf="@id/imgPlayPause"
+            android:layout_toEndOf="@id/imgIndicator"
             android:orientation="vertical">
 
             <TextView
