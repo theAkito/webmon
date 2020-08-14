@@ -15,6 +15,6 @@ interface WebSiteEntryDao {
     @Update
     suspend fun updateWebSiteEntry(webSiteEntry: WebSiteEntry)
 
-    @Query("SELECT * FROM web_site_entry ORDER BY id DESC")
+    @Query("SELECT * FROM web_site_entry ORDER BY id ASC")
     fun getAllWebSiteEntryList(): LiveData<List<WebSiteEntry>>
 }

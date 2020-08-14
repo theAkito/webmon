@@ -1,13 +1,21 @@
 package com.manimarank.websitemonitor.data.repository
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.manimarank.websitemonitor.data.api.ApiAdapter.apiClient
 import com.manimarank.websitemonitor.data.db.DbHelper
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.data.db.WebSiteEntryDao
+import com.manimarank.websitemonitor.data.model.WebSiteStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 class WebSiteEntryRepository(application: Application) {
 
@@ -16,12 +24,9 @@ class WebSiteEntryRepository(application: Application) {
 
     init {
         allWebSiteEntry = webSiteEntryDao?.getAllWebSiteEntryList()!!
-        if (allWebSiteEntry.value?.size ?:0 == 0)
-            addDefaultData()
-
     }
 
-    private fun addDefaultData()  = runBlocking {
+    fun addDefaultData()  = runBlocking {
         this.launch(Dispatchers.IO) {
             webSiteEntryDao?.saveWebSiteEntry(WebSiteEntry(name = "Coopon Website", url = "https://cooponscitech.in/"))
             webSiteEntryDao?.saveWebSiteEntry(WebSiteEntry(name ="Coopon Wiki", url = "https://wiki.cooponscitech.in/"))
@@ -54,4 +59,51 @@ class WebSiteEntryRepository(application: Application) {
     fun getAllWebSiteEntryList(): LiveData<List<WebSiteEntry>> {
         return allWebSiteEntry
     }
+
+
+     suspend fun checkWebSiteStatus(): ArrayList<WebSiteStatus>{
+        val statusList = ArrayList<WebSiteStatus>()
+
+         withContext(Dispatchers.IO) {
+
+             allWebSiteEntry.value?.forEach {
+                 try {
+                     //val webSiteStatus = apiClient(it.url).getWebsiteStatus()
+                     val inputStream: InputStream
+                     val result: String
+
+                     // create URL
+                     val url: URL = URL(it.url)
+
+                     // create HttpURLConnection
+                     val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
+
+                     // make GET request to the given URL
+                     conn.connect()
+
+                     statusList.add(
+                         WebSiteStatus(
+                             it.name,
+                             it.url,
+                             conn.responseCode,
+                             conn.responseCode == 200,
+                             conn.responseMessage
+                         )
+                     )
+                 } catch (e: Exception) {
+                     statusList.add(
+                         WebSiteStatus(
+                             it.name,
+                             it.url,
+                             404,
+                             false,
+                             e.localizedMessage ?: "Please check"
+                         )
+                     )
+                 }
+             }
+         }
+        return statusList
+    }
+
 }

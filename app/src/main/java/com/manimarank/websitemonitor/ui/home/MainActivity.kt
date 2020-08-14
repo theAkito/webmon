@@ -1,16 +1,18 @@
 package com.manimarank.websitemonitor.ui.home
 
-import android.app.Activity
-import android.app.SearchManager
+import android.R.id
+import android.app.*
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
+import android.media.RingtoneManager
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,9 +23,10 @@ import com.manimarank.websitemonitor.utils.Constants
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
+
 class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents {
 
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var viewModel: MainViewModel
     private lateinit var searchView: SearchView
     private lateinit var adapter: WebSiteEntryAdapter
 
@@ -39,6 +42,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             startActivityForResult(intent, Constants.INTENT_CREATE_ENTRY)
         }
 
+        swipeRefresh.setOnRefreshListener {
+            viewModel.checkWebSiteStatus()
+        }
+
         //Setting up RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = WebSiteEntryAdapter(this)
@@ -46,10 +53,41 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
 
         //Setting up ViewModel and LiveData
-        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        mainViewModel.getAllTodoList()?.observe(this, Observer {
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.getWebSiteEntryList().observe(this, Observer {
             adapter.setAllTodoItems(it)
+            if (it.isEmpty())
+                viewModel.addDefaultData()
         })
+
+        viewModel.getAllWebSiteStatusList().observe(this, Observer {
+            if (swipeRefresh.isRefreshing)
+                swipeRefresh.isRefreshing = false
+            it.filter { !it.isSuccessful }.forEach {
+                showNotification(it.name, it.url + " - Not Working!")
+            }
+        })
+    }
+
+    fun showNotification(title: String, message: String) {
+        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel("YOUR_CHANNEL_ID",
+                "YOUR_CHANNEL_NAME",
+                NotificationManager.IMPORTANCE_DEFAULT)
+            channel.description = "YOUR_NOTIFICATION_CHANNEL_DESCRIPTION"
+            mNotificationManager.createNotificationChannel(channel)
+        }
+        val mBuilder = NotificationCompat.Builder(applicationContext, "YOUR_CHANNEL_ID")
+            .setSmallIcon(R.drawable.ic_alert) // notification icon
+            .setContentTitle(title) // title for notification
+            .setContentText(message)// message for notification
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setAutoCancel(true) // clear notification after click
+        val intent = Intent(applicationContext, MainActivity::class.java)
+        val pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        mBuilder.setContentIntent(pi)
+        mNotificationManager.notify(0, mBuilder.build())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -89,7 +127,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         {
             setTitle("Confirmation")
             setMessage("Do you want to remove?")
-            setPositiveButton("Yes") { _, _ -> mainViewModel.deleteTodo(webSiteEntry) }
+            setPositiveButton("Yes") { _, _ -> viewModel.deleteTodo(webSiteEntry) }
             setNegativeButton("No") {_, _ -> }
             show()
         }
@@ -124,10 +162,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             val webSiteEntry = data?.getParcelableExtra<WebSiteEntry>(Constants.INTENT_OBJECT)!!
             when (requestCode) {
                 Constants.INTENT_CREATE_ENTRY -> {
-                    mainViewModel.saveTodo(webSiteEntry)
+                    viewModel.saveTodo(webSiteEntry)
                 }
                 Constants.INTENT_UPDATE_ENTRY -> {
-                    mainViewModel.updateTodo(webSiteEntry)
+                    viewModel.updateTodo(webSiteEntry)
                 }
             }
         }
