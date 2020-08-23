@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
@@ -17,6 +18,11 @@ import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.ui.createentry.CreateEntryActivity
 import com.manimarank.websitemonitor.utils.Constants
+import com.manimarank.websitemonitor.utils.SharedPrefsManager
+import com.manimarank.websitemonitor.utils.SharedPrefsManager.get
+import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
+import com.manimarank.websitemonitor.utils.Utils.showNotification
+import com.manimarank.websitemonitor.worker.WorkManagerScheduler
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -61,31 +67,23 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             if (swipeRefresh.isRefreshing)
                 swipeRefresh.isRefreshing = false
             it.filter { !it.isSuccessful }.forEach {
-                showNotification(it.name, it.url + " - Not Working!")
+                showNotification(applicationContext, it.name, it.url + " - Not Working!")
             }
         })
+
+        startWorkManager()
     }
 
-    private fun showNotification(title: String, message: String) {
-        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("WEB_SITE_MONITOR_CHANNEL_ID",
-                "WEB_SITE_MONITOR_CHANNEL_NAME",
-                NotificationManager.IMPORTANCE_DEFAULT)
-            channel.description = "YOUR_NOTIFICATION_CHANNEL_DESCRIPTION"
-            mNotificationManager.createNotificationChannel(channel)
+    private fun startWorkManager() {
+        val isScheduled: Boolean? = SharedPrefsManager.customPrefs?.get(Constants.IS_SCHEDULED, false) //getter
+
+        isScheduled?.let { scheduled ->
+            if (!scheduled) {
+                Log.d("MyWorker", "started scheduler")
+                SharedPrefsManager.customPrefs?.set(Constants.IS_SCHEDULED, true) //setter
+                WorkManagerScheduler.refreshPeriodicWork(this)
+            }
         }
-        val mBuilder = NotificationCompat.Builder(applicationContext, "WEB_SITE_MONITOR_CHANNEL_ID")
-            .setSmallIcon(R.drawable.ic_alert) // notification icon
-            .setContentTitle(title) // title for notification
-            .setContentText(message)// message for notification
-            .setDefaults(Notification.DEFAULT_SOUND)
-            .setAutoCancel(true) // clear notification after click
-        
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        val pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        mBuilder.setContentIntent(pi)
-        mNotificationManager.notify(0, mBuilder.build())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

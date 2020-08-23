@@ -17,4 +17,7 @@ interface WebSiteEntryDao {
 
     @Query("SELECT * FROM web_site_entry ORDER BY id ASC")
     fun getAllWebSiteEntryList(): LiveData<List<WebSiteEntry>>
+
+    @Query("SELECT * FROM web_site_entry ORDER BY id ASC")
+    suspend fun getAllWebSiteEntryDirectList(): List<WebSiteEntry>
 }
