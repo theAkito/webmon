@@ -29,6 +29,9 @@
         <activity android:name=".ui.createentry.CreateEntryActivity"
             android:label="@string/create_entry"
             android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".ui.settings.SettingsActivity"
+            android:label="@string/action_settings"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

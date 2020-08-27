@@ -9,9 +9,15 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.ui.home.MainActivity
+import com.manimarank.websitemonitor.utils.Constants.DEFAULT_INTERVAL_MIN
 import com.manimarank.websitemonitor.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import com.manimarank.websitemonitor.utils.Constants.NOTIFICATION_CHANNEL_ID
 import com.manimarank.websitemonitor.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import com.manimarank.websitemonitor.utils.Interval.nameList
+import com.manimarank.websitemonitor.utils.Interval.valueList
+import com.manimarank.websitemonitor.utils.SharedPrefsManager.get
+import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
+import com.manimarank.websitemonitor.worker.WorkManagerScheduler
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,7 +25,7 @@ import kotlin.random.Random.Default.nextInt
 
 object Utils {
     fun currentDateTime(): String {
-        return SimpleDateFormat("dd-MMM-yyyy HH:mm:ss:a", Locale.ENGLISH).format(Date())
+        return SimpleDateFormat("dd-MMM-yyyy hh:mm:ss:a", Locale.ENGLISH).format(Date())
     }
 
     fun showNotification(context: Context, title: String, message: String) {
@@ -53,5 +59,24 @@ object Utils {
             e.printStackTrace()
         }
         return false
+    }
+
+    fun startWorkManager(context: Context, isForce : Boolean = false) {
+        val isScheduled: Boolean? = SharedPrefsManager.customPrefs[Constants.IS_SCHEDULED, false]
+
+        isScheduled?.let { scheduled ->
+            if (!scheduled || isForce) {
+                SharedPrefsManager.customPrefs.set(Constants.IS_SCHEDULED, true)
+                WorkManagerScheduler.refreshPeriodicWork(context)
+            }
+        }
+    }
+
+    fun getMonitorInterval() : Long {
+        return (SharedPrefsManager.customPrefs[Constants.MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN] ?: DEFAULT_INTERVAL_MIN).toLong()
+    }
+
+    fun getMonitorTime() : String {
+        return "Checking every ${nameList[valueList.indexOf(getMonitorInterval().toInt())]}"
     }
 }

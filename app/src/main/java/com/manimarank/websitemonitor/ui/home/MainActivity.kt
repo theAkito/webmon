@@ -17,11 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.ui.createentry.CreateEntryActivity
+import com.manimarank.websitemonitor.ui.settings.SettingsActivity
 import com.manimarank.websitemonitor.utils.Constants
 import com.manimarank.websitemonitor.utils.SharedPrefsManager
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.get
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
 import com.manimarank.websitemonitor.utils.Utils.showNotification
+import com.manimarank.websitemonitor.utils.Utils.startWorkManager
 import com.manimarank.websitemonitor.worker.WorkManagerScheduler
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -71,18 +73,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             }
         })
 
-        startWorkManager()
-    }
-
-    private fun startWorkManager() {
-        val isScheduled: Boolean? = SharedPrefsManager.customPrefs?.get(Constants.IS_SCHEDULED, false) //getter
-
-        isScheduled?.let { scheduled ->
-            if (!scheduled) {
-                SharedPrefsManager.customPrefs?.set(Constants.IS_SCHEDULED, true)
-                WorkManagerScheduler.refreshPeriodicWork(this)
-            }
-        }
+        startWorkManager(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -110,7 +101,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                return true
+            }
             R.id.action_search -> true
             else -> super.onOptionsItemSelected(item)
         }

@@ -11,4 +11,6 @@
     <string name="update_entry">Update Entry</string>
     <string name="enter_valid_name">Enter valid name</string>
     <string name="enter_valid_url">Enter valid url</string>
+    <string name="choose_interval">Choose Interval</string>
+    <string name="cancel">Cancel</string>
 </resources>

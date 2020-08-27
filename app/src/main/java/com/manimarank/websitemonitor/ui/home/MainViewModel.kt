@@ -47,7 +47,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addDefaultData() {
-        if (SharedPrefsManager.customPrefs.getBoolean(Constants.IS_SCHEDULED, true))
+        if (SharedPrefsManager.customPrefs.getBoolean(Constants.IS_ADDED_DEFAULT_DATA, true))
             repository.addDefaultData()
     }
 

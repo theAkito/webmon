@@ -13,5 +13,6 @@ data class WebSiteEntry(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "url") val url: String,
     @ColumnInfo(name = "status") var status: Int? = null,
+    @ColumnInfo(name = "is_paused") var isPaused: Boolean = false,
     @ColumnInfo(name = "updated_at") var updatedAt: String? = null
 ) : Parcelable
