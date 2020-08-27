@@ -6,14 +6,11 @@ import android.content.SharedPreferences
 
 object SharedPrefsManager {
 
-    var customPrefs: SharedPreferences? = null
+    lateinit var customPrefs: SharedPreferences
 
     fun init(context: Context) {
         customPrefs = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
     }
-
-    fun customPrefs(context: Context, name: String): SharedPreferences
-            = context.getSharedPreferences(name, Context.MODE_PRIVATE)
 
 
     inline fun SharedPreferences.edit(operation: (SharedPreferences.Editor) -> Unit) {

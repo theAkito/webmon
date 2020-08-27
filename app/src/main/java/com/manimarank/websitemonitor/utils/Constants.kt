@@ -13,4 +13,5 @@ object Constants {
     const val NOTIFICATION_CHANNEL_NAME = "Web Site Monitor"
     const val NOTIFICATION_CHANNEL_DESCRIPTION = "Notification channel for monitoring web sites. In case of any site failed then showing notification."
 
+    const val IS_ADDED_DEFAULT_DATA: String = "is_added_default_data"
 }

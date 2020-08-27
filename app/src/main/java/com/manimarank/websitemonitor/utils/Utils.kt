@@ -12,6 +12,7 @@ import com.manimarank.websitemonitor.ui.home.MainActivity
 import com.manimarank.websitemonitor.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import com.manimarank.websitemonitor.utils.Constants.NOTIFICATION_CHANNEL_ID
 import com.manimarank.websitemonitor.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random.Default.nextInt
@@ -38,8 +39,19 @@ object Utils {
             .setAutoCancel(true) // clear notification after click
 
         val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         mBuilder.setContentIntent(pi)
         mNotificationManager.notify(Random().nextInt(), mBuilder.build())
+    }
+
+    fun isValidUrl(url: String) : Boolean{
+        try {
+            URL(url).toURI()
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
     }
 }

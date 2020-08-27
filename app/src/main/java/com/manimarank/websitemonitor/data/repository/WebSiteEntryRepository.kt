@@ -6,6 +6,9 @@ import com.manimarank.websitemonitor.data.db.DbHelper
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.data.db.WebSiteEntryDao
 import com.manimarank.websitemonitor.data.model.WebSiteStatus
+import com.manimarank.websitemonitor.utils.Constants
+import com.manimarank.websitemonitor.utils.SharedPrefsManager
+import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
 import com.manimarank.websitemonitor.utils.Utils.currentDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,9 +39,10 @@ class WebSiteEntryRepository(context: Context) {
             webSiteEntryDao?.saveWebSiteEntry(
                 WebSiteEntry(
                     name = "Error Site",
-                    url = "https://xyz.cooponscitech.in/"
+                    url = "https://xyz.manimaran96.in/"
                 )
             )
+            SharedPrefsManager.customPrefs[Constants.IS_ADDED_DEFAULT_DATA] = false
         }
     }
 

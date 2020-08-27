@@ -79,8 +79,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
         isScheduled?.let { scheduled ->
             if (!scheduled) {
-                Log.d("MyWorker", "started scheduler")
-                SharedPrefsManager.customPrefs?.set(Constants.IS_SCHEDULED, true) //setter
+                SharedPrefsManager.customPrefs?.set(Constants.IS_SCHEDULED, true)
                 WorkManagerScheduler.refreshPeriodicWork(this)
             }
         }

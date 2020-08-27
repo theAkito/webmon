@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.utils.Constants
+import com.manimarank.websitemonitor.utils.Utils.isValidUrl
 import kotlinx.android.synthetic.main.activity_create_entry.*
 
 class CreateEntryActivity : AppCompatActivity() {
@@ -59,6 +60,10 @@ class CreateEntryActivity : AppCompatActivity() {
             return false
         }
         if (editUrl.text.isEmpty()) {
+            inputUrl.error = getString(R.string.enter_valid_url)
+            editUrl.requestFocus()
+            return false
+        } else if (!isValidUrl(editUrl.text.toString())) {
             inputUrl.error = getString(R.string.enter_valid_url)
             editUrl.requestFocus()
             return false
