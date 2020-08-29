@@ -6,7 +6,7 @@ Website monitor app helps to Monitor your Website periodically and notify if any
 
 ### Screen Shot
 
-<center><img src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" data-canonical-src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" width="300" height="500" /></center>
+<center><img src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" data-canonical-src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" width="280" height="500" /></center>
 <br>
 
 
