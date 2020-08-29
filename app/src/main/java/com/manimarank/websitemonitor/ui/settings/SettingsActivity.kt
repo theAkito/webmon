@@ -2,6 +2,7 @@ package com.manimarank.websitemonitor.ui.settings
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.manimarank.websitemonitor.R
@@ -11,6 +12,8 @@ import com.manimarank.websitemonitor.utils.Interval.valueList
 import com.manimarank.websitemonitor.utils.SharedPrefsManager
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
 import com.manimarank.websitemonitor.utils.Utils.getMonitorTime
+import com.manimarank.websitemonitor.utils.Utils.isCustomRom
+import com.manimarank.websitemonitor.utils.Utils.openAutoStartScreen
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
 import kotlinx.android.synthetic.main.activity_settings.*
 
@@ -21,6 +24,10 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         btnMonitorInterval.setOnClickListener { showIntervalChooseDialog() }
+
+        layoutEnableAutoStart.visibility = if (isCustomRom()) View.VISIBLE else View.GONE
+        btnEnableAutoStart.setOnClickListener { openAutoStartScreen(this) }
+
         updateIntervalTimeOnUi()
     }
 

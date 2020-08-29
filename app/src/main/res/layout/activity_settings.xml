@@ -14,7 +14,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="match_parent"
-            android:text="Monitoring Interval"
+            android:text="@string/monitoring_interval"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_height="wrap_content"/>
@@ -22,7 +22,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtIntervalDetails"
             android:layout_width="match_parent"
-            android:text="Checking every 15 mins"
+            android:text="@string/checking_every_15_mins"
             android:layout_marginTop="4dp"
             android:layout_height="wrap_content"/>
 
@@ -34,5 +34,36 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_height="1dp"/>
+
+    <LinearLayout
+        android:id="@+id/layoutEnableAutoStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:padding="10dp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:text="@string/message_auto_start_reason"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnEnableAutoStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#3F51B5"
+            android:textColor="#fff"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="@string/enable_auto_start"/>
+    </LinearLayout>
 
 </LinearLayout>

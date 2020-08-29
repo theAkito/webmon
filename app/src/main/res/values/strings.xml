@@ -13,4 +13,9 @@
     <string name="enter_valid_url">Enter valid url</string>
     <string name="choose_interval">Choose Interval</string>
     <string name="cancel">Cancel</string>
+    <string name="monitoring_interval">Monitoring Interval</string>
+    <string name="checking_every_15_mins">Checking every 15 mins</string>
+    <string name="message_auto_start_reason">Your mobile may be killed this app. So, enable auto start option.</string>
+    <string name="enable_auto_start">Enable Auto start</string>
+    <string name="ok">Ok</string>
 </resources>

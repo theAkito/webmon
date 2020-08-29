@@ -4,8 +4,12 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.ui.home.MainActivity
@@ -78,5 +82,38 @@ object Utils {
 
     fun getMonitorTime() : String {
         return "Checking every ${nameList[valueList.indexOf(getMonitorInterval().toInt())]}"
+    }
+
+    fun isCustomRom(): Boolean { return listOf("xiaomi", "oppo", "vivo").contains(android.os.Build.MANUFACTURER.toLowerCase(Locale.ROOT)) }
+
+    fun openAutoStartScreen(context: Context) {
+        val intent = Intent()
+        when(android.os.Build.MANUFACTURER.toLowerCase(Locale.ROOT)) {
+            "xiaomi" -> intent.component= ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
+            "oppo" -> intent.component = ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")
+            "vivo" -> intent.component = ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")
+        }
+
+        val list = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        if (list.size > 0) {
+            context.startActivity(intent)
+        }
+    }
+
+    fun showAutoStartEnableDialog(context: Context) {
+        if (isCustomRom() && !SharedPrefsManager.customPrefs.getBoolean(Constants.IS_AUTO_START_SHOWN, false)) {
+            val alertBuilder = AlertDialog.Builder(context)
+            alertBuilder.setTitle(context.getString(R.string.enable_auto_start))
+            alertBuilder.setMessage(context.getString(R.string.message_auto_start_reason))
+            alertBuilder.setPositiveButton(context.getString(R.string.ok)) { dialog, _ ->
+                SharedPrefsManager.customPrefs[Constants.IS_AUTO_START_SHOWN] = true
+                openAutoStartScreen(context)
+                dialog.dismiss()
+            }
+            alertBuilder.setNegativeButton(context.getString(R.string.cancel), null)
+            val dialog = alertBuilder.create()
+            dialog.setCancelable(false)
+            dialog.show()
+        }
     }
 }

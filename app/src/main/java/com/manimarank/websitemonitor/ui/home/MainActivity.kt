@@ -4,6 +4,8 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -22,6 +24,7 @@ import com.manimarank.websitemonitor.utils.Constants
 import com.manimarank.websitemonitor.utils.SharedPrefsManager
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.get
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
+import com.manimarank.websitemonitor.utils.Utils.showAutoStartEnableDialog
 import com.manimarank.websitemonitor.utils.Utils.showNotification
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
 import com.manimarank.websitemonitor.worker.WorkManagerScheduler
@@ -74,6 +77,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         })
 
         startWorkManager(this)
+
+        Handler(Looper.getMainLooper()).postDelayed({ if (!isDestroyed) showAutoStartEnableDialog(this) }, 300)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

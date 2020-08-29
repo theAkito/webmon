@@ -16,6 +16,7 @@ object Constants {
 
     const val IS_ADDED_DEFAULT_DATA: String = "is_added_default_data"
     const val MONITORING_INTERVAL: String = "monitoring_interval"
+    const val IS_AUTO_START_SHOWN : String = "is_auto_start_shown"
 
 
 }
