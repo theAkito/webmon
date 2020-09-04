@@ -1,0 +1,8 @@
+Website monitor app helps to Monitor your Website periodically and notify if any problem in your site.
+Default monitor interval 1 hour once. You can modify the interval by using settings.
+
+<b>App features:</b>
+
+- Simple UI
+- No login required
+- Notified when site down.
