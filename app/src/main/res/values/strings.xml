@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WebSite Monitor</string>
+    <string name="app_name">Website Monitor</string>
     <string name="action_settings">Settings</string>
 
     <string name="name">Name</string>
