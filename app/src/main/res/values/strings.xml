@@ -15,7 +15,12 @@
     <string name="cancel">Cancel</string>
     <string name="monitoring_interval">Monitoring Interval</string>
     <string name="checking_every_15_mins">Checking every 15 mins</string>
-    <string name="message_auto_start_reason">Your mobile may be killed this app. So, enable auto start option.</string>
+    <string name="message_auto_start_reason">Your mobile may be killed this app. So, enable auto start option. Leave it If you already enabled.</string>
     <string name="enable_auto_start">Enable Auto start</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
+    <string name="icon_credits">Logo Icon made by Freepik from Flaticon\nLink : https://www.flaticon.com/authors/freepik</string>
+    <string name="source_code_link" translatable="false">https://gitlab.com/manimaran/website-monitor</string>
+    <string name="no_apps_found">No browser found</string>
+    <string name="credits">Credits</string>
+    <string name="source_code">Source Code</string>
 </resources>

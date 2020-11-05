@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import com.manimarank.websitemonitor.R
@@ -114,6 +116,18 @@ object Utils {
             val dialog = alertBuilder.create()
             dialog.setCancelable(false)
             dialog.show()
+        }
+    }
+
+    fun openUrl(context: Context, url: String) {
+        try {
+            val uri = Uri.parse(url)
+            val intents = Intent(Intent.ACTION_VIEW, uri)
+            context.startActivity(intents)
+        } catch (e: Exception) {
+            Print.log(e.toString())
+            Toast.makeText(context, context.getString(R.string.no_apps_found), Toast.LENGTH_LONG)
+                .show()
         }
     }
 }
