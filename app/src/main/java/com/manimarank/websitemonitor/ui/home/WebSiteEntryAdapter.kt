@@ -45,13 +45,13 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 
             itemView.imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
 
-            itemView.imgPlayPause.setOnClickListener {
-                listener.onDeleteClicked(webSiteEntry)
-            }
+            itemView.btnDelete.setOnClickListener { listener.onDeleteClicked(webSiteEntry) }
 
-            itemView.setOnClickListener {
-                listener.onViewClicked(webSiteEntry)
-            }
+            itemView.btnEdit.setOnClickListener { listener.onEditClicked(webSiteEntry) }
+
+            itemView.setOnClickListener { listener.onEditClicked(webSiteEntry) }
+
+            itemView.btnVisit.setOnClickListener { listener.onViewClicked(webSiteEntry) }
         }
     }
     /**
@@ -103,5 +103,6 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     interface WebSiteEntryEvents {
         fun onDeleteClicked(webSiteEntry: WebSiteEntry)
         fun onViewClicked(webSiteEntry: WebSiteEntry)
+        fun onEditClicked(webSiteEntry: WebSiteEntry)
     }
 }

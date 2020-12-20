@@ -24,6 +24,7 @@ import com.manimarank.websitemonitor.utils.Constants
 import com.manimarank.websitemonitor.utils.SharedPrefsManager
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.get
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
+import com.manimarank.websitemonitor.utils.Utils.openUrl
 import com.manimarank.websitemonitor.utils.Utils.showAutoStartEnableDialog
 import com.manimarank.websitemonitor.utils.Utils.showNotification
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
@@ -127,11 +128,15 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         }
     }
 
-    override fun onViewClicked(webSiteEntry: WebSiteEntry) {
+    override fun onEditClicked(webSiteEntry: WebSiteEntry) {
         resetSearchView()
         val intent = Intent(this, CreateEntryActivity::class.java)
         intent.putExtra(Constants.INTENT_OBJECT, webSiteEntry)
         startActivityForResult(intent, Constants.INTENT_UPDATE_ENTRY)
+    }
+
+    override fun onViewClicked(webSiteEntry: WebSiteEntry) {
+        openUrl(applicationContext, webSiteEntry.url)
     }
 
     override fun onBackPressed() {

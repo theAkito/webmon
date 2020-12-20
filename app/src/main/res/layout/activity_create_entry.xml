@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,6 +15,7 @@
             android:id="@+id/inputName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_marginTop="10dp">
 
             <EditText
@@ -33,6 +35,7 @@
             android:id="@+id/inputUrl"
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_height="wrap_content">
 
             <EditText
@@ -48,13 +51,19 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:cornerRadius="5dp"
+            app:backgroundTint="@color/colorPrimary"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
-            android:text="@string/save"
-            android:layout_height="wrap_content"/>
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="@string/save"/>
 
 
     </LinearLayout>

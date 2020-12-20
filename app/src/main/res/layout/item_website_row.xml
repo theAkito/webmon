@@ -25,19 +25,20 @@
             android:src="@drawable/ic_success" />
 
         <ImageView
-            android:id="@+id/imgPlayPause"
+            android:id="@+id/btnVisit"
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="4dp"
             android:layout_centerVertical="true"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_delete" />
+            android:src="@drawable/ic_open_browser" />
 
         <LinearLayout
+            android:id="@+id/layoutContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/imgPlayPause"
+            android:layout_toStartOf="@id/btnVisit"
             android:layout_toEndOf="@id/imgIndicator"
             android:orientation="vertical">
 
@@ -68,6 +69,39 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 tools:text="Status : 200   Hit Time : 20secs\nLast Update : 23-Aug-2020 12.30 am" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_below="@+id/layoutContent"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/btnEdit"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:drawableStart="@drawable/ic_edit"
+                android:text="Edit"
+                android:padding="5dp"
+                android:layout_gravity="center"
+                android:drawablePadding="10dp"
+                android:textSize="@dimen/text_small"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/btnDelete"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:drawableStart="@drawable/ic_delete"
+                android:text="Delete"
+                android:padding="5dp"
+                android:layout_gravity="center"
+                android:drawablePadding="5dp"
+                android:textSize="@dimen/text_small"
+                android:layout_height="wrap_content"/>
+
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
