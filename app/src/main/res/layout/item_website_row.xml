@@ -11,8 +11,17 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        >
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_icon" />
 
         <ImageView
             android:id="@+id/imgIndicator"

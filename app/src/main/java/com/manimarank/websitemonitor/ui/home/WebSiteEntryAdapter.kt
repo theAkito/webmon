@@ -8,6 +8,8 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.utils.Utils.currentDateTime
@@ -38,20 +40,26 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
         fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents) {
-            itemView.txtWebSite.text = webSiteEntry.name
-            itemView.txtUrl.text = webSiteEntry.url
 
-            itemView.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "---"}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
+            itemView.apply {
 
-            itemView.imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
+                txtWebSite.text = webSiteEntry.name
+                txtUrl.text = webSiteEntry.url
 
-            itemView.btnDelete.setOnClickListener { listener.onDeleteClicked(webSiteEntry) }
+                val iconUrl = "https://www.google.com/s2/favicons?domain=${webSiteEntry.url}"
+                Glide.with(itemView.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(itemView.imgLogo)
 
-            itemView.btnEdit.setOnClickListener { listener.onEditClicked(webSiteEntry) }
+                txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "---"}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
+                imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
 
-            itemView.setOnClickListener { listener.onEditClicked(webSiteEntry) }
+                btnEdit.setOnClickListener { listener.onEditClicked(webSiteEntry) }
 
-            itemView.btnVisit.setOnClickListener { listener.onViewClicked(webSiteEntry) }
+                btnDelete.setOnClickListener { listener.onDeleteClicked(webSiteEntry) }
+
+                btnVisit.setOnClickListener { listener.onViewClicked(webSiteEntry) }
+
+                this.setOnClickListener { listener.onEditClicked(webSiteEntry) }
+            }
         }
     }
     /**
