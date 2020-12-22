@@ -10,9 +10,11 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
+import com.google.android.material.snackbar.Snackbar
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.ui.home.MainActivity
 import com.manimarank.websitemonitor.utils.Constants.DEFAULT_INTERVAL_MIN
@@ -24,6 +26,7 @@ import com.manimarank.websitemonitor.utils.Interval.valueList
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.get
 import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
 import com.manimarank.websitemonitor.worker.WorkManagerScheduler
+import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -121,13 +124,63 @@ object Utils {
 
     fun openUrl(context: Context, url: String) {
         try {
-            val uri = Uri.parse(url)
-            val intents = Intent(Intent.ACTION_VIEW, uri)
+            val intents = Intent(Intent.ACTION_VIEW)
+            intents.data = Uri.parse(url)
+            intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intents)
         } catch (e: Exception) {
             Print.log(e.toString())
             Toast.makeText(context, context.getString(R.string.no_apps_found), Toast.LENGTH_LONG)
                 .show()
+        }
+    }
+
+    fun showToast(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+    fun showSnackBar(view: View, message: String) {
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    fun getStatusMessage(code: Int?): String {
+        return when (code) {
+            HttpURLConnection.HTTP_ACCEPTED -> "Accepted"
+            HttpURLConnection.HTTP_BAD_GATEWAY -> "Bad Gateway"
+            HttpURLConnection.HTTP_BAD_METHOD -> "Method Not Allowed"
+            HttpURLConnection.HTTP_BAD_REQUEST -> "Bad Request"
+            HttpURLConnection.HTTP_CLIENT_TIMEOUT -> "Request Time-Out"
+            HttpURLConnection.HTTP_CONFLICT -> "Conflict"
+            HttpURLConnection.HTTP_CREATED -> "Created"
+            HttpURLConnection.HTTP_ENTITY_TOO_LARGE -> "Request Entity Too Large"
+            HttpURLConnection.HTTP_FORBIDDEN -> "Forbidden"
+            HttpURLConnection.HTTP_GATEWAY_TIMEOUT -> "Gateway Timeout"
+            HttpURLConnection.HTTP_GONE -> "Gone"
+            HttpURLConnection.HTTP_INTERNAL_ERROR -> "Internal Server Error"
+            HttpURLConnection.HTTP_LENGTH_REQUIRED -> "Length Required"
+            HttpURLConnection.HTTP_MOVED_PERM -> "Moved Permanently"
+            HttpURLConnection.HTTP_MOVED_TEMP -> "Temporary Redirect"
+            HttpURLConnection.HTTP_MULT_CHOICE -> "Multiple Choices"
+            HttpURLConnection.HTTP_NOT_ACCEPTABLE -> "Not Acceptable"
+            HttpURLConnection.HTTP_NOT_AUTHORITATIVE -> "Non-Authoritative Information"
+            HttpURLConnection.HTTP_NOT_FOUND -> "Not Found"
+            HttpURLConnection.HTTP_NOT_IMPLEMENTED -> "Not Implemented"
+            HttpURLConnection.HTTP_NOT_MODIFIED -> "Not Modified"
+            HttpURLConnection.HTTP_NO_CONTENT -> "No Content"
+            HttpURLConnection.HTTP_OK -> "Success"
+            HttpURLConnection.HTTP_PARTIAL -> "Partial Content"
+            HttpURLConnection.HTTP_PAYMENT_REQUIRED -> "Payment Required"
+            HttpURLConnection.HTTP_PRECON_FAILED -> "Precondition Failed"
+            HttpURLConnection.HTTP_PROXY_AUTH -> "Proxy Authentication Required"
+            HttpURLConnection.HTTP_REQ_TOO_LONG -> "Request-URI Too Large"
+            HttpURLConnection.HTTP_RESET -> "Reset Content"
+            HttpURLConnection.HTTP_SEE_OTHER -> "See Other"
+            HttpURLConnection.HTTP_UNAUTHORIZED -> "Unauthorized"
+            HttpURLConnection.HTTP_UNAVAILABLE -> "Service Unavailable"
+            HttpURLConnection.HTTP_UNSUPPORTED_TYPE -> "Unsupported Media Type"
+            HttpURLConnection.HTTP_USE_PROXY -> "Use Proxy"
+            HttpURLConnection.HTTP_VERSION -> "HTTP Version Not Supported"
+            else -> "Unknown"
         }
     }
 }

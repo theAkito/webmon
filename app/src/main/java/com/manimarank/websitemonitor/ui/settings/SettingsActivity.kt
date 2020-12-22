@@ -36,8 +36,7 @@ class SettingsActivity : AppCompatActivity() {
         val alertBuilder = AlertDialog.Builder(this)
         alertBuilder.setTitle(getString(R.string.choose_interval))
 
-        val checkedItem =
-            valueList.indexOf(SharedPrefsManager.customPrefs.getInt(MONITORING_INTERVAL, 60))
+        val checkedItem = valueList.indexOf(SharedPrefsManager.customPrefs.getInt(MONITORING_INTERVAL, 60))
         alertBuilder.setSingleChoiceItems(
             nameList,
             checkedItem
