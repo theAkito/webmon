@@ -28,4 +28,11 @@
     <string name="visit">Visit</string>
     <string name="refresh">Refresh</string>
     <string name="not_working">%s - Not Working!</string>
+    <string name="site_refreshing">Refreshing… - %s</string>
+    <string name="monitor_paused">Monitoring paused - %s</string>
+    <string name="monitor_resumed">Monitoring resumed - %s</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="remove_confirmation_message">Do you want to remove?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

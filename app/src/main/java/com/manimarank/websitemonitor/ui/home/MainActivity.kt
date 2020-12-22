@@ -6,31 +6,28 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.ui.createentry.CreateEntryActivity
 import com.manimarank.websitemonitor.ui.settings.SettingsActivity
 import com.manimarank.websitemonitor.utils.Constants
-import com.manimarank.websitemonitor.utils.SharedPrefsManager
-import com.manimarank.websitemonitor.utils.SharedPrefsManager.get
-import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
+import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.openUrl
 import com.manimarank.websitemonitor.utils.Utils.showAutoStartEnableDialog
 import com.manimarank.websitemonitor.utils.Utils.showNotification
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
-import com.manimarank.websitemonitor.worker.WorkManagerScheduler
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.net.HttpURLConnection.HTTP_GATEWAY_TIMEOUT
 
 
 class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents {
@@ -59,11 +56,19 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = WebSiteEntryAdapter(this)
         recyclerView.adapter = adapter
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0) {
+                    fabAdd.hide()
+                } else if (dy < 0)
+                    fabAdd.show()
+            }
+        })
 
 
         //Setting up ViewModel and LiveData
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.getWebSiteEntryList().observe(this, Observer {
+        viewModel.getWebSiteEntryList().observe(this, {
             adapter.setAllTodoItems(it)
             if (it.isEmpty())
                 viewModel.addDefaultData()
@@ -126,10 +131,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         val builder = AlertDialog.Builder(this)
         with(builder)
         {
-            setTitle("Confirmation")
-            setMessage("Do you want to remove?")
-            setPositiveButton("Yes") { _, _ -> viewModel.deleteWebSiteEntry(webSiteEntry) }
-            setNegativeButton("No") {_, _ -> }
+            setTitle(getString(R.string.confirmation))
+            setMessage(getString(R.string.remove_confirmation_message))
+            setPositiveButton(getString(R.string.yes)) { _, _ -> viewModel.deleteWebSiteEntry(webSiteEntry) }
+            setNegativeButton(getString(R.string.no)) {_, _ -> }
             show()
         }
     }
@@ -143,6 +148,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {
         viewModel.getWebSiteStatus(webSiteEntry)
+        Utils.showSnackBar(swipeRefresh, String.format(getString(R.string.site_refreshing), webSiteEntry.url))
     }
 
     override fun onViewClicked(webSiteEntry: WebSiteEntry) {
@@ -153,6 +159,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         viewModel.updateWebSiteEntry(webSiteEntry.apply {
             isPaused = this.isPaused.not()
         })
+        Utils.showSnackBar(swipeRefresh, String.format(getString(if (webSiteEntry.isPaused) R.string.monitor_paused else R.string.monitor_resumed), webSiteEntry.url))
     }
 
     override fun onBackPressed() {
