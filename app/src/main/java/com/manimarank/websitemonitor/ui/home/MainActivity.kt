@@ -69,11 +69,17 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
                 viewModel.addDefaultData()
         })
 
-        viewModel.getAllWebSiteStatusList().observe(this, Observer {
+        viewModel.getAllWebSiteStatusList().observe(this, { it ->
             if (swipeRefresh.isRefreshing)
                 swipeRefresh.isRefreshing = false
             it.filter { !it.isSuccessful }.forEach {
-                showNotification(applicationContext, it.name, it.url + " - Not Working!")
+                showNotification(applicationContext, it.name,  String.format(getString(R.string.not_working, it.url)))
+            }
+        })
+
+        viewModel.getWebSiteStatus().observe(this, {it ->
+            if (!it.isSuccessful) {
+                showNotification(applicationContext, it.name,  String.format(getString(R.string.not_working, it.url)))
             }
         })
 
@@ -133,6 +139,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         val intent = Intent(this, CreateEntryActivity::class.java)
         intent.putExtra(Constants.INTENT_OBJECT, webSiteEntry)
         startActivityForResult(intent, Constants.INTENT_UPDATE_ENTRY)
+    }
+
+    override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {
+        viewModel.getWebSiteStatus(webSiteEntry)
     }
 
     override fun onViewClicked(webSiteEntry: WebSiteEntry) {

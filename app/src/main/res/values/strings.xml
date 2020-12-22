@@ -23,4 +23,9 @@
     <string name="no_apps_found">No browser found</string>
     <string name="credits">Credits</string>
     <string name="source_code">Source Code</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="visit">Visit</string>
+    <string name="refresh">Refresh</string>
+    <string name="not_working">%s - Not Working!</string>
 </resources>

@@ -19,6 +19,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val allWebSiteEntryList: LiveData<List<WebSiteEntry>> =
         repository.getAllWebSiteEntryList()
     private val webSiteStatusList: MutableLiveData<List<WebSiteStatus>> = MutableLiveData()
+    private val webSiteStatus: MutableLiveData<WebSiteStatus> = MutableLiveData()
 
     fun saveWebSiteEntry(webSiteEntry: WebSiteEntry) {
         repository.saveWebSiteEntry(webSiteEntry)
@@ -40,9 +41,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return webSiteStatusList
     }
 
+    fun getWebSiteStatus(): LiveData<WebSiteStatus> {
+        return webSiteStatus
+    }
+
     fun checkWebSiteStatus() {
         viewModelScope.launch {
             webSiteStatusList.value = repository.checkWebSiteStatus()
+        }
+    }
+
+    fun getWebSiteStatus(webSiteEntry: WebSiteEntry) {
+        viewModelScope.launch {
+            webSiteStatus.value = repository.getWebsiteStatus(webSiteEntry)
         }
     }
 

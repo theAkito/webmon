@@ -77,41 +77,46 @@ class WebSiteEntryRepository(context: Context) {
 
         withContext(Dispatchers.IO) {
             webSiteEntryDao?.getAllWebSiteEntryDirectList()?.forEach {
-                var status = 404
-                try {
-                    val url = URL(it.url)
-                    val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
-                    conn.connect()
-
-                    status = conn.responseCode
-                    statusList.add(
-                        WebSiteStatus(
-                            it.name,
-                            it.url,
-                            conn.responseCode,
-                            conn.responseCode == 200,
-                            conn.responseMessage
-                        )
-                    )
-                } catch (e: Exception) {
-                    statusList.add(
-                        WebSiteStatus(
-                            it.name,
-                            it.url,
-                            status,
-                            false,
-                            e.localizedMessage ?: "Please check"
-                        )
-                    )
-                }
-
-                updateWebSiteEntry(it.apply {
-                    it.status = status
-                    it.updatedAt = currentDateTime()
-                })
+                statusList.add(getWebsiteStatus(it))
             }
         }
         return statusList
+    }
+
+    suspend fun getWebsiteStatus(websiteEntry: WebSiteEntry): WebSiteStatus {
+        var  webSiteStatus: WebSiteStatus
+        withContext(Dispatchers.IO) {
+            var status = 404
+            try {
+                val url = URL(websiteEntry.url)
+                val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
+                conn.connect()
+
+                status = conn.responseCode
+                webSiteStatus = WebSiteStatus(
+                    websiteEntry.name,
+                    websiteEntry.url,
+                    conn.responseCode,
+                    conn.responseCode == 200,
+                    conn.responseMessage
+                )
+            } catch (e: Exception) {
+                webSiteStatus = WebSiteStatus(
+                    websiteEntry.name,
+                    websiteEntry.url,
+                    status,
+                    false,
+                    e.localizedMessage ?: "Please check"
+                )
+            }
+
+            updateWebSiteEntry(websiteEntry.apply {
+                this.status = status
+                updatedAt = currentDateTime()
+            })
+        }
+
+        return webSiteStatus
     }
 
 }

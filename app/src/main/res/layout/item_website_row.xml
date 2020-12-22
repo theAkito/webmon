@@ -13,15 +13,6 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
-        <ImageView
-            android:id="@+id/imgLogo"
-            android:layout_width="@dimen/icon_size"
-            android:layout_height="@dimen/icon_size"
-            android:layout_alignParentStart="true"
-            android:layout_marginEnd="4dp"
-            android:layout_marginTop="4dp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_icon" />
 
         <ImageView
             android:id="@+id/imgIndicator"
@@ -34,32 +25,56 @@
             android:src="@drawable/ic_success" />
 
         <ImageView
-            android:id="@+id/btnVisit"
+            android:id="@+id/btnMore"
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="4dp"
             android:layout_centerVertical="true"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_open_browser" />
+            android:src="@drawable/ic_more" />
 
         <LinearLayout
             android:id="@+id/layoutContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/btnVisit"
+            android:layout_toStartOf="@id/btnMore"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="2dp"
             android:layout_toEndOf="@id/imgIndicator"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/txtWebSite"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/black"
-                tools:text="Title" />
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/imgLogo"
+                    android:layout_width="@dimen/site_logo_size"
+                    android:layout_height="@dimen/site_logo_size"
+                    android:padding="2dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="-2dp"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/ic_icon" />
+
+                <TextView
+                    android:id="@+id/txtWebSite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/black"
+                    tools:text="Title" />
+
+
+            </LinearLayout>
+
+
 
             <TextView
                 android:id="@+id/txtUrl"
@@ -80,37 +95,6 @@
                 tools:text="Status : 200   Hit Time : 20secs\nLast Update : 23-Aug-2020 12.30 am" />
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_below="@+id/layoutContent"
-            android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_height="wrap_content">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/btnEdit"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:drawableStart="@drawable/ic_edit"
-                android:text="Edit"
-                android:padding="5dp"
-                android:layout_gravity="center"
-                android:drawablePadding="10dp"
-                android:textSize="@dimen/text_small"
-                android:layout_height="wrap_content"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/btnDelete"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:drawableStart="@drawable/ic_delete"
-                android:text="Delete"
-                android:padding="5dp"
-                android:layout_gravity="center"
-                android:drawablePadding="5dp"
-                android:textSize="@dimen/text_small"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

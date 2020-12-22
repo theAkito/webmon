@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.PopupMenu
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -52,13 +53,39 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "---"}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
                 imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
 
-                btnEdit.setOnClickListener { listener.onEditClicked(webSiteEntry) }
 
-                btnDelete.setOnClickListener { listener.onDeleteClicked(webSiteEntry) }
+                val popupMenu = PopupMenu(context, btnMore)
+                popupMenu.inflate(R.menu.menu_website_more)
+                popupMenu.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.action_refresh -> listener.onRefreshClicked(webSiteEntry)
+                        R.id.action_visit -> listener.onViewClicked(webSiteEntry)
+                        R.id.action_edit -> listener.onEditClicked(webSiteEntry)
+                        R.id.action_delete -> listener.onDeleteClicked(webSiteEntry)
+                    }
+                    true
+                }
 
-                btnVisit.setOnClickListener { listener.onViewClicked(webSiteEntry) }
+                btnMore.setOnClickListener {
+                    try {
+                        val popup = PopupMenu::class.java.getDeclaredField("mPopup")
+                        popup.isAccessible =  true
+                        val menu = popup.get(popupMenu)
+                        menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java)
+                            .invoke(menu, true)
+                    }catch (e: Exception) {
+                        e.printStackTrace()
+                    } finally {
+                        popupMenu.show()
+                    }
+                }
 
-                this.setOnClickListener { listener.onEditClicked(webSiteEntry) }
+
+                this.setOnClickListener { listener.onRefreshClicked(webSiteEntry) }
+                this.setOnLongClickListener {
+                    listener.onEditClicked(webSiteEntry)
+                    true
+                }
             }
         }
     }
@@ -112,5 +139,6 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         fun onDeleteClicked(webSiteEntry: WebSiteEntry)
         fun onViewClicked(webSiteEntry: WebSiteEntry)
         fun onEditClicked(webSiteEntry: WebSiteEntry)
+        fun onRefreshClicked(webSiteEntry: WebSiteEntry)
     }
 }
