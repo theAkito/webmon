@@ -149,6 +149,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         openUrl(applicationContext, webSiteEntry.url)
     }
 
+    override fun onPauseClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int) {
+        viewModel.updateWebSiteEntry(webSiteEntry.apply {
+            isPaused = this.isPaused.not()
+        })
+    }
+
     override fun onBackPressed() {
         resetSearchView()
         super.onBackPressed()

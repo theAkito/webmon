@@ -76,7 +76,7 @@ class WebSiteEntryRepository(context: Context) {
         val statusList = ArrayList<WebSiteStatus>()
 
         withContext(Dispatchers.IO) {
-            webSiteEntryDao?.getAllWebSiteEntryDirectList()?.forEach {
+            webSiteEntryDao?.getAllValidWebSiteEntryDirectList()?.forEach {
                 statusList.add(getWebsiteStatus(it))
             }
         }

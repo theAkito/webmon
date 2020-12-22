@@ -20,4 +20,7 @@ interface WebSiteEntryDao {
 
     @Query("SELECT * FROM web_site_entry ORDER BY id ASC")
     suspend fun getAllWebSiteEntryDirectList(): List<WebSiteEntry>
+
+    @Query("SELECT * FROM web_site_entry WHERE is_paused = 0 ORDER BY id ASC")
+    suspend fun getAllValidWebSiteEntryDirectList(): List<WebSiteEntry>
 }

@@ -35,12 +35,12 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     override fun getItemCount(): Int = filteredList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(filteredList[position], listener)
+        holder.bind(filteredList[position], listener, position)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetTextI18n")
-        fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents) {
+        fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents, position: Int) {
 
             itemView.apply {
 
@@ -52,6 +52,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 
                 txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "---"}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
                 imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
+                btnPause.setImageResource(if(webSiteEntry.isPaused) R.drawable.ic_play else R.drawable.ic_pause)
 
 
                 val popupMenu = PopupMenu(context, btnMore)
@@ -71,13 +72,18 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                         val popup = PopupMenu::class.java.getDeclaredField("mPopup")
                         popup.isAccessible =  true
                         val menu = popup.get(popupMenu)
-                        menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java)
-                            .invoke(menu, true)
+                        menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
                     }catch (e: Exception) {
                         e.printStackTrace()
                     } finally {
                         popupMenu.show()
                     }
+                }
+
+                btnPause.setOnClickListener {
+                    listener.onPauseClicked(webSiteEntry, position)
+                    webSiteEntry.isPaused = webSiteEntry.isPaused.not()
+                    notifyItemChanged(position)
                 }
 
 
@@ -89,6 +95,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
             }
         }
     }
+
     /**
      * Search Filter implementation
      * */
@@ -140,5 +147,6 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         fun onViewClicked(webSiteEntry: WebSiteEntry)
         fun onEditClicked(webSiteEntry: WebSiteEntry)
         fun onRefreshClicked(webSiteEntry: WebSiteEntry)
+        fun onPauseClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int)
     }
 }
