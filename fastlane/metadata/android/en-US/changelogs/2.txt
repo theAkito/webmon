@@ -1,0 +1,6 @@
+- Monitor pause/resume option added
+- Single site refresh
+- Card single click refresh, long click edit
+- Monitor intervals updated
+- Website status, icon added
+- Minor defects are fixed
