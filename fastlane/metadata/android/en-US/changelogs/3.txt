@@ -1,0 +1,3 @@
+- Support added for custom port url and http url.
+- Minor crashes are fixed
+- Minor UI Updates
