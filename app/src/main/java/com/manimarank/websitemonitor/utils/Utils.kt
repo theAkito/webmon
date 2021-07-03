@@ -86,7 +86,14 @@ object Utils {
     }
 
     fun getMonitorTime() : String {
-        return "Checking every ${nameList[valueList.indexOf(getMonitorInterval().toInt())]}"
+        val interval = getMonitorInterval().toInt()
+        var refreshTime: String? = null
+        if (valueList.contains(interval)) {
+            val pos = valueList.indexOf(interval)
+            if (pos >= 0 && pos < nameList.size)
+                refreshTime = nameList[pos]
+        }
+        return "Checking every ${refreshTime ?: "1 hour once"}"
     }
 
     fun isCustomRom(): Boolean { return listOf("xiaomi", "oppo", "vivo").contains(android.os.Build.MANUFACTURER.toLowerCase(Locale.ROOT)) }
