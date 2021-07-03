@@ -17,6 +17,8 @@ class CreateEntryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_entry)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         //Prepopulate existing title and content from intent
         val intent = intent
         if (intent != null && intent.hasExtra(Constants.INTENT_OBJECT)) {
