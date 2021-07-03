@@ -23,6 +23,8 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         btnMonitorInterval.setOnClickListener { showIntervalChooseDialog() }
 
         layoutEnableAutoStart.visibility = if (isCustomRom()) View.VISIBLE else View.GONE
