@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -30,7 +29,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.random.Random.Default.nextInt
 
 object Utils {
     fun currentDateTime(): String {
@@ -152,42 +150,54 @@ object Utils {
 
     fun getStatusMessage(code: Int?): String {
         return when (code) {
-            HttpURLConnection.HTTP_ACCEPTED -> "Accepted"
-            HttpURLConnection.HTTP_BAD_GATEWAY -> "Bad Gateway"
-            HttpURLConnection.HTTP_BAD_METHOD -> "Method Not Allowed"
-            HttpURLConnection.HTTP_BAD_REQUEST -> "Bad Request"
-            HttpURLConnection.HTTP_CLIENT_TIMEOUT -> "Request Time-Out"
-            HttpURLConnection.HTTP_CONFLICT -> "Conflict"
-            HttpURLConnection.HTTP_CREATED -> "Created"
-            HttpURLConnection.HTTP_ENTITY_TOO_LARGE -> "Request Entity Too Large"
-            HttpURLConnection.HTTP_FORBIDDEN -> "Forbidden"
-            HttpURLConnection.HTTP_GATEWAY_TIMEOUT -> "Gateway Timeout"
-            HttpURLConnection.HTTP_GONE -> "Gone"
-            HttpURLConnection.HTTP_INTERNAL_ERROR -> "Internal Server Error"
-            HttpURLConnection.HTTP_LENGTH_REQUIRED -> "Length Required"
-            HttpURLConnection.HTTP_MOVED_PERM -> "Moved Permanently"
-            HttpURLConnection.HTTP_MOVED_TEMP -> "Temporary Redirect"
-            HttpURLConnection.HTTP_MULT_CHOICE -> "Multiple Choices"
-            HttpURLConnection.HTTP_NOT_ACCEPTABLE -> "Not Acceptable"
-            HttpURLConnection.HTTP_NOT_AUTHORITATIVE -> "Non-Authoritative Information"
-            HttpURLConnection.HTTP_NOT_FOUND -> "Not Found"
-            HttpURLConnection.HTTP_NOT_IMPLEMENTED -> "Not Implemented"
-            HttpURLConnection.HTTP_NOT_MODIFIED -> "Not Modified"
-            HttpURLConnection.HTTP_NO_CONTENT -> "No Content"
-            HttpURLConnection.HTTP_OK -> "Success"
-            HttpURLConnection.HTTP_PARTIAL -> "Partial Content"
-            HttpURLConnection.HTTP_PAYMENT_REQUIRED -> "Payment Required"
-            HttpURLConnection.HTTP_PRECON_FAILED -> "Precondition Failed"
-            HttpURLConnection.HTTP_PROXY_AUTH -> "Proxy Authentication Required"
-            HttpURLConnection.HTTP_REQ_TOO_LONG -> "Request-URI Too Large"
-            HttpURLConnection.HTTP_RESET -> "Reset Content"
-            HttpURLConnection.HTTP_SEE_OTHER -> "See Other"
-            HttpURLConnection.HTTP_UNAUTHORIZED -> "Unauthorized"
-            HttpURLConnection.HTTP_UNAVAILABLE -> "Service Unavailable"
-            HttpURLConnection.HTTP_UNSUPPORTED_TYPE -> "Unsupported Media Type"
-            HttpURLConnection.HTTP_USE_PROXY -> "Use Proxy"
-            HttpURLConnection.HTTP_VERSION -> "HTTP Version Not Supported"
+            HttpURLConnection.HTTP_OK -> "Success" // 200
+            HttpURLConnection.HTTP_CREATED -> "Created" // 201
+            HttpURLConnection.HTTP_ACCEPTED -> "Accepted" // 202
+            HttpURLConnection.HTTP_NOT_AUTHORITATIVE -> "Non-Authoritative Information" // 203
+            HttpURLConnection.HTTP_NO_CONTENT -> "No Content" // 204
+            HttpURLConnection.HTTP_RESET -> "Reset Content" // 205
+            HttpURLConnection.HTTP_PARTIAL -> "Partial Content" // 206
+            HttpURLConnection.HTTP_MULT_CHOICE -> "Multiple Choices" // 300
+            HttpURLConnection.HTTP_MOVED_PERM -> "Moved Permanently" // 301
+            HttpURLConnection.HTTP_MOVED_TEMP -> "Temporary Redirect" // 302
+            HttpURLConnection.HTTP_SEE_OTHER -> "See Other" // 303
+            HttpURLConnection.HTTP_NOT_MODIFIED -> "Not Modified" // 304
+            HttpURLConnection.HTTP_USE_PROXY -> "Use Proxy" // 305
+            HttpURLConnection.HTTP_BAD_REQUEST -> "Bad Request" // 400
+            HttpURLConnection.HTTP_UNAUTHORIZED -> "Unauthorized" // 401
+            HttpURLConnection.HTTP_PAYMENT_REQUIRED -> "Payment Required" // 402
+            HttpURLConnection.HTTP_FORBIDDEN -> "Forbidden" // 403
+            HttpURLConnection.HTTP_NOT_FOUND -> "Not Found" // 404
+            HttpURLConnection.HTTP_BAD_METHOD -> "Method Not Allowed" // 405
+            HttpURLConnection.HTTP_NOT_ACCEPTABLE -> "Not Acceptable" // 406
+            HttpURLConnection.HTTP_PROXY_AUTH -> "Proxy Authentication Required" // 407
+            HttpURLConnection.HTTP_CLIENT_TIMEOUT -> "Request Time-Out" // 408
+            HttpURLConnection.HTTP_CONFLICT -> "Conflict" // 409
+            HttpURLConnection.HTTP_GONE -> "Gone" // 410
+            HttpURLConnection.HTTP_LENGTH_REQUIRED -> "Length Required" // 411
+            HttpURLConnection.HTTP_PRECON_FAILED -> "Precondition Failed" // 412
+            HttpURLConnection.HTTP_ENTITY_TOO_LARGE -> "Request Entity Too Large" // 413
+            HttpURLConnection.HTTP_REQ_TOO_LONG -> "Request-URI Too Large" // 414
+            HttpURLConnection.HTTP_UNSUPPORTED_TYPE -> "Unsupported Media Type" // 415
+            HttpURLConnection.HTTP_INTERNAL_ERROR -> "Internal Server Error" // 500
+            HttpURLConnection.HTTP_NOT_IMPLEMENTED -> "Not Implemented" // 501
+            HttpURLConnection.HTTP_BAD_GATEWAY -> "Bad Gateway" // 502
+            HttpURLConnection.HTTP_UNAVAILABLE -> "Service Unavailable" // 503
+            HttpURLConnection.HTTP_GATEWAY_TIMEOUT -> "Gateway Timeout" // 504
+            HttpURLConnection.HTTP_VERSION -> "HTTP Version Not Supported" // 505
             else -> "Unknown"
         }
+    }
+
+    private fun isServerRelatedFail(status: Int): Boolean {
+        return status >= 500
+    }
+
+    fun isValidNotifyStatus(status: Int): Boolean {
+        val isEnabledServerFailOnly = SharedPrefsManager.customPrefs.getBoolean(Constants.NOTIFY_ONLY_SERVER_ISSUES, false)
+        return if (isEnabledServerFailOnly)
+            status != HttpURLConnection.HTTP_OK && isServerRelatedFail(status)
+        else
+            status != HttpURLConnection.HTTP_OK
     }
 }

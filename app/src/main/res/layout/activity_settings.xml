@@ -1,152 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/btnMonitorInterval"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center"
-        android:padding="10dp">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:text="@string/monitoring_interval"
-            android:textSize="@dimen/text_normal"
-            android:textStyle="bold"
-            android:layout_height="wrap_content"/>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtIntervalDetails"
-            android:layout_width="match_parent"
-            android:text="@string/checking_every_15_mins"
-            android:layout_marginTop="4dp"
-            android:textSize="@dimen/text_small"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutEnableAutoStart"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:paddingEnd="10dp"
-        android:paddingStart="10dp">
+        android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <LinearLayout
+            android:id="@+id/btnMonitorInterval"
             android:layout_width="match_parent"
-            android:text="@string/enable_auto_start"
-            android:textSize="@dimen/text_normal"
-            android:textStyle="bold"
-            android:layout_height="wrap_content"/>
-
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:text="@string/message_auto_start_reason"
-            android:textSize="@dimen/text_small"
-            android:layout_height="wrap_content"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEnableAutoStart"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:gravity="center"
-            app:cornerRadius="5dp"
-            app:backgroundTint="@color/colorPrimary"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="center"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="@string/enable_auto_start"/>
-    </LinearLayout>
+            android:padding="10dp">
 
-    <TextView
-        android:text="**************"
-        android:textAlignment="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:ignore="HardcodedText" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:text="@string/monitoring_interval"
+                android:textSize="@dimen/text_normal"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtIntervalDetails"
+                android:layout_width="match_parent"
+                android:text="@string/checking_every_15_mins"
+                android:layout_marginTop="4dp"
+                android:textSize="@dimen/text_small"
+                android:layout_height="wrap_content"/>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:text="@string/credits"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_normal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <LinearLayout
+            android:id="@+id/layoutEnableAutoStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:padding="10dp"
-            android:text="@string/icon_credits"
-            android:textSize="14sp" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:text="@string/source_code"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_normal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:padding="10dp"
-            android:text="@string/source_code_link"
-            android:textSize="@dimen/text_small"/>
-
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:text="@string/enable_auto_start"
+                android:textSize="@dimen/text_normal"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:text="@string/message_auto_start_reason"
+                android:textSize="@dimen/text_small"
+                android:layout_height="wrap_content"/>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:text="@string/support_development"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_normal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEnableAutoStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:cornerRadius="5dp"
+                app:backgroundTint="@color/colorPrimary"
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/enable_auto_start"/>
+        </LinearLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <LinearLayout
+            android:id="@+id/btnNotifyOnlyServerIssue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autoLink="web"
-            android:padding="10dp"
-            android:text="@string/support_development_link"
-            android:textSize="@dimen/text_small"/>
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:text="@string/notify_only_server_issues"
+                android:textSize="@dimen/text_normal"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchNotifyOnlyServerIssues"
+                android:layout_width="match_parent"
+                app:switchPadding="10dp"
+                android:text="@string/notify_only_server_side_issues_info"
+                android:textSize="@dimen/text_small"
+                android:checked="false"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:text="**************"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="HardcodedText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:text="@string/credits"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_normal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:padding="10dp"
+                android:text="@string/icon_credits"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:text="@string/source_code"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_normal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:padding="10dp"
+                android:text="@string/source_code_link"
+                android:textSize="@dimen/text_small"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:text="@string/support_development"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_normal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:padding="10dp"
+                android:text="@string/support_development_link"
+                android:textSize="@dimen/text_small"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
 
-</LinearLayout>
+</ScrollView>

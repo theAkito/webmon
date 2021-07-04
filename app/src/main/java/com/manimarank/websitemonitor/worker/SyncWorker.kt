@@ -21,7 +21,7 @@ class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
         Print.log("Fetching Data from Remote host")
         return try {
-            repository.checkWebSiteStatus().filter { !it.isSuccessful }.forEach {
+            repository.checkWebSiteStatus().filter { Utils.isValidNotifyStatus(it.status) }.forEach {
                 Print.log("Error Page : $it")
                 Utils.showNotification(applicationContext, it.name, String.format(applicationContext.getString(R.string.not_working, it.url)))
             }

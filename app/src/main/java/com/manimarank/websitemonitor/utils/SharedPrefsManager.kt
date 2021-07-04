@@ -13,7 +13,7 @@ object SharedPrefsManager {
     }
 
 
-    inline fun SharedPreferences.edit(operation: (SharedPreferences.Editor) -> Unit) {
+    private inline fun SharedPreferences.edit(operation: (SharedPreferences.Editor) -> Unit) {
         val editor = this.edit()
         operation(editor)
         editor.apply()

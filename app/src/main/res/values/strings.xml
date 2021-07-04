@@ -37,4 +37,6 @@
     <string name="no">No</string>
     <string name="support_development">Support development</string>
     <string name="support_development_link" translatable="false">Buy a Coffee for developer\nhttps://www.paypal.me/manimaran24</string>
+    <string name="notify_only_server_issues">Notify only Server issues</string>
+    <string name="notify_only_server_side_issues_info">Notify only server side issues(5xx). Avoid client side problems like internet and 4xx issues.</string>
 </resources>

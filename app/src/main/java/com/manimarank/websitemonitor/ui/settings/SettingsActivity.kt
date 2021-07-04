@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.utils.Constants.MONITORING_INTERVAL
+import com.manimarank.websitemonitor.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import com.manimarank.websitemonitor.utils.Interval.nameList
 import com.manimarank.websitemonitor.utils.Interval.valueList
 import com.manimarank.websitemonitor.utils.SharedPrefsManager
@@ -31,6 +32,11 @@ class SettingsActivity : AppCompatActivity() {
         btnEnableAutoStart.setOnClickListener { openAutoStartScreen(this) }
 
         updateIntervalTimeOnUi()
+
+        switchNotifyOnlyServerIssues.isChecked = SharedPrefsManager.customPrefs.getBoolean(NOTIFY_ONLY_SERVER_ISSUES, false)
+        switchNotifyOnlyServerIssues.setOnCheckedChangeListener { _, isChecked ->
+            SharedPrefsManager.customPrefs[NOTIFY_ONLY_SERVER_ISSUES] = isChecked
+        }
     }
 
     private fun showIntervalChooseDialog() {

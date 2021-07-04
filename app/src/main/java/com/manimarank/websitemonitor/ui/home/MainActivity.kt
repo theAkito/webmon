@@ -77,13 +77,13 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         viewModel.getAllWebSiteStatusList().observe(this, { it ->
             if (swipeRefresh.isRefreshing)
                 swipeRefresh.isRefreshing = false
-            it.filter { !it.isSuccessful }.forEach {
+            it.filter { Utils.isValidNotifyStatus(it.status) }.forEach {
                 showNotification(applicationContext, it.name,  String.format(getString(R.string.not_working, it.url)))
             }
         })
 
-        viewModel.getWebSiteStatus().observe(this, {it ->
-            if (!it.isSuccessful) {
+        viewModel.getWebSiteStatus().observe(this, {
+            if (Utils.isValidNotifyStatus(it.status)) {
                 showNotification(applicationContext, it.name,  String.format(getString(R.string.not_working, it.url)))
             }
         })

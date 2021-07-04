@@ -86,7 +86,7 @@ class WebSiteEntryRepository(context: Context) {
     suspend fun getWebsiteStatus(websiteEntry: WebSiteEntry): WebSiteStatus {
         var  webSiteStatus: WebSiteStatus
         withContext(Dispatchers.IO) {
-            var status = 404
+            var status = HttpURLConnection.HTTP_NOT_FOUND
             try {
                 val url = URL(websiteEntry.url)
                 val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
@@ -97,7 +97,7 @@ class WebSiteEntryRepository(context: Context) {
                     websiteEntry.name,
                     websiteEntry.url,
                     conn.responseCode,
-                    conn.responseCode == 200,
+                    conn.responseCode == HttpURLConnection.HTTP_OK,
                     conn.responseMessage
                 )
             } catch (e: Exception) {
