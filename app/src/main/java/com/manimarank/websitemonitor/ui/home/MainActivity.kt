@@ -24,6 +24,7 @@ import com.manimarank.websitemonitor.data.model.CustomMonitorData
 import com.manimarank.websitemonitor.ui.createentry.CreateEntryActivity
 import com.manimarank.websitemonitor.ui.settings.SettingsActivity
 import com.manimarank.websitemonitor.utils.Constants
+import com.manimarank.websitemonitor.utils.NetworkUtils
 import com.manimarank.websitemonitor.utils.Print
 import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.openUrl
@@ -89,6 +90,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         btnStop.setOnClickListener { stopTask() }
 
         swipeRefresh.setOnRefreshListener {
+            if (!NetworkUtils.isConnected(applicationContext)) {
+                if (swipeRefresh.isRefreshing)
+                    swipeRefresh.isRefreshing = false
+                Utils.showToast(applicationContext, getString(R.string.check_internet))
+                return@setOnRefreshListener
+            }
             viewModel.checkWebSiteStatus()
         }
 
@@ -195,6 +202,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
         dialog.run {
             btnSave.setOnClickListener {
+                if (!NetworkUtils.isConnected(applicationContext)) {
+                    Utils.showToast(applicationContext, getString(R.string.check_internet))
+                    return@setOnClickListener
+                }
                 if (!TextUtils.isEmpty(editDuration.text)) {
                     if (checkboxAgree.isChecked) {
                         val durationBy = if (rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) 60 * 1000 else 1000
@@ -234,6 +245,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
     override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {
+        if (!NetworkUtils.isConnected(applicationContext)) {
+            if (swipeRefresh.isRefreshing)
+                swipeRefresh.isRefreshing = false
+            Utils.showToast(applicationContext, getString(R.string.check_internet))
+            return
+        }
         viewModel.getWebSiteStatus(webSiteEntry)
         Utils.showSnackBar(
             swipeRefresh, String.format(

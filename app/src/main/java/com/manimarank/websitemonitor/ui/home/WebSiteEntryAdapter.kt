@@ -90,7 +90,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 
                 this.setOnClickListener { listener.onRefreshClicked(webSiteEntry) }
                 this.setOnLongClickListener {
-                    listener.onEditClicked(webSiteEntry)
+                    listener.onViewClicked(webSiteEntry)
                     true
                 }
             }

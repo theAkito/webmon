@@ -22,11 +22,7 @@ class WebSiteEntryRepository(context: Context) {
     private val webSiteEntryDao: WebSiteEntryDao? by lazy {
         DbHelper.getInstance(context)?.webSiteEntryDao()
     }
-    private val allWebSiteEntry: LiveData<List<WebSiteEntry>>
-
-    init {
-        allWebSiteEntry = webSiteEntryDao?.getAllWebSiteEntryList()!!
-    }
+    private val allWebSiteEntry: LiveData<List<WebSiteEntry>> = webSiteEntryDao?.getAllWebSiteEntryList()!!
 
     fun addDefaultData() = runBlocking {
         this.launch(Dispatchers.IO) {
