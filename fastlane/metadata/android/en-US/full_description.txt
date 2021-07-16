@@ -4,8 +4,10 @@ Default monitor interval 1 hour once. You can modify the interval by using setti
 <b>App features:</b>
 
 - Simple UI
-- No login required
+- No login required.
 - Notified when site down.
-- App monitor all sites in some period of time interval
-- Monitor Pause/Resume particular site
-- Single site quick refresh
+- App monitor all sites in some period of time interval.
+- Monitor Pause/Resume particular site.
+- Custom monitor option(1 sec to 99 min).
+- Single site quick refresh.
+- Settings for Notify only server issue.
