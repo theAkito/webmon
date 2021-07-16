@@ -1,0 +1,3 @@
+- Added: Settings for Notify only server issue.
+- Added: Custom monitor option.
+- Added: Check for internet connectivity
