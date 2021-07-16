@@ -18,33 +18,36 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 **Release/Demo App** - [Click here](https://gitlab.com/manimaran/website-monitor/-/releases)
 
 
-## Features
-- App monitor all sites in some period of time interval
-- App notify to user if any site down/unknown issue.
-- We can configure monitor interval time.
-- Monitor Pause/Resume particular site
-- Single site quick refresh
+## App Features
+- Simple UI
+- No login required.
+- Notified when site down.
+- App monitor all sites in some period of time interval.
+- Monitor Pause/Resume particular site.
+- Custom monitor option(1 sec to 99 min).
+- Single site quick refresh.
+- Settings for Notify only server issue.
+
+
+## Useful links
+ * [Blog about Website monitor](https://manimaran96.wordpress.com/category/android-apps/website-monitor/)
 
 
 ## Screen Shot
 
-<center><img src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" data-canonical-src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" width="280" height="500" /></center>
+<center><img src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" data-canonical-src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" width="260" height="480" /></center>
 <br>
 
 
 ## More Screenshots 
 
-| Main | Menu Options | Pause/Resume | Monitor Intervals |
+| Main & Menu Options | Settings | Monitor Intervals | Custom Monitor Setup |
 |:-:|:-:|:-:|:-:|
 | ![First](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true) | ![Sec](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true) | ![Third](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true) | ![Fourth](fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true) |
 
-| Update | Create | Search | Notification |
+| Custom Monitor Info | Update | Pause/Resume | Notification |
 |:-:|:-:|:-:|:-:|
 | ![Fifth](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true) | ![Sixth](fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true) | ![Seventh](fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true) | ![Eighth](fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true) |
-
-
-## Useful links
- * [Blog about Website monitor](https://manimaran96.wordpress.com/category/android-apps/website-monitor/)
 
 ## License
 
