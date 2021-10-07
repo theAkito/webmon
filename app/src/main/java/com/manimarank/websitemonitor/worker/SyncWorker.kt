@@ -23,7 +23,9 @@ class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
         return try {
             repository.checkWebSiteStatus().filter { Utils.isValidNotifyStatus(it.status) }.forEach {
                 Print.log("Error Page : $it")
-                Utils.showNotification(applicationContext, it.name, String.format(applicationContext.getString(R.string.not_working, it.url)))
+                if (Utils.appIsVisible().not()) {
+                    Utils.showNotification(applicationContext, it.name, String.format(applicationContext.getString(R.string.not_working, it.url)))
+                }
             }
             Result.success()
         } catch (e: Throwable) {

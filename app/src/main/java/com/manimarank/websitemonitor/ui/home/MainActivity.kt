@@ -27,6 +27,7 @@ import com.manimarank.websitemonitor.utils.Constants
 import com.manimarank.websitemonitor.utils.NetworkUtils
 import com.manimarank.websitemonitor.utils.Print
 import com.manimarank.websitemonitor.utils.Utils
+import com.manimarank.websitemonitor.utils.Utils.appIsVisible
 import com.manimarank.websitemonitor.utils.Utils.openUrl
 import com.manimarank.websitemonitor.utils.Utils.showAutoStartEnableDialog
 import com.manimarank.websitemonitor.utils.Utils.showNotification
@@ -124,7 +125,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         viewModel.getAllWebSiteStatusList().observe(this, { it ->
             if (swipeRefresh.isRefreshing)
                 swipeRefresh.isRefreshing = false
-            it.filter { Utils.isValidNotifyStatus(it.status) && customMonitorData.showNotification }.forEach {
+            it.filter { Utils.isValidNotifyStatus(it.status) && customMonitorData.showNotification && appIsVisible().not() }.forEach {
                 showNotification(
                     applicationContext, (if (runningCount > 1) "#$runningCount " else "") + it.name, String.format(
                         getString(
@@ -137,7 +138,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         })
 
         viewModel.getWebSiteStatus().observe(this, {
-            if (Utils.isValidNotifyStatus(it.status)) {
+            if (Utils.isValidNotifyStatus(it.status) && appIsVisible().not()) {
                 showNotification(
                     applicationContext, it.name, String.format(
                         getString(
@@ -189,6 +190,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             R.id.action_search -> true
             R.id.action_custom_monitor -> {
                 showForceRefreshUI()
+                return true
+            }
+            R.id.action_refresh -> {
+                viewModel.checkWebSiteStatus()
                 return true
             }
             else -> super.onOptionsItemSelected(item)
