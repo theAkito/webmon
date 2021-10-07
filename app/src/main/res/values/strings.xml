@@ -53,4 +53,5 @@
     <string name="error_read_and_agree_checkbox"><![CDATA[Read & Agree the checkbox]]></string>
     <string name="enter_valid_input">Enter valid input</string>
     <string name="check_internet">Please check your internet connection!</string>
+    <string name="action_refresh_title">Refresh</string>
 </resources>

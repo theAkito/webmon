@@ -17,6 +17,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/ic_refresh"
+        android:orderInCategory="3"
+        android:title="@string/action_refresh_title"
+        app:showAsAction="withText" />
+    <item
         android:id="@+id/action_custom_monitor"
         android:orderInCategory="3"
         android:title="@string/custom_monitor"
