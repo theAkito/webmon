@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import com.google.android.material.snackbar.Snackbar
+import com.manimarank.websitemonitor.MyApplication
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.ui.home.MainActivity
 import com.manimarank.websitemonitor.utils.Constants.DEFAULT_INTERVAL_MIN
@@ -199,5 +200,17 @@ object Utils {
             status != HttpURLConnection.HTTP_OK && isServerRelatedFail(status)
         else
             status != HttpURLConnection.HTTP_OK
+    }
+
+    fun resumeApp() {
+        MyApplication.ActivityVisibility.resumeApp()
+    }
+
+    fun pauseApp() {
+        MyApplication.ActivityVisibility.pauseApp()
+    }
+
+    fun appIsVisible(): Boolean {
+        return MyApplication.ActivityVisibility.appIsVisible
     }
 }
