@@ -47,7 +47,7 @@ before_script:
   - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/bin/
 
   # Nothing fancy here, just checking sdkManager version
-  - sdkmanager --version
+  - sdkmanager --sdk_root=${ANDROID_HOME} --version
 
   # use yes to accept all licenses
   - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
