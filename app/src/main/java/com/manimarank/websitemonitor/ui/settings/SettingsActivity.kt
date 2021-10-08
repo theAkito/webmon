@@ -3,9 +3,14 @@ package com.manimarank.websitemonitor.ui.settings
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.manimarank.websitemonitor.R
+import com.manimarank.websitemonitor.databinding.ActivitySettingsBinding
 import com.manimarank.websitemonitor.utils.Constants.MONITORING_INTERVAL
 import com.manimarank.websitemonitor.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import com.manimarank.websitemonitor.utils.Interval.nameList
@@ -16,13 +21,27 @@ import com.manimarank.websitemonitor.utils.Utils.getMonitorTime
 import com.manimarank.websitemonitor.utils.Utils.isCustomRom
 import com.manimarank.websitemonitor.utils.Utils.openAutoStartScreen
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
-import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var activitySettingsBinding: ActivitySettingsBinding
+    private lateinit var btnMonitorInterval: LinearLayout
+    private lateinit var layoutEnableAutoStart: LinearLayout
+    private lateinit var btnEnableAutoStart: TextView
+    private lateinit var switchNotifyOnlyServerIssues: SwitchMaterial
+    private lateinit var txtIntervalDetails: AppCompatTextView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+
+        activitySettingsBinding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(activitySettingsBinding.root)
+        btnMonitorInterval = activitySettingsBinding.btnMonitorInterval
+        layoutEnableAutoStart = activitySettingsBinding.layoutEnableAutoStart
+        btnEnableAutoStart = activitySettingsBinding.btnEnableAutoStart
+        switchNotifyOnlyServerIssues = activitySettingsBinding.switchNotifyOnlyServerIssues
+        txtIntervalDetails = activitySettingsBinding.txtIntervalDetails
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

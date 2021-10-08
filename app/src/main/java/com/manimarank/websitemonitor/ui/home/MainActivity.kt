@@ -12,6 +12,8 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -21,6 +23,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.data.model.CustomMonitorData
+import com.manimarank.websitemonitor.databinding.ActivityMainBinding
+import com.manimarank.websitemonitor.databinding.ContentMainBinding
+import com.manimarank.websitemonitor.databinding.CustomRefreshInputBinding
 import com.manimarank.websitemonitor.ui.createentry.CreateEntryActivity
 import com.manimarank.websitemonitor.ui.settings.SettingsActivity
 import com.manimarank.websitemonitor.utils.Constants
@@ -32,16 +37,20 @@ import com.manimarank.websitemonitor.utils.Utils.openUrl
 import com.manimarank.websitemonitor.utils.Utils.showAutoStartEnableDialog
 import com.manimarank.websitemonitor.utils.Utils.showNotification
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.custom_refresh_input.*
 
 
 class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var searchView: SearchView
-    private lateinit var adapter: WebSiteEntryAdapter
+
+    private lateinit var webSiteEntryAdapter: WebSiteEntryAdapter
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var contentMainBinding: ContentMainBinding
+
+    private lateinit var customRefreshInputBinding: CustomRefreshInputBinding
+
+    private lateinit var onEditClickedResultLauncher: ActivityResultLauncher<Intent>
 
     var handler = Handler(Looper.getMainLooper())
 
@@ -57,11 +66,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     private fun startUpdateTask(isUpdate: Boolean = true) {
         Print.log("Called on main thread $runningCount")
-        layoutForceRefreshInfo.visibility = View.VISIBLE
+        binding.layout.layoutForceRefreshInfo.visibility = View.VISIBLE
         if (isUpdate) {
             handler.postDelayed(runnableTask, customMonitorData.runningDelay)
             viewModel.checkWebSiteStatus()
-            txtForceRefreshInfo.text = getString(R.string.custom_monitor_running_info, customMonitorData.runningDelayValue, runningCount.toString())
+            binding.layout.txtForceRefreshInfo.text = getString(R.string.custom_monitor_running_info, customMonitorData.runningDelayValue, runningCount.toString())
             runningCount += 1
         } else{
             runningCount = 1
@@ -73,27 +82,46 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         handler.removeCallbacks(runnableTask)
         runningCount = 0
         customMonitorData = CustomMonitorData()
-        layoutForceRefreshInfo.visibility = View.GONE
+        binding.layout.layoutForceRefreshInfo.visibility = View.GONE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
 
-        //Fab click listener
-        fabAdd.setOnClickListener {
-            resetSearchView()
-            val intent = Intent(this, CreateEntryActivity::class.java)
-            startActivityForResult(intent, Constants.INTENT_CREATE_ENTRY)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+
+        // Edit Website Entry Result Launcher
+        onEditClickedResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val currentWebSiteEntry = data?.getParcelableExtra<WebSiteEntry>(Constants.INTENT_OBJECT)!!
+                viewModel.updateWebSiteEntry(currentWebSiteEntry)
+            }
         }
 
-        btnStop.setOnClickListener { stopTask() }
+        //Fab click listener
+        var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val webSiteEntry = data?.getParcelableExtra<WebSiteEntry>(Constants.INTENT_OBJECT)!!
+                viewModel.saveWebSiteEntry(webSiteEntry)
+            }
+        }
+        binding.fabAdd.setOnClickListener {
+            resetSearchView()
+            val intent = Intent(this, CreateEntryActivity::class.java)
+            resultLauncher.launch(intent)
+        }
 
-        swipeRefresh.setOnRefreshListener {
+        binding.layout.btnStop.setOnClickListener { stopTask() }
+
+        binding.layout.swipeRefresh.setOnRefreshListener {
             if (!NetworkUtils.isConnected(applicationContext)) {
-                if (swipeRefresh.isRefreshing)
-                    swipeRefresh.isRefreshing = false
+                if (binding.layout.swipeRefresh.isRefreshing)
+                    binding.layout.swipeRefresh.isRefreshing = false
                 Utils.showToast(applicationContext, getString(R.string.check_internet))
                 return@setOnRefreshListener
             }
@@ -101,30 +129,32 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         }
 
         //Setting up RecyclerView
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = WebSiteEntryAdapter(this)
-        recyclerView.adapter = adapter
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0) {
-                    fabAdd.hide()
-                } else if (dy < 0)
-                    fabAdd.show()
-            }
-        })
-
+        val thisContext = this
+        webSiteEntryAdapter = WebSiteEntryAdapter(this)
+        binding.layout.recyclerView.apply {
+            layoutManager = LinearLayoutManager(thisContext)
+            adapter = webSiteEntryAdapter
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (dy > 0) {
+                        binding.fabAdd.hide()
+                    } else if (dy < 0)
+                        binding.fabAdd.show()
+                }
+            })
+        }
 
         //Setting up ViewModel and LiveData
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.getWebSiteEntryList().observe(this, {
-            adapter.setAllTodoItems(it)
+            webSiteEntryAdapter.setAllTodoItems(it)
             if (it.isEmpty())
                 viewModel.addDefaultData()
         })
 
         viewModel.getAllWebSiteStatusList().observe(this, { it ->
-            if (swipeRefresh.isRefreshing)
-                swipeRefresh.isRefreshing = false
+            if (binding.layout.swipeRefresh.isRefreshing)
+                binding.layout.swipeRefresh.isRefreshing = false
             it.filter { Utils.isValidNotifyStatus(it.status) && customMonitorData.showNotification && appIsVisible().not() }.forEach {
                 showNotification(
                     applicationContext, (if (runningCount > 1) "#$runningCount " else "") + it.name, String.format(
@@ -168,12 +198,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         searchView.maxWidth = Integer.MAX_VALUE
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                adapter.filter.filter(query)
+                webSiteEntryAdapter.filter.filter(query)
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                adapter.filter.filter(newText)
+                webSiteEntryAdapter.filter.filter(newText)
                 return false
             }
 
@@ -203,21 +233,21 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     private fun showForceRefreshUI() {
         val dialog = Dialog(this)
         dialog.setCancelable(true)
-        dialog.setContentView(R.layout.custom_refresh_input)
+        dialog.setContentView(customRefreshInputBinding.root)
 
         dialog.run {
-            btnSave.setOnClickListener {
+            customRefreshInputBinding.btnSave.setOnClickListener {
                 if (!NetworkUtils.isConnected(applicationContext)) {
                     Utils.showToast(applicationContext, getString(R.string.check_internet))
                     return@setOnClickListener
                 }
-                if (!TextUtils.isEmpty(editDuration.text)) {
-                    if (checkboxAgree.isChecked) {
-                        val durationBy = if (rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) 60 * 1000 else 1000
-                        val duration = editDuration.text.toString().toLong()
+                if (!TextUtils.isEmpty(customRefreshInputBinding.editDuration.text)) {
+                    if (customRefreshInputBinding.checkboxAgree.isChecked) {
+                        val durationBy = if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) 60 * 1000 else 1000
+                        val duration = customRefreshInputBinding.editDuration.text.toString().toLong()
                         customMonitorData.runningDelay = duration * durationBy
-                        customMonitorData.runningDelayValue = "$duration ${ if(rgDurationType.checkedRadioButtonId == rbDurationMin.id) rbDurationMin.text else rbDurationSec.text}"
-                        customMonitorData.showNotification = switchShowNotification.isChecked
+                        customMonitorData.runningDelayValue = "$duration ${ if(customRefreshInputBinding.rgDurationType.checkedRadioButtonId == customRefreshInputBinding.rbDurationMin.id) customRefreshInputBinding.rbDurationMin.text else customRefreshInputBinding.rbDurationSec.text}"
+                        customMonitorData.showNotification = customRefreshInputBinding.switchShowNotification.isChecked
 
                         startUpdateTask(isUpdate = false)
                         dialog.dismiss()
@@ -246,19 +276,19 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         resetSearchView()
         val intent = Intent(this, CreateEntryActivity::class.java)
         intent.putExtra(Constants.INTENT_OBJECT, webSiteEntry)
-        startActivityForResult(intent, Constants.INTENT_UPDATE_ENTRY)
+        onEditClickedResultLauncher.launch(intent)
     }
 
     override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {
         if (!NetworkUtils.isConnected(applicationContext)) {
-            if (swipeRefresh.isRefreshing)
-                swipeRefresh.isRefreshing = false
+            if (binding.layout.swipeRefresh.isRefreshing)
+                binding.layout.swipeRefresh.isRefreshing = false
             Utils.showToast(applicationContext, getString(R.string.check_internet))
             return
         }
         viewModel.getWebSiteStatus(webSiteEntry)
         Utils.showSnackBar(
-            swipeRefresh, String.format(
+            binding.layout.swipeRefresh, String.format(
                 getString(R.string.site_refreshing),
                 webSiteEntry.url
             )
@@ -274,7 +304,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             isPaused = this.isPaused.not()
         })
         Utils.showSnackBar(
-            swipeRefresh, String.format(
+            binding.layout.swipeRefresh, String.format(
                 getString(if (webSiteEntry.isPaused) R.string.monitor_paused else R.string.monitor_resumed),
                 webSiteEntry.url
             )
@@ -298,22 +328,4 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         stopTask()
     }
 
-    /**
-     * Activity result callback
-     * Triggers when Save button clicked from @CreateEntryActivity
-     * */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            val webSiteEntry = data?.getParcelableExtra<WebSiteEntry>(Constants.INTENT_OBJECT)!!
-            when (requestCode) {
-                Constants.INTENT_CREATE_ENTRY -> {
-                    viewModel.saveWebSiteEntry(webSiteEntry)
-                }
-                Constants.INTENT_UPDATE_ENTRY -> {
-                    viewModel.updateWebSiteEntry(webSiteEntry)
-                }
-            }
-        }
-    }
 }

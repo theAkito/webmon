@@ -2,20 +2,17 @@ package com.manimarank.websitemonitor.ui.home
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.PopupMenu
+import android.widget.*
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
+import com.manimarank.websitemonitor.databinding.ItemWebsiteRowBinding
 import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.currentDateTime
-import kotlinx.android.synthetic.main.item_website_row.view.*
 import java.util.*
 
 /**
@@ -27,36 +24,41 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     private var mList: List<WebSiteEntry> = arrayListOf()
     private var filteredList: List<WebSiteEntry> = arrayListOf()
     private val listener: WebSiteEntryEvents = todoEvents
+    private lateinit var itemWebsiteRowBinding: ItemWebsiteRowBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_website_row, parent, false)
-        return ViewHolder(view)
+        itemWebsiteRowBinding = ItemWebsiteRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(itemWebsiteRowBinding)
     }
 
     override fun getItemCount(): Int = filteredList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(filteredList[position], listener, position)
+        with (holder) {
+            with (filteredList[position]) {
+                holder.bind(this, listener, position)
+            }
+        }
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(private val binding: ItemWebsiteRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents, position: Int) {
 
-            itemView.apply {
+            binding.root.apply {
 
-                txtWebSite.text = webSiteEntry.name
-                txtUrl.text = webSiteEntry.url
+                binding.txtWebSite.text = webSiteEntry.name
+                binding.txtUrl.text = webSiteEntry.url
 
                 val iconUrl = "https://www.google.com/s2/favicons?domain=${webSiteEntry.url}"
-                Glide.with(itemView.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(itemView.imgLogo)
+                Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
 
-                txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry.status)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
-                imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
-                btnPause.setImageResource(if(webSiteEntry.isPaused) R.drawable.ic_play else R.drawable.ic_pause)
+                binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry.status)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
+                binding.imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
+                binding.btnPause.setImageResource(if(webSiteEntry.isPaused) R.drawable.ic_play else R.drawable.ic_pause)
 
 
-                val popupMenu = PopupMenu(context, btnMore)
+                val popupMenu = PopupMenu(context, binding.btnMore)
                 popupMenu.inflate(R.menu.menu_website_more)
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
@@ -68,7 +70,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                     true
                 }
 
-                btnMore.setOnClickListener {
+                binding.btnMore.setOnClickListener {
                     try {
                         val popup = PopupMenu::class.java.getDeclaredField("mPopup")
                         popup.isAccessible =  true
@@ -81,7 +83,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                     }
                 }
 
-                btnPause.setOnClickListener {
+                binding.btnPause.setOnClickListener {
                     listener.onPauseClicked(webSiteEntry, position)
                     webSiteEntry.isPaused = webSiteEntry.isPaused.not()
                     notifyItemChanged(position)
@@ -109,8 +111,11 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 } else {
                     val filteredList = arrayListOf<WebSiteEntry>()
                     for (row in mList) {
-                        if (row.name.toLowerCase(Locale.getDefault()).contains(charString.toLowerCase(Locale.getDefault()))
-                            || row.url.contains(charString.toLowerCase(Locale.getDefault()))
+                        if (
+                            row.name
+                                .lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                            || row.url.contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             filteredList.add(row)
                         }
