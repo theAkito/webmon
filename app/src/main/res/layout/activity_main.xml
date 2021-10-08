@@ -31,6 +31,8 @@
         android:contentDescription="@string/create_entry"
         app:srcCompat="@drawable/ic_add" />
 
-    <include layout="@layout/content_main" />
+    <include
+        android:id="@+id/layout"
+        layout="@layout/content_main" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
