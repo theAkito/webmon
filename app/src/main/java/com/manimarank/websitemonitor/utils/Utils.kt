@@ -95,11 +95,16 @@ object Utils {
         return "Checking every ${refreshTime ?: "1 hour once"}"
     }
 
-    fun isCustomRom(): Boolean { return listOf("xiaomi", "oppo", "vivo").contains(android.os.Build.MANUFACTURER.toLowerCase(Locale.ROOT)) }
+    fun isCustomRom(): Boolean {
+        return listOf("xiaomi", "oppo", "vivo")
+            .contains(
+                android.os.Build.MANUFACTURER.lowercase(Locale.ROOT)
+            )
+    }
 
     fun openAutoStartScreen(context: Context) {
         val intent = Intent()
-        when(android.os.Build.MANUFACTURER.toLowerCase(Locale.ROOT)) {
+        when(android.os.Build.MANUFACTURER.lowercase(Locale.ROOT)) {
             "xiaomi" -> intent.component= ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
             "oppo" -> intent.component = ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")
             "vivo" -> intent.component = ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")
@@ -195,11 +200,13 @@ object Utils {
     }
 
     fun isValidNotifyStatus(status: Int): Boolean {
-        val isEnabledServerFailOnly = SharedPrefsManager.customPrefs.getBoolean(Constants.NOTIFY_ONLY_SERVER_ISSUES, false)
-        return if (isEnabledServerFailOnly)
+        val isEnabledServerFailOnly = SharedPrefsManager
+            .customPrefs.getBoolean(Constants.NOTIFY_ONLY_SERVER_ISSUES, false)
+        return if (isEnabledServerFailOnly) {
             status != HttpURLConnection.HTTP_OK && isServerRelatedFail(status)
-        else
+        } else {
             status != HttpURLConnection.HTTP_OK
+        }
     }
 
     fun resumeApp() {
