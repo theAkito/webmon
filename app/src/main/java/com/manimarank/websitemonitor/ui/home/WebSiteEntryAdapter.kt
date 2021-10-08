@@ -129,7 +129,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
             }
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                filteredList = p1?.values as List<WebSiteEntry>
+                filteredList = (p1?.values as List<*>).filterIsInstance<WebSiteEntry>()
                 notifyDataSetChanged()
             }
 
