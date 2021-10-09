@@ -220,4 +220,6 @@ object Utils {
     fun appIsVisible(): Boolean {
         return MyApplication.ActivityVisibility.appIsVisible
     }
+
+    fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")
 }

@@ -16,6 +16,7 @@ import com.manimarank.websitemonitor.databinding.ItemWebsiteRowBinding
 import com.manimarank.websitemonitor.utils.Print
 import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.currentDateTime
+import com.manimarank.websitemonitor.utils.Utils.removeUrlProto
 import java.util.*
 
 /**
@@ -54,7 +55,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 binding.txtWebSite.text = webSiteEntry.name
                 binding.txtUrl.text = webSiteEntry.url
 
-                val iconUrl = "https://www.google.com/s2/favicons?domain=${webSiteEntry.url}"
+                val iconUrl = "https://icons.duckduckgo.com/ip3/${webSiteEntry.url.removeUrlProto()}.ico"
                 try {
                     Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
                 } catch (e: Exception) {
