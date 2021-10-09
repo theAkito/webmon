@@ -9,22 +9,20 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.data.model.CustomMonitorData
 import com.manimarank.websitemonitor.databinding.ActivityMainBinding
-import com.manimarank.websitemonitor.databinding.ContentMainBinding
 import com.manimarank.websitemonitor.databinding.CustomRefreshInputBinding
 import com.manimarank.websitemonitor.ui.createentry.CreateEntryActivity
 import com.manimarank.websitemonitor.ui.settings.SettingsActivity
@@ -33,7 +31,6 @@ import com.manimarank.websitemonitor.utils.NetworkUtils
 import com.manimarank.websitemonitor.utils.Print
 import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.appIsVisible
-import com.manimarank.websitemonitor.utils.Utils.openUrl
 import com.manimarank.websitemonitor.utils.Utils.showAutoStartEnableDialog
 import com.manimarank.websitemonitor.utils.Utils.showNotification
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
@@ -46,22 +43,26 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     private lateinit var webSiteEntryAdapter: WebSiteEntryAdapter
     private lateinit var binding: ActivityMainBinding
-    private lateinit var contentMainBinding: ContentMainBinding
 
     private lateinit var customRefreshInputBinding: CustomRefreshInputBinding
 
     private lateinit var onEditClickedResultLauncher: ActivityResultLauncher<Intent>
+
+    private lateinit var currentItem: WebSiteEntry
 
     var handler = Handler(Looper.getMainLooper())
 
     private var runningCount = 0
     private var customMonitorData: CustomMonitorData = CustomMonitorData()
 
+    private lateinit var itemTouchHelper: ItemTouchHelper
+
     private val runnableTask: Runnable = Runnable {
-        if (runningCount == 0)
+        if (runningCount == 0) {
             stopTask()
-        else
+        } else {
             startUpdateTask(isUpdate = true)
+        }
     }
 
     private fun startUpdateTask(isUpdate: Boolean = true) {
@@ -142,14 +143,19 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
                         binding.fabAdd.show()
                 }
             })
+
+            // Setting up Drag & Drop Re-Order WebsiteEntry
+            itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+            itemTouchHelper.attachToRecyclerView(this)
         }
+
+
 
         //Setting up ViewModel and LiveData
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.getWebSiteEntryList().observe(this, {
             webSiteEntryAdapter.setAllTodoItems(it)
-            if (it.isEmpty())
-                viewModel.addDefaultData()
+            if (it.isEmpty()) { viewModel.addDefaultData() }
         })
 
         viewModel.getAllWebSiteStatusList().observe(this, { it ->
@@ -295,8 +301,13 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         )
     }
 
-    override fun onViewClicked(webSiteEntry: WebSiteEntry) {
-        openUrl(applicationContext, webSiteEntry.url)
+    override fun onViewClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int) {
+        val adapterPositionItem = viewModel.getWebSiteEntryList().value?.map {
+            System.lineSeparator() + Print.log(System.lineSeparator() + """viewModel.getWebSiteEntryList().value: """ + it.name)
+            it
+        }?.associateBy { it.itemPosition }?.get(adapterPosition)
+        Print.log(System.lineSeparator() + """MainActivity.onViewClicked.adapterPositionItem: """ + adapterPositionItem)
+        currentItem = adapterPositionItem ?: throw IllegalAccessError("[MainActivity.onViewClicked()] Item must be available.")
     }
 
     override fun onPauseClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int) {
@@ -326,6 +337,64 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     override fun onResume() {
         super.onResume()
         stopTask()
+    }
+
+    private val itemTouchHelperCallback = object: ItemTouchHelper.Callback() {
+
+        override fun getMovementFlags(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int {
+            // Available movement directions.
+            val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
+            return makeMovementFlags(dragFlags, 0)
+        }
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            // Notify your adapter that an item is moved from Position X to position Y.
+            webSiteEntryAdapter.notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
+            return true
+        }
+
+        override fun isLongPressDragEnabled(): Boolean {
+            // true: You want to start dragging on long press.
+            // false: You want to handle it yourself.
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+            super.onSelectedChanged(viewHolder, actionState)
+            // Hanlde action state changes
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            super.clearView(recyclerView, viewHolder)
+
+            // Called by the ItemTouchHelper when the user interaction with an element is over and it also completed its animation.
+            // This is a good place to send an update to your backend about changes.
+
+            val entries = (0..recyclerView.childCount).mapNotNull {
+                val holder = try { recyclerView.getChildViewHolder(recyclerView.getChildAt(it)) } catch (e: Exception) { return@mapNotNull null }
+                val position = holder.adapterPosition
+                Print.log("${holder.itemView.tag} holder.adapterPosition: " + holder.adapterPosition)
+                Print.log("holder.itemView.tag: " + (holder.itemView.tag as WebSiteEntry).name)
+                (holder.itemView.tag as WebSiteEntry) to position
+            }.toMap()
+
+            entries.forEach { entryToPosition ->
+                val entry = entryToPosition.key
+                entry.apply {
+                    itemPosition = entryToPosition.value
+                }
+                viewModel.updateWebSiteEntry(entry)
+            }
+        }
     }
 
 }
