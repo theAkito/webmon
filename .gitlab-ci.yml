@@ -71,7 +71,7 @@ assembleDebug:
   interruptible: true
   stage: build
   script:
-    - ./gradlew --debug --full-stacktrace assembleDebug
+    - ./gradlew --full-stacktrace assembleDebug
   artifacts:
     paths:
       - app/build/outputs/

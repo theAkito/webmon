@@ -46,7 +46,6 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     }
 
     inner class ViewHolder(val binding: ItemWebsiteRowBinding) : RecyclerView.ViewHolder(binding.root) {
-        var entry: WebSiteEntry = WebSiteEntry(name = "test", url = "test")
         @SuppressLint("SetTextI18n")
         fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents, position: Int) {
 
