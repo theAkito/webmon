@@ -3,7 +3,9 @@ package com.manimarank.websitemonitor.ui.home
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Filter
+import android.widget.Filterable
+import android.widget.PopupMenu
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -11,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.databinding.ItemWebsiteRowBinding
+import com.manimarank.websitemonitor.utils.Print
 import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.currentDateTime
 import java.util.*
@@ -22,7 +25,7 @@ import java.util.*
 class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter<WebSiteEntryAdapter.ViewHolder>(), Filterable {
 
     private var mList: List<WebSiteEntry> = arrayListOf()
-    private var filteredList: List<WebSiteEntry> = arrayListOf()
+    var filteredList: List<WebSiteEntry> = arrayListOf()
     private val listener: WebSiteEntryEvents = todoEvents
     private lateinit var itemWebsiteRowBinding: ItemWebsiteRowBinding
 
@@ -36,12 +39,14 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with (holder) {
             with (filteredList[position]) {
+                holder.itemView.tag = this
                 holder.bind(this, listener, position)
             }
         }
     }
 
-    inner class ViewHolder(private val binding: ItemWebsiteRowBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(val binding: ItemWebsiteRowBinding) : RecyclerView.ViewHolder(binding.root) {
+        var entry: WebSiteEntry = WebSiteEntry(name = "test", url = "test")
         @SuppressLint("SetTextI18n")
         fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents, position: Int) {
 
@@ -51,7 +56,12 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 binding.txtUrl.text = webSiteEntry.url
 
                 val iconUrl = "https://www.google.com/s2/favicons?domain=${webSiteEntry.url}"
-                Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
+                try {
+                    Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
+                } catch (e: Exception) {
+                    Print.log(e.message ?: "Exception occured when using Glide to load Website Logo.")
+                }
+
 
                 binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry.status)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
                 binding.imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
@@ -63,7 +73,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
                         R.id.action_refresh -> listener.onRefreshClicked(webSiteEntry)
-                        R.id.action_visit -> listener.onViewClicked(webSiteEntry)
+                        R.id.action_visit -> listener.onViewClicked(webSiteEntry, position)
                         R.id.action_edit -> listener.onEditClicked(webSiteEntry)
                         R.id.action_delete -> listener.onDeleteClicked(webSiteEntry)
                     }
@@ -92,7 +102,8 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 
                 this.setOnClickListener { listener.onRefreshClicked(webSiteEntry) }
                 this.setOnLongClickListener {
-                    listener.onViewClicked(webSiteEntry)
+                    listener.onViewClicked(webSiteEntry, position)
+                    notifyDataSetChanged()
                     true
                 }
             }
@@ -141,7 +152,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
      * */
     fun setAllTodoItems(todoItems: List<WebSiteEntry>) {
         this.mList = todoItems
-        this.filteredList = todoItems
+        this.filteredList = todoItems.sortedBy { it.itemPosition }
         notifyDataSetChanged()
     }
 
@@ -150,7 +161,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
      * */
     interface WebSiteEntryEvents {
         fun onDeleteClicked(webSiteEntry: WebSiteEntry)
-        fun onViewClicked(webSiteEntry: WebSiteEntry)
+        fun onViewClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int)
         fun onEditClicked(webSiteEntry: WebSiteEntry)
         fun onRefreshClicked(webSiteEntry: WebSiteEntry)
         fun onPauseClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int)
