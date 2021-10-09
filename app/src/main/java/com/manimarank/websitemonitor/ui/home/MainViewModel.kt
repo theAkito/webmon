@@ -10,7 +10,6 @@ import com.manimarank.websitemonitor.data.model.WebSiteStatus
 import com.manimarank.websitemonitor.data.repository.WebSiteEntryRepository
 import com.manimarank.websitemonitor.utils.Constants
 import com.manimarank.websitemonitor.utils.SharedPrefsManager
-import com.manimarank.websitemonitor.utils.SharedPrefsManager.set
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
