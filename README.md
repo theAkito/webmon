@@ -49,6 +49,11 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 |:-:|:-:|:-:|:-:|
 | ![Fifth](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true) | ![Sixth](fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true) | ![Seventh](fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true) | ![Eighth](fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true) |
 
+## TODO
+* Dark Mode
+* Export Website Entries to JSON as Backup
+* Enable Import of Backups
+
 ## License
 
 <img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg" width="100px"></img>
