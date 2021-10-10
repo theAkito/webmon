@@ -2,21 +2,20 @@ package com.manimarank.websitemonitor.ui.createentry
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputLayout
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.databinding.ActivityCreateEntryBinding
-import com.manimarank.websitemonitor.databinding.ItemWebsiteRowBinding
+import com.manimarank.websitemonitor.ui.home.WebSiteEntryAdapter
 import com.manimarank.websitemonitor.utils.Constants
+import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.isValidUrl
 
 class CreateEntryActivity : AppCompatActivity() {
 
     var webSiteEntry: WebSiteEntry? = null
     private lateinit var activityCreateEntryBinding: ActivityCreateEntryBinding
+    private lateinit var webSiteEntryAdapter: WebSiteEntryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +51,12 @@ class CreateEntryActivity : AppCompatActivity() {
     private fun saveEntry() {
         if (validateFields()) {
             val id = if (webSiteEntry != null) webSiteEntry?.id else null
-            val todo = WebSiteEntry(id = id, name = activityCreateEntryBinding.editName.text.toString(), url = activityCreateEntryBinding.editUrl.text.toString())
+            val todo = WebSiteEntry(
+                id = id,
+                name = activityCreateEntryBinding.editName.text.toString(),
+                url = activityCreateEntryBinding.editUrl.text.toString(),
+                itemPosition = Utils.totalAmountEntry
+            )
             val intent = Intent()
             intent.putExtra(Constants.INTENT_OBJECT, todo)
             setResult(RESULT_OK, intent)

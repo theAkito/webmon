@@ -26,7 +26,7 @@ import java.util.*
 class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter<WebSiteEntryAdapter.ViewHolder>(), Filterable {
 
     private var mList: List<WebSiteEntry> = arrayListOf()
-    var filteredList: List<WebSiteEntry> = arrayListOf()
+    private var filteredList: List<WebSiteEntry> = arrayListOf()
     private val listener: WebSiteEntryEvents = todoEvents
     private lateinit var itemWebsiteRowBinding: ItemWebsiteRowBinding
 
@@ -103,7 +103,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 this.setOnClickListener { listener.onRefreshClicked(webSiteEntry) }
                 this.setOnLongClickListener {
                     listener.onViewClicked(webSiteEntry, position)
-                    notifyDataSetChanged()
+                    notifyItemChanged(position)
                     true
                 }
             }
