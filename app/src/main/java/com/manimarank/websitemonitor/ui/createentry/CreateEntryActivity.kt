@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.manimarank.websitemonitor.R
 import com.manimarank.websitemonitor.data.db.WebSiteEntry
 import com.manimarank.websitemonitor.databinding.ActivityCreateEntryBinding
-import com.manimarank.websitemonitor.ui.home.WebSiteEntryAdapter
 import com.manimarank.websitemonitor.utils.Constants
 import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.isValidUrl
@@ -15,7 +14,6 @@ class CreateEntryActivity : AppCompatActivity() {
 
     var webSiteEntry: WebSiteEntry? = null
     private lateinit var activityCreateEntryBinding: ActivityCreateEntryBinding
-    private lateinit var webSiteEntryAdapter: WebSiteEntryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

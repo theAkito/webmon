@@ -364,6 +364,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
             super.onSelectedChanged(viewHolder, actionState)
             // Hanlde action state changes
+            val swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG
+            binding.layout.swipeRefresh.isEnabled = swiping.not()
         }
 
         override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
