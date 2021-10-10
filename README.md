@@ -50,9 +50,10 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 | ![Fifth](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true) | ![Sixth](fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true) | ![Seventh](fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true) | ![Eighth](fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true) |
 
 ## TODO
-* Dark Mode
-* Export Website Entries to JSON as Backup
-* Enable Import of Backups
+* Add Dark Mode.
+* Export Website Entries to JSON as Backup.
+* Enable Import of Backups.
+* Merge Notifications into single one, if more than one Website is down.
 
 ## License
 

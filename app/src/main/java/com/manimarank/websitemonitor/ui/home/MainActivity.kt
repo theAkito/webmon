@@ -48,8 +48,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     private lateinit var onEditClickedResultLauncher: ActivityResultLauncher<Intent>
 
-    private lateinit var currentItem: WebSiteEntry
-
     var handler = Handler(Looper.getMainLooper())
 
     private var runningCount = 0
@@ -111,8 +109,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
                 viewModel.saveWebSiteEntry(webSiteEntry)
             }
         }
+
         binding.fabAdd.setOnClickListener {
             resetSearchView()
+            Utils.totalAmountEntry = webSiteEntryAdapter.itemCount
             val intent = Intent(this, CreateEntryActivity::class.java)
             resultLauncher.launch(intent)
         }
@@ -301,14 +301,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         )
     }
 
-    override fun onViewClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int) {
-        val adapterPositionItem = viewModel.getWebSiteEntryList().value?.map {
-            System.lineSeparator() + Print.log(System.lineSeparator() + """viewModel.getWebSiteEntryList().value: """ + it.name)
-            it
-        }?.associateBy { it.itemPosition }?.get(adapterPosition)
-        Print.log(System.lineSeparator() + """MainActivity.onViewClicked.adapterPositionItem: """ + adapterPositionItem)
-        currentItem = adapterPositionItem ?: throw IllegalAccessError("[MainActivity.onViewClicked()] Item must be available.")
-    }
+    override fun onViewClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int) {}
 
     override fun onPauseClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int) {
         viewModel.updateWebSiteEntry(webSiteEntry.apply {

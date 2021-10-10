@@ -32,6 +32,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Utils {
+
+    var totalAmountEntry = 0
+
     fun currentDateTime(): String {
         return SimpleDateFormat("dd-MMM-yyyy hh:mm:ss:a", Locale.ENGLISH).format(Date())
     }
