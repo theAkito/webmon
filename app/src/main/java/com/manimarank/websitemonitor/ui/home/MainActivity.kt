@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.view.*
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -31,6 +32,8 @@ import com.manimarank.websitemonitor.utils.NetworkUtils
 import com.manimarank.websitemonitor.utils.Print
 import com.manimarank.websitemonitor.utils.Utils
 import com.manimarank.websitemonitor.utils.Utils.appIsVisible
+import com.manimarank.websitemonitor.utils.Utils.getStringNotWorking
+import com.manimarank.websitemonitor.utils.Utils.joinToStringDescription
 import com.manimarank.websitemonitor.utils.Utils.showAutoStartEnableDialog
 import com.manimarank.websitemonitor.utils.Utils.showNotification
 import com.manimarank.websitemonitor.utils.Utils.startWorkManager
@@ -88,6 +91,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         super.onCreate(savedInstanceState)
         customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater, binding.root, false)
 
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
@@ -101,7 +105,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             }
         }
 
-        //Fab click listener
+        // Fab click listener
         var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
@@ -129,7 +133,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             viewModel.checkWebSiteStatus()
         }
 
-        //Setting up RecyclerView
+        // Setting up RecyclerView
         val thisContext = this
         webSiteEntryAdapter = WebSiteEntryAdapter(this)
         binding.layout.recyclerView.apply {
@@ -144,45 +148,77 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
                 }
             })
 
-            // Setting up Drag & Drop Re-Order WebsiteEntry
+            // Setting up Drag & Drop Re-Order WebsiteEntry List
             itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
             itemTouchHelper.attachToRecyclerView(this)
         }
 
 
 
-        //Setting up ViewModel and LiveData
+        // Setting up ViewModel and LiveData
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.getWebSiteEntryList().observe(this, {
             webSiteEntryAdapter.setAllTodoItems(it)
             if (it.isEmpty()) { viewModel.addDefaultData() }
         })
 
+        // Setting up Custom Monitor Option
         viewModel.getAllWebSiteStatusList().observe(this, { it ->
-            if (binding.layout.swipeRefresh.isRefreshing)
-                binding.layout.swipeRefresh.isRefreshing = false
-            it.filter { Utils.isValidNotifyStatus(it.status) && customMonitorData.showNotification && appIsVisible().not() }.forEach {
-                showNotification(
-                    applicationContext, (if (runningCount > 1) "#$runningCount " else "") + it.name, String.format(
-                        getString(
-                            R.string.not_working,
-                            it.url
-                        )
-                    )
-                )
-            }
-        })
+            /*
+              This block gets executed when Custom Monitor option is used,
+              plus when pressing the Refresh option, manually.
+            */
 
-        viewModel.getWebSiteStatus().observe(this, {
-            if (Utils.isValidNotifyStatus(it.status) && appIsVisible().not()) {
-                showNotification(
-                    applicationContext, it.name, String.format(
-                        getString(
-                            R.string.not_working,
-                            it.url
-                        )
+            if (binding.layout.swipeRefresh.isRefreshing) {
+                binding.layout.swipeRefresh.isRefreshing = false
+            }
+
+            if (appIsVisible().not()) {
+                /*
+                  If Custom Monitor option is used,
+                  we only want to send notifications,
+                  when App is in Foreground.
+                */
+                return@observe
+            }
+
+            val entriesWithFailedConnection =
+                it.filter {
+                    Utils.mayNotifyStatusFailure(it.status) &&
+                    customMonitorData.showNotification
+                }
+
+            val customMonitorEnabled = runningCount >= 1
+            val runningCountText = if (customMonitorEnabled) { "#${runningCount - 1} " } else { "" }
+            if (entriesWithFailedConnection.size == 1) {
+                val entryWithFailedConnection = entriesWithFailedConnection.first()
+                if (customMonitorEnabled) {
+                    showNotification(
+                        applicationContext,
+                        runningCountText + entryWithFailedConnection.name,
+                        getStringNotWorking(entryWithFailedConnection.url)
                     )
-                )
+                } else {
+                    Toast.makeText(
+                        applicationContext,
+                        getStringNotWorking(entryWithFailedConnection.url),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } else {
+                if (customMonitorEnabled) {
+                    showNotification(
+                        applicationContext,
+                        runningCountText + "Several Websites are not reachable!",
+                        entriesWithFailedConnection.joinToStringDescription()
+                    )
+                } else {
+                    Toast.makeText(
+                        applicationContext,
+                        "Several Websites are not reachable!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         })
 
@@ -239,6 +275,13 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     private fun showForceRefreshUI() {
         val dialog = Dialog(this)
         dialog.setCancelable(true)
+        if (customRefreshInputBinding.root.parent != null) {
+            /*
+              Make sure child does not already have parent.
+              https://stackoverflow.com/a/52988517/7061105
+            */
+            (customRefreshInputBinding.root.parent as ViewGroup).removeView(customRefreshInputBinding.root)
+        }
         dialog.setContentView(customRefreshInputBinding.root)
 
         dialog.run {
@@ -251,9 +294,18 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
                     if (customRefreshInputBinding.checkboxAgree.isChecked) {
                         val durationBy = if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) 60 * 1000 else 1000
                         val duration = customRefreshInputBinding.editDuration.text.toString().toLong()
-                        customMonitorData.runningDelay = duration * durationBy
-                        customMonitorData.runningDelayValue = "$duration ${ if(customRefreshInputBinding.rgDurationType.checkedRadioButtonId == customRefreshInputBinding.rbDurationMin.id) customRefreshInputBinding.rbDurationMin.text else customRefreshInputBinding.rbDurationSec.text}"
-                        customMonitorData.showNotification = customRefreshInputBinding.switchShowNotification.isChecked
+
+                        customMonitorData.apply {
+                            val durationType =
+                                if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == customRefreshInputBinding.rbDurationMin.id) {
+                                    customRefreshInputBinding.rbDurationMin.text
+                                } else {
+                                    customRefreshInputBinding.rbDurationSec.text
+                                }
+                            runningDelay = duration * durationBy
+                            runningDelayValue = "$duration " + durationType
+                            showNotification = customRefreshInputBinding.switchShowNotification.isChecked
+                        }
 
                         startUpdateTask(isUpdate = false)
                         dialog.dismiss()
