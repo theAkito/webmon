@@ -15,10 +15,10 @@
     <string name="cancel">Cancel</string>
     <string name="monitoring_interval">Monitoring Interval</string>
     <string name="checking_every_15_mins">Checking every 15 mins</string>
-    <string name="message_auto_start_reason">Your mobile may be killed this app. So, enable auto start option. Leave it If you already enabled.</string>
+    <string name="message_auto_start_reason">Your device may kill the app process, when it is in the background. Therefore, it is recommended to enable the auto start option in the settings.</string>
     <string name="enable_auto_start">Enable Auto start</string>
     <string name="ok">OK</string>
-    <string name="icon_credits">Logo Icon made by Freepik from Flaticon\nLink : https://www.flaticon.com/authors/freepik</string>
+    <string name="icon_credits">Logo Icon made by Freepik from Flaticon\nhttps://www.flaticon.com/authors/freepik</string>
     <string name="source_code_link" translatable="false">https://gitlab.com/manimaran/website-monitor</string>
     <string name="no_apps_found">No browser found</string>
     <string name="credits">Credits</string>
@@ -36,16 +36,19 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="support_development">Support development</string>
-    <string name="support_development_link" translatable="false">Buy a Coffee for developer\nhttps://www.paypal.me/manimaran24</string>
+    <string name="support_development_link" translatable="false">Buy a Coffee for the Developer\nhttps://www.paypal.me/manimaran24</string>
+    <string name="contributors_main_title">Main Contributors</string>
+    <string name="contributors_main_akito" translatable="false">Akito\nhttps://github.com/theAkito</string>
+    <string name="contributors_main_manimaran" translatable="false">Manimaran\nhttps://gitlab.com/manimaran</string>
     <string name="notify_only_server_issues">Notify only Server issues</string>
-    <string name="notify_only_server_side_issues_info">Notify only server side issues(5xx). Avoid client side problems like internet and 4xx issues.</string>
+    <string name="notify_only_server_side_issues_info">Notify only server side issues (Error Codes 5xx). Do not notify on client side errors, like internet and 4xx issues.</string>
     <string name="stop">Stop</string>
     <string name="provide_custom_monitor_values">Provide custom monitor values</string>
     <string name="enter_duration">Enter duration for per execution</string>
     <string name="minute_once">Minute once</string>
     <string name="second_once">Second once</string>
     <string name="custom_monitor_process_warning">Actually this process may take more power consumption. Because this process will run continuously until you stop/close the app.</string>
-    <string name="custom_monitor_agree"><![CDATA[Yes, I Agree & aware of this process.]]></string>
+    <string name="custom_monitor_agree"><![CDATA[Yes, I Agree & am aware of what this process does.]]></string>
     <string name="start">Start</string>
     <string name="custom_monitor">Custom monitor</string>
     <string name="show_notification">Show notification</string>

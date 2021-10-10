@@ -19,18 +19,18 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 
 
 ## App Features
-- Simple UI
+- Simple UI.
 - No login required.
-- Notified when site down.
-- App monitor all sites in some period of time interval.
-- Monitor Pause/Resume particular site.
-- Custom monitor option(1 sec to 99 min).
-- Single site quick refresh.
-- Settings for Notify only server issue.
+- Get notified when site down.
+- Check website status according to chosen interval.
+- Pause/Resume Monitoring for a particular site.
+- Custom monitor option. Useful for continually checking website status every 1 second or 5 minutes. The Second/Minute interval can be manually assigned.
+- Tap a website entry to quickly refresh that particular one.
+- Ability to notify only on Server issue. If enabled, does not notify, if the app has no internet connection.
 
 
 ## Useful links
- * [Blog about Website monitor](https://manimaran96.wordpress.com/category/android-apps/website-monitor/)
+ * [Blog about Website Monitor](https://manimaran96.wordpress.com/category/android-apps/website-monitor/)
 
 
 ## Screen Shot
@@ -53,7 +53,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 * Add Dark Mode.
 * Export Website Entries to JSON as Backup.
 * Enable Import of Backups.
-* Merge Notifications into single one, if more than one Website is down.
+* ~~Merge Notifications into single one, if more than one Website is down.~~
 
 ## License
 
