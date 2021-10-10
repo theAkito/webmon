@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import com.google.android.material.snackbar.Snackbar
 import com.manimarank.websitemonitor.MyApplication
 import com.manimarank.websitemonitor.R
+import com.manimarank.websitemonitor.data.model.WebSiteStatus
 import com.manimarank.websitemonitor.ui.home.MainActivity
 import com.manimarank.websitemonitor.utils.Constants.DEFAULT_INTERVAL_MIN
 import com.manimarank.websitemonitor.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
@@ -33,6 +34,7 @@ import java.util.*
 
 object Utils {
 
+    val lineEnd = System.lineSeparator()
     var totalAmountEntry = 0
 
     fun currentDateTime(): String {
@@ -202,13 +204,28 @@ object Utils {
         return status >= 500
     }
 
-    fun isValidNotifyStatus(status: Int): Boolean {
+    fun mayNotifyStatusFailure(status: Int): Boolean {
         val isEnabledServerFailOnly = SharedPrefsManager
             .customPrefs.getBoolean(Constants.NOTIFY_ONLY_SERVER_ISSUES, false)
         return if (isEnabledServerFailOnly) {
             status != HttpURLConnection.HTTP_OK && isServerRelatedFail(status)
         } else {
             status != HttpURLConnection.HTTP_OK
+        }
+    }
+
+    fun Context.getStringNotWorking(url: String): String {
+        return String.format(
+            this.getString(
+                R.string.not_working,
+                url
+            )
+        )
+    }
+
+    fun List<WebSiteStatus>.joinToStringDescription(): String {
+        return this.joinToString(lineEnd) { status ->
+            status.name
         }
     }
 
