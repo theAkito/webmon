@@ -17,16 +17,16 @@ object Metadata {
 }
 
 android {
-  compileSdkVersion(defaultSdkVersion)
-  buildToolsVersion("30.0.3")
+  compileSdk = defaultSdkVersion
+  buildToolsVersion = "30.0.3"
 
   defaultConfig {
     configurations.all {
       resolutionStrategy { force("androidx.core:core-ktx:${ktx_version}") }
     }
     applicationId = "ooo.akito.webmon"
-    minSdkVersion(19)
-    targetSdkVersion(defaultSdkVersion)
+    minSdk = 19
+    targetSdk = defaultSdkVersion
     versionCode = 4
     versionName = "1.1.2"
 
