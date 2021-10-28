@@ -18,8 +18,8 @@
     <string name="message_auto_start_reason">Your device may kill the app process, when it is in the background. Therefore, it is recommended to enable the auto start option in the settings.</string>
     <string name="enable_auto_start">Enable Auto start</string>
     <string name="ok">OK</string>
-    <string name="icon_credits">Logo Icon made by Freepik from Flaticon\nhttps://www.flaticon.com/authors/freepik</string>
-    <string name="source_code_link" translatable="false">https://gitlab.com/manimaran/website-monitor</string>
+    <string name="icon_credits">Logo Icon generated at\nhttps://www.freelogodesign.org</string>
+    <string name="source_code_link" translatable="false">https://github.com/theAkito/webmon</string>
     <string name="no_apps_found">No browser found</string>
     <string name="credits">Credits</string>
     <string name="source_code">Source Code</string>
@@ -37,7 +37,7 @@
     <string name="no">No</string>
     <string name="support_development">Support development</string>
     <string name="support_development_link" translatable="false">Buy a Coffee for the Developer\nhttps://www.paypal.me/manimaran24</string>
-    <string name="contributors_main_title">Main Contributors</string>
+    <string name="contributors_main_title">Developer</string>
     <string name="contributors_main_akito" translatable="false">Akito\nhttps://github.com/theAkito</string>
     <string name="contributors_main_manimaran" translatable="false">Manimaran\nhttps://gitlab.com/manimaran</string>
     <string name="notify_only_server_issues">Notify only Server issues</string>

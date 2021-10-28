@@ -17,7 +17,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 <a href="https://f-droid.org/packages/ooo.akito.webmon/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width="200px"></a><a href="https://play.google.com/store/apps/details?id=ooo.akito.webmon"><img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/google_play.png" width="200px"></a>
 </p>
 
-**Release/Demo App** - [Click here](https://gitlab.com/manimaran/website-monitor/-/releases)
+[**Release/Demo App**](https://github.com/theAkito/webmon/releases)
 
 
 ## App Features

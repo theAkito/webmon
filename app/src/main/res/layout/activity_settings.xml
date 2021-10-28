@@ -162,34 +162,11 @@
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:text="@string/support_development"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_normal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:padding="10dp"
-                android:text="@string/support_development_link"
-                android:textSize="@dimen/text_small"/>
-
-            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/contributors_main_title"
                 android:textStyle="bold"
                 android:textSize="@dimen/text_normal"/>
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:padding="10dp"
-                android:text="@string/contributors_main_manimaran"
-                android:textSize="@dimen/text_small"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
