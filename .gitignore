@@ -7,5 +7,18 @@
 /captures
 .externalNativeBuild
 .cxx
-.vscode/linenote
 app/release
+
+# ---> Kate
+# Swap Files #
+.*.kate-swp
+.swp.*
+
+# ---> Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
