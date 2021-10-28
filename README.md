@@ -6,10 +6,12 @@
 Website monitor app helps to monitor/track your Website periodically and notify if any problem in your site.
 </p>
 
-<p align="center">
-<a href="https://gitlab.com/manimaran/website-monitor/blob/master/LICENSE" alt="GitHub license"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" ></a>
-<a href="https://manimaran96.wordpress.com" alt="Developer badge"><img src="https://img.shields.io/badge/developed%20by-Manimaran-blue.svg" ></a>
-</p>
+[![Language](https://img.shields.io/badge/project-language-blue?style=plastic)](https://kotlinlang.org/)
+
+[![Upstream](https://img.shields.io/badge/project-upstream-yellow?style=plastic)](https://gitlab.com/manimaran/website-monitor)
+
+![GitHub](https://img.shields.io/github/license/theAkito/webmon?style=plastic)
+![Liberapay patrons](https://img.shields.io/liberapay/patrons/Akito?style=plastic)
 
 <p align="center">
 <a href="https://f-droid.org/packages/ooo.akito.webmon/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width="200px"></a><a href="https://play.google.com/store/apps/details?id=ooo.akito.webmon"><img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/google_play.png" width="200px"></a>

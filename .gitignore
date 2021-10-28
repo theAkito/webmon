@@ -22,3 +22,6 @@ app/release
 !.vscode/extensions.json
 *.code-workspace
 .history/
+
+# ---> Temp & Test Files
+test.md
