@@ -12,7 +12,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 </p>
 
 <p align="center">
-<a href="https://f-droid.org/packages/com.manimarank.websitemonitor/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width="200px"></a><a href="https://play.google.com/store/apps/details?id=com.manimarank.websitemonitor"><img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/google_play.png" width="200px"></a>
+<a href="https://f-droid.org/packages/ooo.akito.webmon/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width="200px"></a><a href="https://play.google.com/store/apps/details?id=ooo.akito.webmon"><img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/google_play.png" width="200px"></a>
 </p>
 
 **Release/Demo App** - [Click here](https://gitlab.com/manimaran/website-monitor/-/releases)
@@ -50,14 +50,38 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 | ![Fifth](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true) | ![Sixth](fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true) | ![Seventh](fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true) | ![Eighth](fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true) |
 
 ## TODO
+* Publish to F-Droid.
 * Add Dark Mode.
 * Export Website Entries to JSON as Backup.
 * Enable Import of Backups.
 * ~~Merge Notifications into single one, if more than one Website is down.~~
 
+## Note
+
+This is a fork of the project [WebSite Monitor](https://gitlab.com/manimaran/website-monitor) made by [Manimaran](https://gitlab.com/manimaran).
+
+I forked this project, because it's not actively maintained, anymore. For example, some not that difficult to solve issues have been open since 10 months and there has been no work done on them, despite promises of doing that.
+It's also the case, that my [pull request](https://gitlab.com/manimaran/website-monitor/-/merge_requests/4#f71fe0455681aefe79c631fdf86cd2181c8735e6) with quite a number of improvements was neither accepted, nor was it even responded to in any way.
+
+I want to keep working on the project and keep maintaining it, because I find this app very useful. However, it's hard to make better versions available for all users, when issues don't get solved by the maintainer and contributions from third parties are, as well, not accepted.
+
+Therefore, I am maintaining my own fork of this project, to be able to contribute to it, without having to wait forever for a pull request to be accepted.
+
 ## License
 
 <img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg" width="100px"></img>
 
-Website monitor is Free Software: You can use, study share and improve it at your will. 
-Specifically you can redistribute and/or modify it under the terms of the [GNU General Public License](https://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Copyright (C) 2021  Akito <the@akito.ooo>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
