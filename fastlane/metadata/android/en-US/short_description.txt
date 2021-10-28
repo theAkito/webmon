@@ -1,1 +1,1 @@
-This app helps to monitor your websites periodically with notification.
+Monitor web services available through an HTTP link and get notified, if a service becomes unavailable.

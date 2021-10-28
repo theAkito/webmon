@@ -23,7 +23,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 ## App Features
 - Simple UI.
 - No login required.
-- Get notified when site down.
+- Get notified when site becomes unavailable.
 - Check website status according to chosen interval.
 - Pause/Resume Monitoring for a particular site.
 - Custom monitor option. Useful for continually checking website status every 1 second or 5 minutes. The Second/Minute interval can be manually assigned.

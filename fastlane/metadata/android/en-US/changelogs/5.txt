@@ -1,0 +1,5 @@
+- Grab Website favicons through DuckDuckGo, instead of Google.
+- Do not show Notifications while App is in Foreground.
+- Show only a single notification, if more than one website is not reachable. (Do not show 10 Notifications for 10 unreachable Websites.)
+- Enable Drag & Drop to re-order Website entries.
+- Make upgrading to newer versions easier.
