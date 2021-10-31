@@ -1,4 +1,4 @@
-Monitor web services available through an HTTP link and get notified, if a service becomes unavailable.
+Monitor web services and get notified, if a service becomes unavailable.
 
 <b>App features:</b>
 
