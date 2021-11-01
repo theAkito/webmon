@@ -55,12 +55,13 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 binding.txtWebSite.text = webSiteEntry.name
                 binding.txtUrl.text = webSiteEntry.url
 
-                val iconUrl = "https://icons.duckduckgo.com/ip3/${webSiteEntry.url.removeUrlProto()}.ico"
-                try {
-                    Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
-                } catch (e: Exception) {
-                    Print.log(e.message ?: "Exception occured when using Glide to load Website Logo.")
-                }
+                /** https://gitlab.com/fdroid/fdroiddata/-/merge_requests/10001#note_720175502 */
+//                val iconUrl = "https://icons.duckduckgo.com/ip3/${webSiteEntry.url.removeUrlProto()}.ico"
+//                try {
+//                    Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
+//                } catch (e: Exception) {
+//                    Print.log(e.message ?: "Exception occured when using Glide to load Website Logo.")
+//                }
 
 
                 binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry.status)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
