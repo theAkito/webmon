@@ -241,4 +241,12 @@ object Utils {
     }
 
     fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")
+
+    fun String?.asUri(): Uri? {
+        return try {
+            Uri.parse(this)
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

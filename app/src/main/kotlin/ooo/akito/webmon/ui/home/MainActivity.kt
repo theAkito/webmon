@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +33,7 @@ import ooo.akito.webmon.utils.NetworkUtils
 import ooo.akito.webmon.utils.Print
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.appIsVisible
+import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
@@ -337,13 +339,29 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         onEditClickedResultLauncher.launch(intent)
     }
 
-    override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {
-        if (!NetworkUtils.isConnected(applicationContext)) {
+    private fun handleInternetUnavailable(): Boolean {
+        return if (!NetworkUtils.isConnected(applicationContext)) {
             if (binding.layout.swipeRefresh.isRefreshing)
                 binding.layout.swipeRefresh.isRefreshing = false
             Utils.showToast(applicationContext, getString(R.string.check_internet))
+            Print.log("Internet unavailable!")
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun String?.openInBrowser() {
+        val uri = this.asUri()
+        if (uri == null) {
+            Print.log("URI provided is null!")
             return
         }
+        ContextCompat.startActivity(this@MainActivity, Intent(Intent.ACTION_VIEW, uri), null)
+    }
+
+    override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {
+        if (handleInternetUnavailable()) { return }
         viewModel.getWebSiteStatus(webSiteEntry)
         Utils.showSnackBar(
             binding.layout.swipeRefresh, String.format(
@@ -351,6 +369,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
                 webSiteEntry.url
             )
         )
+    }
+
+    override fun onVisitClicked(webSiteEntry: WebSiteEntry) {
+        if (handleInternetUnavailable()) { return }
+        webSiteEntry.url.openInBrowser()
+
     }
 
     override fun onViewClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int) {}

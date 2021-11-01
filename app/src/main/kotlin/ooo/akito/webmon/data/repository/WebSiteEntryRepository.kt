@@ -102,7 +102,7 @@ class WebSiteEntryRepository(context: Context) {
                     websiteEntry.url,
                     status,
                     false,
-                    e.localizedMessage ?: "Please check"
+                    e.localizedMessage ?: "Please check."
                 )
             }
 

@@ -74,7 +74,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
                         R.id.action_refresh -> listener.onRefreshClicked(webSiteEntry)
-                        R.id.action_visit -> listener.onViewClicked(webSiteEntry, position)
+                        R.id.action_visit -> listener.onVisitClicked(webSiteEntry)
                         R.id.action_edit -> listener.onEditClicked(webSiteEntry)
                         R.id.action_delete -> listener.onDeleteClicked(webSiteEntry)
                     }
@@ -163,6 +163,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     interface WebSiteEntryEvents {
         fun onDeleteClicked(webSiteEntry: WebSiteEntry)
         fun onViewClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int)
+        fun onVisitClicked(webSiteEntry: WebSiteEntry)
         fun onEditClicked(webSiteEntry: WebSiteEntry)
         fun onRefreshClicked(webSiteEntry: WebSiteEntry)
         fun onPauseClicked(webSiteEntry: WebSiteEntry, adapterPosition: Int)
