@@ -57,4 +57,5 @@
     <string name="enter_valid_input">Enter valid input</string>
     <string name="check_internet">Please check your internet connection!</string>
     <string name="action_refresh_title">Refresh</string>
+    <string name="backup">Backup</string>
 </resources>

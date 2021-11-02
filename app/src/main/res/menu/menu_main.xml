@@ -23,6 +23,10 @@
         android:title="@string/action_refresh_title"
         app:showAsAction="withText" />
     <item
+        android:id="@+id/action_backup"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/backup" />
+    <item
         android:id="@+id/action_custom_monitor"
         android:orderInCategory="3"
         android:title="@string/custom_monitor"
