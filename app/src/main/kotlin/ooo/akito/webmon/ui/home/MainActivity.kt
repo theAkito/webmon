@@ -36,6 +36,7 @@ import ooo.akito.webmon.utils.Utils.appIsVisible
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
+import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.startWorkManager
@@ -87,6 +88,27 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         runningCount = 0
         customMonitorData = CustomMonitorData()
         binding.layout.layoutForceRefreshInfo.visibility = View.GONE
+    }
+
+    private fun handleInternetUnavailable(): Boolean {
+        return if (!NetworkUtils.isConnected(applicationContext)) {
+            if (binding.layout.swipeRefresh.isRefreshing)
+                binding.layout.swipeRefresh.isRefreshing = false
+            Utils.showToast(applicationContext, getString(R.string.check_internet))
+            Print.log("Internet unavailable!")
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun String?.openInBrowser() {
+        val uri = this.asUri()
+        if (uri == null) {
+            Print.log("URI provided is null!")
+            return
+        }
+        this@MainActivity.openInBrowser(uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -337,27 +359,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         val intent = Intent(this, CreateEntryActivity::class.java)
         intent.putExtra(Constants.INTENT_OBJECT, webSiteEntry)
         onEditClickedResultLauncher.launch(intent)
-    }
-
-    private fun handleInternetUnavailable(): Boolean {
-        return if (!NetworkUtils.isConnected(applicationContext)) {
-            if (binding.layout.swipeRefresh.isRefreshing)
-                binding.layout.swipeRefresh.isRefreshing = false
-            Utils.showToast(applicationContext, getString(R.string.check_internet))
-            Print.log("Internet unavailable!")
-            true
-        } else {
-            false
-        }
-    }
-
-    private fun String?.openInBrowser() {
-        val uri = this.asUri()
-        if (uri == null) {
-            Print.log("URI provided is null!")
-            return
-        }
-        ContextCompat.startActivity(this@MainActivity, Intent(Intent.ACTION_VIEW, uri), null)
     }
 
     override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {

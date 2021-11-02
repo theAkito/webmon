@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.model.WebSiteStatus
@@ -249,4 +250,6 @@ object Utils {
             null
         }
     }
+
+    fun Context.openInBrowser(uri: Uri) = ContextCompat.startActivity(this, Intent(Intent.ACTION_VIEW, uri), null)
 }
