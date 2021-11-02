@@ -16,7 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
+import androidx.core.os.ConfigurationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +29,11 @@ import ooo.akito.webmon.databinding.CustomRefreshInputBinding
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.Constants
+import ooo.akito.webmon.utils.Environment.defaultTimeFormat
+import ooo.akito.webmon.utils.Environment.getCurrentLocale
+import ooo.akito.webmon.utils.Environment.getDefaultDateTimeFormat
+import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
+import ooo.akito.webmon.utils.Environment.locale
 import ooo.akito.webmon.utils.NetworkUtils
 import ooo.akito.webmon.utils.Print
 import ooo.akito.webmon.utils.Utils
@@ -40,6 +45,8 @@ import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.startWorkManager
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents {
@@ -53,6 +60,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private lateinit var customRefreshInputBinding: CustomRefreshInputBinding
 
   private lateinit var onEditClickedResultLauncher: ActivityResultLauncher<Intent>
+  private lateinit var onBackupWebsiteEntriesResultLauncher: ActivityResultLauncher<String>
 
   var handler = Handler(Looper.getMainLooper())
 
@@ -113,6 +121,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    locale = getCurrentLocale()
+    defaultTimeFormat = locale.getDefaultDateTimeFormat()
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
     binding = ActivityMainBinding.inflate(layoutInflater)
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater, binding.root, false)
@@ -137,6 +147,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         viewModel.saveWebSiteEntry(webSiteEntry)
       }
     }
+
+    /** Backup Website Entries */
+    onBackupWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) {}
 
     binding.fabAdd.setOnClickListener {
       resetSearchView()
@@ -281,16 +294,20 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     return when (item.itemId) {
       R.id.action_settings -> {
         startActivity(Intent(this, SettingsActivity::class.java))
-        return true
+        true
       }
       R.id.action_search -> true
       R.id.action_custom_monitor -> {
         showForceRefreshUI()
-        return true
+        true
       }
       R.id.action_refresh -> {
         viewModel.checkWebSiteStatus()
-        return true
+        true
+      }
+      R.id.action_backup -> {
+        onBackupWebsiteEntriesResultLauncher.launch("example_${getDefaultDateTimeString()}.txt")
+        true
       }
       else -> super.onOptionsItemSelected(item)
     }
