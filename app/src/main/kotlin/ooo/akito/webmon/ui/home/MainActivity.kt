@@ -306,7 +306,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         true
       }
       R.id.action_backup -> {
-        onBackupWebsiteEntriesResultLauncher.launch("example_${getDefaultDateTimeString()}.txt")
+        onBackupWebsiteEntriesResultLauncher.launch("backup-webmon_${getDefaultDateTimeString()}.json")
         true
       }
       else -> super.onOptionsItemSelected(item)
