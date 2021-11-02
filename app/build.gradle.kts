@@ -30,6 +30,8 @@ android {
     versionCode = 5
     versionName = "2.0.0"
 
+    multiDexEnabled = true
+
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     vectorDrawables {
@@ -103,6 +105,12 @@ dependencies {
 
   // Glide
   implementation("com.github.bumptech.glide:glide:4.11.0")
+
+  // JSON
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
+  implementation("com.fasterxml.jackson.core:jackson-core:2.13")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13")
 
   // Testing
 //  testImplementation("junit:junit:4.13.2")
