@@ -7,31 +7,31 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [WebSiteEntry::class],
-    version = 2,
-    exportSchema = true,
-    autoMigrations = [
-        AutoMigration (from = 1, to = 2)
-    ]
+  entities = [WebSiteEntry::class],
+  version = 2,
+  exportSchema = true,
+  autoMigrations = [
+    AutoMigration (from = 1, to = 2)
+  ]
 )
 abstract class DbHelper: RoomDatabase() {
 
-    abstract fun webSiteEntryDao(): WebSiteEntryDao
+  abstract fun webSiteEntryDao(): WebSiteEntryDao
 
-    companion object{
-        private var INSTANCE: DbHelper? = null
+  companion object{
+    private var INSTANCE: DbHelper? = null
 
-        fun getInstance(context: Context): DbHelper? {
-            if (INSTANCE == null) {
-               synchronized(DbHelper::class) {
-                   INSTANCE = Room.databaseBuilder(context,
-                       DbHelper::class.java,
-                       "web_site_monitor_db")
-                       .build()
-               }
-            }
-            return INSTANCE
+    fun getInstance(context: Context): DbHelper? {
+      if (INSTANCE == null) {
+        synchronized(DbHelper::class) {
+          INSTANCE = Room.databaseBuilder(context,
+            DbHelper::class.java,
+            "web_site_monitor_db")
+            .build()
         }
+      }
+      return INSTANCE
     }
+  }
 
 }

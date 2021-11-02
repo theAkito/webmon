@@ -24,61 +24,61 @@ import ooo.akito.webmon.utils.Utils.startWorkManager
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var activitySettingsBinding: ActivitySettingsBinding
-    private lateinit var btnMonitorInterval: LinearLayout
-    private lateinit var layoutEnableAutoStart: LinearLayout
-    private lateinit var btnEnableAutoStart: TextView
-    private lateinit var switchNotifyOnlyServerIssues: SwitchMaterial
-    private lateinit var txtIntervalDetails: AppCompatTextView
+  private lateinit var activitySettingsBinding: ActivitySettingsBinding
+  private lateinit var btnMonitorInterval: LinearLayout
+  private lateinit var layoutEnableAutoStart: LinearLayout
+  private lateinit var btnEnableAutoStart: TextView
+  private lateinit var switchNotifyOnlyServerIssues: SwitchMaterial
+  private lateinit var txtIntervalDetails: AppCompatTextView
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        activitySettingsBinding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(activitySettingsBinding.root)
-        btnMonitorInterval = activitySettingsBinding.btnMonitorInterval
-        layoutEnableAutoStart = activitySettingsBinding.layoutEnableAutoStart
-        btnEnableAutoStart = activitySettingsBinding.btnEnableAutoStart
-        switchNotifyOnlyServerIssues = activitySettingsBinding.switchNotifyOnlyServerIssues
-        txtIntervalDetails = activitySettingsBinding.txtIntervalDetails
+    activitySettingsBinding = ActivitySettingsBinding.inflate(layoutInflater)
+    setContentView(activitySettingsBinding.root)
+    btnMonitorInterval = activitySettingsBinding.btnMonitorInterval
+    layoutEnableAutoStart = activitySettingsBinding.layoutEnableAutoStart
+    btnEnableAutoStart = activitySettingsBinding.btnEnableAutoStart
+    switchNotifyOnlyServerIssues = activitySettingsBinding.switchNotifyOnlyServerIssues
+    txtIntervalDetails = activitySettingsBinding.txtIntervalDetails
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        btnMonitorInterval.setOnClickListener { showIntervalChooseDialog() }
+    btnMonitorInterval.setOnClickListener { showIntervalChooseDialog() }
 
-        layoutEnableAutoStart.visibility = if (isCustomRom()) View.VISIBLE else View.GONE
-        btnEnableAutoStart.setOnClickListener { openAutoStartScreen(this) }
+    layoutEnableAutoStart.visibility = if (isCustomRom()) View.VISIBLE else View.GONE
+    btnEnableAutoStart.setOnClickListener { openAutoStartScreen(this) }
 
-        updateIntervalTimeOnUi()
+    updateIntervalTimeOnUi()
 
-        switchNotifyOnlyServerIssues.isChecked = SharedPrefsManager.customPrefs.getBoolean(NOTIFY_ONLY_SERVER_ISSUES, false)
-        switchNotifyOnlyServerIssues.setOnCheckedChangeListener { _, isChecked ->
-            SharedPrefsManager.customPrefs[NOTIFY_ONLY_SERVER_ISSUES] = isChecked
-        }
+    switchNotifyOnlyServerIssues.isChecked = SharedPrefsManager.customPrefs.getBoolean(NOTIFY_ONLY_SERVER_ISSUES, false)
+    switchNotifyOnlyServerIssues.setOnCheckedChangeListener { _, isChecked ->
+      SharedPrefsManager.customPrefs[NOTIFY_ONLY_SERVER_ISSUES] = isChecked
     }
+  }
 
-    private fun showIntervalChooseDialog() {
+  private fun showIntervalChooseDialog() {
 
-        val alertBuilder = AlertDialog.Builder(this)
-        alertBuilder.setTitle(getString(R.string.choose_interval))
+    val alertBuilder = AlertDialog.Builder(this)
+    alertBuilder.setTitle(getString(R.string.choose_interval))
 
-        val checkedItem = valueList.indexOf(SharedPrefsManager.customPrefs.getInt(MONITORING_INTERVAL, 60))
-        alertBuilder.setSingleChoiceItems(
-            nameList,
-            checkedItem
-        ) { dialog: DialogInterface, which: Int ->
-            SharedPrefsManager.customPrefs[MONITORING_INTERVAL] = valueList[which]
-            startWorkManager(this, true)
-            updateIntervalTimeOnUi()
-            dialog.dismiss()
-        }
-        alertBuilder.setNegativeButton(getString(R.string.cancel), null)
-        val dialog = alertBuilder.create()
-        dialog.show()
+    val checkedItem = valueList.indexOf(SharedPrefsManager.customPrefs.getInt(MONITORING_INTERVAL, 60))
+    alertBuilder.setSingleChoiceItems(
+      nameList,
+      checkedItem
+    ) { dialog: DialogInterface, which: Int ->
+      SharedPrefsManager.customPrefs[MONITORING_INTERVAL] = valueList[which]
+      startWorkManager(this, true)
+      updateIntervalTimeOnUi()
+      dialog.dismiss()
     }
+    alertBuilder.setNegativeButton(getString(R.string.cancel), null)
+    val dialog = alertBuilder.create()
+    dialog.show()
+  }
 
-    private fun updateIntervalTimeOnUi() {
-        txtIntervalDetails.text = getMonitorTime()
-    }
+  private fun updateIntervalTimeOnUi() {
+    txtIntervalDetails.text = getMonitorTime()
+  }
 }
