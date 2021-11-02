@@ -1,6 +1,7 @@
 package ooo.akito.webmon.ui.home
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -59,6 +60,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
   fun addDefaultData() {
     if (SharedPrefsManager.customPrefs.getBoolean(Constants.IS_ADDED_DEFAULT_DATA, true))
       repository.addDefaultData()
+  }
+
+  fun backupDataWebsites() {
+    //TODO: Back up all website entries.
+  }
+
+  fun backupDataSettings() {
+    //TODO: Back up all app settings (not websites).
   }
 
 }
