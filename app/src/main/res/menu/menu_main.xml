@@ -27,6 +27,10 @@
         android:icon="@android:drawable/ic_menu_save"
         android:title="@string/backup" />
     <item
+        android:id="@+id/action_restore"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/restore" />
+    <item
         android:id="@+id/action_custom_monitor"
         android:orderInCategory="3"
         android:title="@string/custom_monitor"

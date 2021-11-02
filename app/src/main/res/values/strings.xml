@@ -58,4 +58,5 @@
     <string name="check_internet">Please check your internet connection!</string>
     <string name="action_refresh_title">Refresh</string>
     <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
 </resources>
