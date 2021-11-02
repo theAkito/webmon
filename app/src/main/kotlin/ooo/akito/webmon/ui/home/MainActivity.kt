@@ -16,27 +16,27 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.os.ConfigurationCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
+import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVersion
+import ooo.akito.webmon.data.model.BackupWebsites
 import ooo.akito.webmon.data.model.CustomMonitorData
 import ooo.akito.webmon.databinding.ActivityMainBinding
 import ooo.akito.webmon.databinding.CustomRefreshInputBinding
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
-import ooo.akito.webmon.utils.Constants
+import ooo.akito.webmon.utils.*
 import ooo.akito.webmon.utils.Environment.defaultTimeFormat
 import ooo.akito.webmon.utils.Environment.getCurrentLocale
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeFormat
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.Environment.locale
-import ooo.akito.webmon.utils.NetworkUtils
-import ooo.akito.webmon.utils.Print
-import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.appIsVisible
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
@@ -45,11 +45,14 @@ import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.startWorkManager
-import java.text.SimpleDateFormat
 import java.util.*
 
 
 class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents {
+
+  companion object {
+    val mapper: ObjectMapper = jacksonObjectMapper()
+  }
 
   private lateinit var viewModel: MainViewModel
   private lateinit var searchView: SearchView
@@ -119,6 +122,20 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     this@MainActivity.openInBrowser(uri)
   }
 
+  private fun generateBackupWebsites(locationSave: String): BackupWebsites {
+    return BackupWebsites(
+      version = defaultBackupWebsitesVersion,
+      timestamp = getDefaultDateTimeString(),
+      locationSaved = locationSave,
+      entries = viewModel.getWebSiteEntryList().value
+        ?: throw IllegalAccessError("Cannot get WebSiteEntryList from LiveData!")
+    )
+  }
+
+  private fun generateBackupWebsitesJString(locationSave: String): JString {
+    return mapper.writeValueAsString(generateBackupWebsites(locationSave))
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     locale = getCurrentLocale()
@@ -149,7 +166,17 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
     /** Backup Website Entries */
-    onBackupWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) {}
+    onBackupWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
+      val backupFilePathRelative = uri.path ?: throw IllegalStateException("Backup URI does not provide a valid path!")
+      val backupFileContent = generateBackupWebsitesJString(backupFilePathRelative)
+      val resolver = this@MainActivity.contentResolver
+      /** https://stackoverflow.com/a/64733499/7061105 */
+      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError("Cannot open output stream when trying to write Backup Website Entries File!")
+      out.use { stream ->
+        stream.write(backupFileContent.toByteArray())
+        stream.flush()
+      }
+    }
 
     binding.fabAdd.setOnClickListener {
       resetSearchView()
