@@ -19,20 +19,22 @@
     <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh"
-        android:orderInCategory="3"
+        android:orderInCategory="1"
         android:title="@string/action_refresh_title"
         app:showAsAction="withText" />
     <item
         android:id="@+id/action_backup"
         android:icon="@android:drawable/ic_menu_save"
+        android:orderInCategory="2"
         android:title="@string/backup" />
     <item
         android:id="@+id/action_restore"
         android:icon="@android:drawable/ic_menu_save"
+        android:orderInCategory="3"
         android:title="@string/restore" />
     <item
         android:id="@+id/action_custom_monitor"
-        android:orderInCategory="3"
+        android:orderInCategory="99"
         android:title="@string/custom_monitor"
         android:icon="@drawable/ic_refresh"
         app:showAsAction="withText" />
