@@ -7,6 +7,7 @@ import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
+import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.isValidUrl
 
@@ -24,7 +25,7 @@ class CreateEntryActivity : AppCompatActivity() {
 
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-    //Prepopulate existing title and content from intent
+    /* Prepopulate existing Title and Content from Intent. */
     val intent = intent
     if (intent != null && intent.hasExtra(Constants.INTENT_OBJECT)) {
       webSiteEntry = intent.getParcelableExtra(Constants.INTENT_OBJECT)
@@ -33,12 +34,16 @@ class CreateEntryActivity : AppCompatActivity() {
 
     title = if (webSiteEntry != null) getString(R.string.update_entry) else getString(R.string.create_entry)
 
+    activityCreateEntryBinding.checkDNSRecords.setOnClickListener {
+
+    }
     activityCreateEntryBinding.btnSave.setOnClickListener { saveEntry() }
   }
 
   private fun prePopulateData(todoRecord: WebSiteEntry) {
     activityCreateEntryBinding.editName.setText(todoRecord.name)
     activityCreateEntryBinding.editUrl.setText(todoRecord.url)
+    activityCreateEntryBinding.checkDNSRecords.isChecked = todoRecord.dnsRecordsAAAAA
     activityCreateEntryBinding.btnSave.text = getString(R.string.update)
   }
 
@@ -53,8 +58,10 @@ class CreateEntryActivity : AppCompatActivity() {
         id = id,
         name = activityCreateEntryBinding.editName.text.toString(),
         url = activityCreateEntryBinding.editUrl.text.toString(),
-        itemPosition = Utils.totalAmountEntry
+        itemPosition = Utils.totalAmountEntry,
+        dnsRecordsAAAAA = activityCreateEntryBinding.checkDNSRecords.isChecked
       )
+      Log.info("WebsiteEntry after Edit: " + todo)
       val intent = Intent()
       intent.putExtra(Constants.INTENT_OBJECT, todo)
       setResult(RESULT_OK, intent)
