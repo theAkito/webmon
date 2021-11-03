@@ -11,7 +11,9 @@ import androidx.room.RoomDatabase
   version = 3,
   exportSchema = true,
   autoMigrations = [
-    AutoMigration (from = 2, to = 3)
+    AutoMigration (from = 1, to = 2),
+    AutoMigration (from = 2, to = 3),
+//    AutoMigration (from = 3, to = 4)
   ]
 )
 abstract class DbHelper: RoomDatabase() {

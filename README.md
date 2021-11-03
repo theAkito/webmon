@@ -30,6 +30,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 - Tap a website entry to quickly refresh that particular one.
 - Ability to notify only on Server issue. If enabled, does not notify, if the app has no internet connection.
 - Import & Export of Website entry list backups.
+- Check connectivity of common address records (A, AAAA) from a domain.
 
 
 ## Screen Shot
@@ -50,12 +51,12 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 
 ## TODO
 * [Add Dark Mode](https://gitlab.com/manimaran/website-monitor/-/issues/3).
-* [Check all address records (A, AAA, etc.).](https://gitlab.com/manimaran/website-monitor/-/issues/11)
 * [Use Notification workaround to ensure App never gets killed, when in background.](https://gitlab.com/manimaran/website-monitor/-/issues/14)
 * [Support Proxies.](https://gitlab.com/manimaran/website-monitor/-/issues/2)
-* ~~Publish to F-Droid.~~
+* ~~[Check common address records (A, AAAA).](https://gitlab.com/manimaran/website-monitor/-/issues/11)~~
 * ~~Export Website Entries to JSON as Backup.~~
 * ~~Enable Import of Backups.~~
+* ~~Publish to F-Droid.~~
 * ~~Merge Notifications into single one, if more than one Website is down.~~
 
 ## Note
