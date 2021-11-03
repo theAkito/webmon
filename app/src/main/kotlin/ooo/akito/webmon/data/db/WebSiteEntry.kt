@@ -22,5 +22,7 @@ data class WebSiteEntry(
   @ColumnInfo(name = "updated_at")
   var updatedAt: String? = null,
   @ColumnInfo(name = "item_position")
-  var itemPosition: Int? = null
+  var itemPosition: Int? = null,
+  @ColumnInfo(name = "dns_records_a_aaaa", defaultValue = false.toString())
+  var dnsRecordsAAAAA: Boolean = false
 ) : Parcelable
