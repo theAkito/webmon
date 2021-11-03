@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -22,35 +23,43 @@
                 android:id="@+id/editName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints="@string/name"
                 android:gravity="start"
                 android:hint="@string/name"
-                android:singleLine="true"
-                android:autofillHints="@string/name"
                 android:inputType="textCapSentences"
-                android:textStyle="bold" />
+                android:singleLine="true"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/inputUrl"
-            android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:layout_marginTop="10dp">
 
             <EditText
                 android:id="@+id/editUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints="@string/name"
                 android:gravity="start"
                 android:hint="@string/url"
-                android:singleLine="true"
-                android:autofillHints="@string/name"
                 android:inputType="textUri"
-                android:textStyle="bold" />
+                android:singleLine="true"
+                android:textStyle="bold"
+                tools:ignore="SpeakableTextPresentCheck" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/checkDNSRecords"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/check_a_aaaa_dns_records" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"

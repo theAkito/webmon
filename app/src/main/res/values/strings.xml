@@ -59,4 +59,5 @@
     <string name="action_refresh_title">Refresh</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
+    <string name="check_a_aaaa_dns_records">Check A/AAAA DNS Records</string>
 </resources>

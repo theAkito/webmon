@@ -8,7 +8,7 @@ import org.minidns.record.A
 import org.minidns.record.AAAA
 
 class DNS {
-  
+
   fun retrieveAllIPsFromDnsRecords(url: String): List<ArrayIP> {
     /** A Records */
     val resultA: ResolverResult<A> = ResolverApi.INSTANCE.resolve(url, A::class.java)
