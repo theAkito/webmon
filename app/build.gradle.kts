@@ -133,6 +133,9 @@ dependencies {
   */
   implementation("com.github.ok2c.hc5.android:httpclient-android:0.1.1")
 
+  /** DNS Tool */
+  implementation("org.minidns:minidns-hla:1.0.0")
+
   // Testing
 //  testImplementation("junit:junit:4.13.2")
 //  androidTestImplementation("androidx.test.ext:junit:1.1.3")
