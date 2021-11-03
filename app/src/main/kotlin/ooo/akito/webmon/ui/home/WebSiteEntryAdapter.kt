@@ -8,15 +8,11 @@ import android.widget.Filterable
 import android.widget.PopupMenu
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ItemWebsiteRowBinding
-import ooo.akito.webmon.utils.Print
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.currentDateTime
-import ooo.akito.webmon.utils.Utils.removeUrlProto
 import java.util.*
 
 /**

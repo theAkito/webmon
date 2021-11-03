@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import ooo.akito.webmon.data.repository.WebSiteEntryRepository
-import ooo.akito.webmon.utils.Print
+import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
@@ -32,7 +32,7 @@ class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
     repository = WebSiteEntryRepository(applicationContext)
 
-    Print.log("Fetching Data from Remote hosts...")
+    Log.error("Fetching Data from Remote hosts...")
     return try {
       val entriesWithFailedConnection =
         repository.checkWebSiteStatus().filter { Utils.mayNotifyStatusFailure(it.status) }
@@ -53,7 +53,7 @@ class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
       Result.success()
     } catch (e: Throwable) {
       e.printStackTrace()
-      Print.log("Error fetching data : $e")
+      Log.error("Error fetching data : $e")
       Result.failure()
     }
   }

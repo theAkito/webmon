@@ -145,7 +145,7 @@ object Utils {
             intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intents)
         } catch (e: Exception) {
-            Print.log(e.toString())
+            Log.error(e.toString())
             Toast.makeText(context, context.getString(R.string.no_apps_found), Toast.LENGTH_LONG)
                 .show()
         }
