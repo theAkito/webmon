@@ -64,6 +64,21 @@ android {
   kotlinOptions {
     jvmTarget = "11"
   }
+
+  /**
+    Required by Apache HttpClient.
+  */
+  packagingOptions {
+    resources.excludes.addAll(
+      listOf(
+        "META-INF/DEPENDENCIES",
+        "META-INF/NOTICE",
+        "META-INF/LICENSE",
+        "META-INF/LICENSE.txt",
+        "META-INF/NOTICE.txt"
+      )
+    )
+  }
 }
 
 dependencies {
@@ -111,6 +126,12 @@ dependencies {
   implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
   implementation("com.fasterxml.jackson.core:jackson-core:2.13")
   implementation("com.fasterxml.jackson.core:jackson-annotations:2.13")
+
+  /**
+    Apache HttpClient.
+    https://ok2c.github.io/httpclient-android-ext/hc5.html
+  */
+  implementation("com.github.ok2c.hc5.android:httpclient-android:0.1.1")
 
   // Testing
 //  testImplementation("junit:junit:4.13.2")
