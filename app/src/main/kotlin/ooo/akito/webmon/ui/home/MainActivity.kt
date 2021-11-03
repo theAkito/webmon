@@ -36,11 +36,21 @@ import ooo.akito.webmon.databinding.CustomRefreshInputBinding
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
+import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
+import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.defaultTimeFormat
 import ooo.akito.webmon.utils.Environment.getCurrentLocale
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeFormat
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.Environment.locale
+import ooo.akito.webmon.utils.ExceptionMessages.msgBackupUriPathInvalid
+import ooo.akito.webmon.utils.ExceptionMessages.msgCannotGetWebsiteEntryListValue
+import ooo.akito.webmon.utils.ExceptionMessages.msgFileContent
+import ooo.akito.webmon.utils.ExceptionMessages.msgInputStreamNullBackupInterrupted
+import ooo.akito.webmon.utils.ExceptionMessages.msgInternetUnavailable
+import ooo.akito.webmon.utils.ExceptionMessages.msgParseBackupFail
+import ooo.akito.webmon.utils.ExceptionMessages.msgUriProvidedIsNull
+import ooo.akito.webmon.utils.ExceptionMessages.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Utils.appIsVisible
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
@@ -92,7 +102,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   }
 
   private fun startUpdateTask(isUpdate: Boolean = true) {
-    Log.error("Called on main thread $runningCount")
+    Log.info("Called on main thread $runningCount")
     binding.layout.layoutForceRefreshInfo.visibility = View.VISIBLE
     if (isUpdate) {
       handler.postDelayed(runnableTask, customMonitorData.runningDelay)
@@ -117,7 +127,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       if (binding.layout.swipeRefresh.isRefreshing)
         binding.layout.swipeRefresh.isRefreshing = false
       Utils.showToast(applicationContext, getString(R.string.check_internet))
-      Log.error("Internet unavailable!")
+      Log.error(msgInternetUnavailable)
       true
     } else {
       false
@@ -127,7 +137,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private fun String?.openInBrowser() {
     val uri = this.asUri()
     if (uri == null) {
-      Log.error("URI provided is null!")
+      Log.error(msgUriProvidedIsNull)
       return
     }
     this@MainActivity.openInBrowser(uri)
@@ -139,7 +149,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       timestamp = getDefaultDateTimeString(),
       locationSaved = locationSave,
       entries = viewModel.getWebSiteEntryList().value
-        ?: throw IllegalAccessError("Cannot get WebSiteEntryList from LiveData!")
+        ?: throw IllegalAccessError(msgCannotGetWebsiteEntryListValue)
     )
   }
 
@@ -158,7 +168,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
 
-    // Edit Website Entry Result Launcher
+    /** Edit Website Entry Result Launcher */
     onEditClickedResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       if (result.resultCode == Activity.RESULT_OK) {
         val data: Intent? = result.data
@@ -167,7 +177,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     }
 
-    // Fab click listener
+    /** Floating Action Buttong (Add WebsiteEntry) Result Launcher */
     val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       if (result.resultCode == Activity.RESULT_OK) {
         val data: Intent? = result.data
@@ -178,7 +188,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     /** Backup Website Entries */
     onBackupWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-      fun logErr() = Log.error("Backup URI does not provide a valid path!")
+      fun logErr() = Log.error(msgBackupUriPathInvalid)
       val backupFilePathRelative = try {
         uri.path
       } catch (e: Exception) {
@@ -202,7 +212,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
     onRestoreWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-      fun logErr() = Log.error("InputStream is null! The Backup Action was probably interrupted.")
+      fun logErr() = Log.error(msgInputStreamNullBackupInterrupted)
       val resolver = this@MainActivity.contentResolver
       val input = try {
         resolver.openInputStream(uri)
@@ -218,10 +228,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       val backupWebsites = try {
         mapper.readValue<BackupWebsites>(rawContent)
       } catch (e: Exception) {
-        Log.error("File content: " + rawContent)
-        throw IllegalStateException("Could not parse Backup Website Entries File!")
+        Log.error(msgFileContent + rawContent)
+        throw IllegalStateException(msgParseBackupFail)
       }
-      val currentWebsites = viewModel.getWebSiteEntryList().value ?: throw IllegalAccessError("Cannot get WebSiteEntryList from LiveData!")
+      val currentWebsites = viewModel.getWebSiteEntryList().value ?: throw IllegalAccessError(msgCannotGetWebsiteEntryListValue)
       val providedWebsites = backupWebsites.entries
       /**
         Do not import Websites that are already available.
@@ -282,7 +292,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
 
-
     // Setting up ViewModel and LiveData
     viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
     viewModel.getWebSiteEntryList().observe(this, {
@@ -291,7 +300,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     })
 
     // Setting up Custom Monitor Option
-    viewModel.getAllWebSiteStatusList().observe(this, { it ->
+    viewModel.getAllWebSiteStatusList().observe(this, { status ->
       /*
         This block gets executed when Custom Monitor option is used,
         plus when pressing the Refresh option, manually.
@@ -311,7 +320,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
 
       val entriesWithFailedConnection =
-        it.filter {
+        status.filter {
           Utils.mayNotifyStatusFailure(it.status) &&
               customMonitorData.showNotification
         }
@@ -337,13 +346,13 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         if (customMonitorEnabled) {
           showNotification(
             applicationContext,
-            runningCountText + "Several Websites are not reachable!",
+            runningCountText + msgWebsitesNotReachable,
             entriesWithFailedConnection.joinToStringDescription()
           )
         } else {
           Toast.makeText(
             applicationContext,
-            "Several Websites are not reachable!",
+            msgWebsitesNotReachable,
             Toast.LENGTH_LONG
           ).show()
         }
@@ -381,13 +390,16 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     return true
   }
 
+  private fun permissionIsGranted(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@MainActivity, permission) == PackageManager.PERMISSION_GRANTED
+  private fun permissionIsDenied(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@MainActivity, permission) == PackageManager.PERMISSION_DENIED
+
   override fun onRequestPermissionsResult(
     requestCode: Int,
     permissions: Array<out String>,
     grantResults: IntArray
   ) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    if (ActivityCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+    if (permissionIsGranted()) {
       onRestoreWebsiteEntriesResultLauncher.launch(fileTypeFilter)
     }
   }
@@ -398,7 +410,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         startActivity(Intent(this, SettingsActivity::class.java))
         true
       }
-      R.id.action_search -> true
+      R.id.action_search -> {
+        true
+      }
       R.id.action_custom_monitor -> {
         showForceRefreshUI()
         true
@@ -413,11 +427,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
       R.id.action_restore -> {
         if (
-          ActivityCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED &&
+          permissionIsDenied() &&
           Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
           Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
         ) {
-          ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+          ActivityCompat.requestPermissions(this, arrayOf(permissionReadExternalStorage), requestCodeReadExternalStorage)
         } else {
           onRestoreWebsiteEntriesResultLauncher.launch(fileTypeFilter)
         }
