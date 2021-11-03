@@ -28,14 +28,16 @@ class WebSiteEntryRepository(context: Context) {
     this.launch(Dispatchers.IO) {
       webSiteEntryDao?.saveWebSiteEntry(
         WebSiteEntry(
-          name = "Nim Website",
-          url = "https://nim-lang.org/"
+          name = "Nim Homepage",
+          url = "https://nim-lang.org/",
+          itemPosition = 0
         )
       )
       webSiteEntryDao?.saveWebSiteEntry(
         WebSiteEntry(
           name = "Unavailable Website",
-          url = "https://error.duckduckgo.com/"
+          url = "https://error.duckduckgo.com/",
+          itemPosition = 1
         )
       )
       SharedPrefsManager.customPrefs[Constants.IS_ADDED_DEFAULT_DATA] = false
