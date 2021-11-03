@@ -29,10 +29,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 - Custom monitor option. Useful for continually checking website status every 1 second or 5 minutes. The Second/Minute interval can be manually assigned.
 - Tap a website entry to quickly refresh that particular one.
 - Ability to notify only on Server issue. If enabled, does not notify, if the app has no internet connection.
-
-
-## Useful links
- * [Blog about Website Monitor](https://manimaran96.wordpress.com/category/android-apps/website-monitor/)
+- Import & Export of Website entry list backups.
 
 
 ## Screen Shot
@@ -52,10 +49,13 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 | ![Fifth](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true) | ![Sixth](fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true) | ![Seventh](fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true) | ![Eighth](fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true) |
 
 ## TODO
-* Publish to F-Droid.
-* Add Dark Mode.
-* Export Website Entries to JSON as Backup.
-* Enable Import of Backups.
+* [Add Dark Mode](https://gitlab.com/manimaran/website-monitor/-/issues/3).
+* [Check all address records (A, AAA, etc.).](https://gitlab.com/manimaran/website-monitor/-/issues/11)
+* [Use Notification workaround to ensure App never gets killed, when in background.](https://gitlab.com/manimaran/website-monitor/-/issues/14)
+* [Support Proxies.](https://gitlab.com/manimaran/website-monitor/-/issues/2)
+* ~~Publish to F-Droid.~~
+* ~~Export Website Entries to JSON as Backup.~~
+* ~~Enable Import of Backups.~~
 * ~~Merge Notifications into single one, if more than one Website is down.~~
 
 ## Note
