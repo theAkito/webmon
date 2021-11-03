@@ -22,6 +22,9 @@ object ExceptionMessages {
   val msgParseBackupFail: String by lazy {
     "Could not parse Backup Website Entries File!"
   }
+  val msgCannotOpenOutputStreamBackupWebsiteEntries: String by lazy {
+    "Cannot open output stream when trying to write Backup Website Entries File!"
+  }
 
   val msgErrorTryingToFetchData: String by lazy {
     "Error when trying to fetch data: "

@@ -45,6 +45,7 @@ import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.Environment.locale
 import ooo.akito.webmon.utils.ExceptionMessages.msgBackupUriPathInvalid
 import ooo.akito.webmon.utils.ExceptionMessages.msgCannotGetWebsiteEntryListValue
+import ooo.akito.webmon.utils.ExceptionMessages.msgCannotOpenOutputStreamBackupWebsiteEntries
 import ooo.akito.webmon.utils.ExceptionMessages.msgFileContent
 import ooo.akito.webmon.utils.ExceptionMessages.msgInputStreamNullBackupInterrupted
 import ooo.akito.webmon.utils.ExceptionMessages.msgInternetUnavailable
@@ -202,7 +203,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       val backupFileContent = generateBackupWebsitesJString(backupFilePathRelative)
       val resolver = this@MainActivity.contentResolver
       /** https://stackoverflow.com/a/64733499/7061105 */
-      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError("Cannot open output stream when trying to write Backup Website Entries File!")
+      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError(msgCannotOpenOutputStreamBackupWebsiteEntries)
       out.use { stream ->
         Log.info("Writing WebsiteEntry from Backup...")
         Log.info("BackupWebsites: " + backupFileContent)
@@ -238,8 +239,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         Filtered by Website URL.
       */
       val newWebsites = providedWebsites.filterNot { provided -> currentWebsites.any { it.url == provided.url } }
+      Log.info("Restoring WebsiteEntry List from Backup...")
       newWebsites.forEach { website ->
-        Log.info("Restoring WebsiteEntry from Backup...")
         Log.info("WebsiteEntry: " + website)
         /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
         val cleanedWebsite = WebSiteEntry(
@@ -249,6 +250,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         )
         viewModel.saveWebSiteEntry(cleanedWebsite)
       }
+      Log.info("Finished restoring WebsiteEntry List from Backup!")
     }
 
 
@@ -461,9 +463,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         }
         if (!TextUtils.isEmpty(customRefreshInputBinding.editDuration.text)) {
           if (customRefreshInputBinding.checkboxAgree.isChecked) {
-            val durationBy = if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) 60 * 1000 else 1000
             val duration = customRefreshInputBinding.editDuration.text.toString().toLong()
-
+            val durationBy = if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) {
+              60 * 1000
+            } else {
+              1000
+            }
             customMonitorData.apply {
               val durationType =
                 if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == customRefreshInputBinding.rbDurationMin.id) {
@@ -596,12 +601,14 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       // Called by the ItemTouchHelper when the user interaction with an element is over and it also completed its animation.
       // This is a good place to send an update to your backend about changes.
 
-      val entries = (0..recyclerView.childCount).mapNotNull {
-        val holder = try { recyclerView.getChildViewHolder(recyclerView.getChildAt(it)) } catch (e: Exception) { return@mapNotNull null }
+      val entries = (0..recyclerView.childCount).mapNotNull { childPosition ->
+        val holder = try { recyclerView.getChildViewHolder(recyclerView.getChildAt(childPosition)) } catch (e: Exception) { return@mapNotNull null }
         val position = holder.adapterPosition
-        Log.info("${holder.itemView.tag} holder.adapterPosition: " + holder.adapterPosition)
-        Log.info("holder.itemView.tag: " + (holder.itemView.tag as WebSiteEntry).name)
-        (holder.itemView.tag as WebSiteEntry) to position
+        val itemViewTag = holder.itemView.tag
+        val websiteEntry = itemViewTag as WebSiteEntry
+        Log.info("${itemViewTag} holder.adapterPosition: " + holder.adapterPosition)
+        Log.info("holder.itemView.tag: " + websiteEntry.name)
+        websiteEntry to position
       }.toMap()
 
       entries.forEach { entryToPosition ->
@@ -613,5 +620,4 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     }
   }
-
 }
