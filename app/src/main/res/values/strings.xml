@@ -60,4 +60,7 @@
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
     <string name="check_a_aaaa_dns_records">Check A/AAAA DNS Records</string>
+    <string name="settings_tor">Tor Settings</string>
+    <string name="enable_tor_msg">Enable Tor (Requires running Orbot and App Restart!)</string>
+    <string name="is_onion_address">Is TOR .onion Address</string>
 </resources>

@@ -31,6 +31,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 - Ability to notify only on Server issue. If enabled, does not notify, if the app has no internet connection.
 - Import & Export of Website entry list backups.
 - Check connectivity of common address records (A, AAAA) from a domain.
+- Check Onion Domains, when [Orbot](https://github.com/guardianproject/orbot) is running.
 
 
 ## Screen Shot
@@ -52,7 +53,7 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 ## TODO
 * [Add Dark Mode](https://gitlab.com/manimaran/website-monitor/-/issues/3).
 * [Use Notification workaround to ensure App never gets killed, when in background.](https://gitlab.com/manimaran/website-monitor/-/issues/14)
-* [Support Proxies.](https://gitlab.com/manimaran/website-monitor/-/issues/2)
+* ~~[Support Tor Proxy.](https://gitlab.com/manimaran/website-monitor/-/issues/2)~~
 * ~~[Check common address records (A, AAAA).](https://gitlab.com/manimaran/website-monitor/-/issues/11)~~
 * ~~Export Website Entries to JSON as Backup.~~
 * ~~Enable Import of Backups.~~

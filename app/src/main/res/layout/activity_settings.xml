@@ -99,6 +99,28 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/settings_tor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="10dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:text="@string/settings_tor"
+                android:textSize="@dimen/text_normal"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/settings_tor_enable"
+                android:layout_width="match_parent"
+                android:layout_height="49dp"
+                android:text="@string/enable_tor_msg" />
+        </LinearLayout>
+
         <TextView
             android:text="**************"
             android:textAlignment="center"
@@ -147,9 +169,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
+                android:minHeight="48dp"
                 android:padding="10dp"
                 android:text="@string/source_code_link"
-                android:textSize="@dimen/text_small"/>
+                android:textSize="@dimen/text_small" />
 
         </LinearLayout>
 
