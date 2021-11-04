@@ -10,3 +10,6 @@ Monitor web services and get notified, if a service becomes unavailable.
 - Custom monitor option. Useful for continually checking website status every 1 second or 5 minutes. The Second/Minute interval can be manually assigned.
 - Tap a website entry to quickly refresh that particular one.
 - Ability to notify only on Server issue. If enabled, does not notify, if the app has no internet connection.
+- Import & Export of Website entry list backups.
+- Check connectivity of common address records (A, AAAA) from a domain.
+- Check Onion Domains, when Orbot is running.

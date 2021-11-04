@@ -1,0 +1,6 @@
+- Fix: Failure indication, even if all destinations are reachable.
+- Fix: Visit Website action.
+- Fix: Item Order not respected after updating website entry.
+- Add Feature: Backup & Restore.
+- Add Feature: Check connectivity of common address records (A, AAAA) from a domain.
+- Add Feature: Check Onion Domains, when Orbot is running.
