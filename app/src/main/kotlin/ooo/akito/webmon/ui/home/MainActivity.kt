@@ -318,7 +318,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
       if (appIsVisible().not()) {
         /*
-          If Custom Monitor option is used,
+          If Custom Monitoring option is used,
           we only want to send notifications,
           when App is in Foreground.
         */

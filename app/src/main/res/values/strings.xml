@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Website Monitor</string>
+    <string name="app_name">Webmon</string>
     <string name="action_settings">Settings</string>
 
     <string name="name">Name</string>
@@ -43,16 +43,16 @@
     <string name="notify_only_server_issues">Notify only Server issues</string>
     <string name="notify_only_server_side_issues_info">Notify only server side issues (Error Codes 5xx). Do not notify on client side errors, like internet and 4xx issues.</string>
     <string name="stop">Stop</string>
-    <string name="provide_custom_monitor_values">Provide custom monitor values</string>
+    <string name="provide_custom_monitor_values">Provide Custom Monitoring values</string>
     <string name="enter_duration">Enter duration for per execution</string>
     <string name="minute_once">Minute once</string>
     <string name="second_once">Second once</string>
     <string name="custom_monitor_process_warning">Actually this process may take more power consumption. Because this process will run continuously until you stop/close the app.</string>
     <string name="custom_monitor_agree"><![CDATA[Yes, I Agree & am aware of what this process does.]]></string>
     <string name="start">Start</string>
-    <string name="custom_monitor">Custom monitor</string>
+    <string name="custom_monitor">Custom Monitoring</string>
     <string name="show_notification">Show notification</string>
-    <string name="custom_monitor_running_info">Custom monitor Running… \nMonitoring every %1$s\nCount : %2$s</string>
+    <string name="custom_monitor_running_info">Custom Monitoring Running… \nMonitoring every %1$s\nCount : %2$s</string>
     <string name="error_read_and_agree_checkbox"><![CDATA[Read & Agree the checkbox]]></string>
     <string name="enter_valid_input">Enter valid input</string>
     <string name="check_internet">Please check your internet connection!</string>

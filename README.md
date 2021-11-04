@@ -1,10 +1,11 @@
-<h1 align="center">WebSite Monitor</h1>
+<h1 style="text-align: center;">Webmon</h1>
 
-<p align="center"><img width="120" height="120" src="fastlane/metadata/android/en-US/images/icon.png" alt="logo"/></p>
+<h1 align="center"><img width="120" height="120" src="fastlane/metadata/android/en-US/images/icon.png" alt="logo"/></h1>
 
-<p align="center">
-Website monitor app helps to monitor/track your Website periodically and notify if any problem in your site.
-</p>
+<p style="text-align: center;">Monitor web services and get notified, if a service becomes unavailable.</p>
+
+<br>
+<br>
 
 [![Language](https://img.shields.io/badge/project-language-blue?style=plastic)](https://kotlinlang.org/)
 
@@ -26,27 +27,20 @@ Website monitor app helps to monitor/track your Website periodically and notify 
 - Get notified when site becomes unavailable.
 - Check website status according to chosen interval.
 - Pause/Resume Monitoring for a particular site.
-- Custom monitor option. Useful for continually checking website status every 1 second or 5 minutes. The Second/Minute interval can be manually assigned.
+- Custom Monitoring option. Useful for continually checking website status every 1 second or 5 minutes. The Second/Minute interval can be manually assigned.
 - Tap a website entry to quickly refresh that particular one.
 - Ability to notify only on Server issue. If enabled, does not notify, if the app has no internet connection.
 - Import & Export of Website entry list backups.
 - Check connectivity of common address records (A, AAAA) from a domain.
 - Check Onion Domains, when [Orbot](https://github.com/guardianproject/orbot) is running.
 
+## Screenshots 
 
-## Screen Shot
-
-<center><img src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" data-canonical-src="https://gitlab.com/manimaran/website-monitor/raw/master/files/web_site_monitor_ui.gif" width="260" height="480" /></center>
-<br>
-
-
-## More Screenshots 
-
-| Main & Menu Options | Settings | Monitor Intervals | Custom Monitor Setup |
+| Main | Settings | Monitor Intervals | Custom Monitoring Setup |
 |:-:|:-:|:-:|:-:|
 | ![First](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true) | ![Sec](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true) | ![Third](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true) | ![Fourth](fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true) |
 
-| Custom Monitor Info | Update | Pause/Resume | Notification |
+| Backup & Restore | Monitor A/AAAA DNS Records | Monitor Onion Sites | Search |
 |:-:|:-:|:-:|:-:|
 | ![Fifth](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true) | ![Sixth](fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true) | ![Seventh](fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true) | ![Eighth](fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true) |
 
