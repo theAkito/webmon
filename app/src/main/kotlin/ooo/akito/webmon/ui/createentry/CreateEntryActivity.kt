@@ -2,6 +2,7 @@ package ooo.akito.webmon.ui.createentry
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
@@ -10,6 +11,7 @@ import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.isValidUrl
+import ooo.akito.webmon.utils.Utils.torIsEnabled
 
 class CreateEntryActivity : AppCompatActivity() {
 
@@ -34,16 +36,25 @@ class CreateEntryActivity : AppCompatActivity() {
 
     title = if (webSiteEntry != null) getString(R.string.update_entry) else getString(R.string.create_entry)
 
-    activityCreateEntryBinding.checkDNSRecords.setOnClickListener {
-
+    if (torIsEnabled) {
+      Log.info("Tor is enabled. Showing option to set Onion Address.")
+      activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE
+      activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE
+    } else {
+      Log.info("Tor is enabled. Hiding option to set Onion Address.")
+      activityCreateEntryBinding.isOnionAddress.visibility = View.GONE
+      activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE
     }
+
     activityCreateEntryBinding.btnSave.setOnClickListener { saveEntry() }
   }
 
   private fun prePopulateData(todoRecord: WebSiteEntry) {
+    val isOnion = todoRecord.isOnionAddress
     activityCreateEntryBinding.editName.setText(todoRecord.name)
     activityCreateEntryBinding.editUrl.setText(todoRecord.url)
-    activityCreateEntryBinding.checkDNSRecords.isChecked = todoRecord.dnsRecordsAAAAA
+    activityCreateEntryBinding.checkDNSRecords.isChecked = if (isOnion) { false } else { todoRecord.dnsRecordsAAAAA }
+    activityCreateEntryBinding.isOnionAddress.isChecked = isOnion /* No `if` check, because it would cause more harm to reset it, than to leave it be. */
     activityCreateEntryBinding.btnSave.text = getString(R.string.update)
   }
 
@@ -59,7 +70,8 @@ class CreateEntryActivity : AppCompatActivity() {
         name = activityCreateEntryBinding.editName.text.toString(),
         url = activityCreateEntryBinding.editUrl.text.toString(),
         itemPosition = Utils.totalAmountEntry,
-        dnsRecordsAAAAA = activityCreateEntryBinding.checkDNSRecords.isChecked
+        dnsRecordsAAAAA = activityCreateEntryBinding.checkDNSRecords.isChecked,
+        isOnionAddress = activityCreateEntryBinding.isOnionAddress.isChecked
       )
       Log.info("WebsiteEntry after Edit: " + todo)
       val intent = Intent()
@@ -79,10 +91,6 @@ class CreateEntryActivity : AppCompatActivity() {
       return false
     }
     if (activityCreateEntryBinding.editUrl.text.isEmpty()) {
-      activityCreateEntryBinding.inputUrl.error = getString(R.string.enter_valid_url)
-      activityCreateEntryBinding.editUrl.requestFocus()
-      return false
-    } else if (!isValidUrl(activityCreateEntryBinding.editUrl.text.toString())) {
       activityCreateEntryBinding.inputUrl.error = getString(R.string.enter_valid_url)
       activityCreateEntryBinding.editUrl.requestFocus()
       return false
