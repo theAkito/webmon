@@ -1,6 +1,21 @@
 package ooo.akito.webmon.utils
 
-object ExceptionMessages {
+object ExceptionCompanion {
+
+  val connCodeTorFail: Int by lazy {
+    9404
+  }
+  val connCodeTorAppUnavailable: Int by lazy {
+    9405
+  }
+  val connCodeTorConnFailed: Int by lazy {
+    9409
+  }
+
+  val msgGenericFailure: String by lazy {
+    "Failure"
+  }
+
   val msgWebsitesNotReachable: String by lazy {
     "Several Websites are not reachable!"
   }
@@ -24,6 +39,12 @@ object ExceptionMessages {
   }
   val msgCannotOpenOutputStreamBackupWebsiteEntries: String by lazy {
     "Cannot open output stream when trying to write Backup Website Entries File!"
+  }
+  val msgTorIsEnabledButNotAvailable: String by lazy {
+    "TOR is enabled but Orbot App is not available!"
+  }
+  val msgCannotConnectToTor: String by lazy {
+    "Cannot connect to TOR!"
   }
 
   val msgErrorTryingToFetchData: String by lazy {

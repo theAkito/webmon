@@ -15,10 +15,6 @@ import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.currentDateTime
 import java.util.*
 
-/**
- * @author Naveen T P
- * @since 08/11/18
- */
 class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter<WebSiteEntryAdapter.ViewHolder>(), Filterable {
 
   private var mList: List<WebSiteEntry> = arrayListOf()

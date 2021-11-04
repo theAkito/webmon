@@ -5,8 +5,8 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import ooo.akito.webmon.data.repository.WebSiteEntryRepository
-import ooo.akito.webmon.utils.ExceptionMessages.msgErrorTryingToFetchData
-import ooo.akito.webmon.utils.ExceptionMessages.msgWebsitesNotReachable
+import ooo.akito.webmon.utils.ExceptionCompanion.msgErrorTryingToFetchData
+import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
