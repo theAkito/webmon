@@ -6,10 +6,7 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.text.TextUtils
 import android.view.*
 import android.widget.Toast
@@ -36,6 +33,7 @@ import ooo.akito.webmon.databinding.CustomRefreshInputBinding
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
+import ooo.akito.webmon.utils.Constants.orbotFQID
 import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.defaultTimeFormat
@@ -43,15 +41,15 @@ import ooo.akito.webmon.utils.Environment.getCurrentLocale
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeFormat
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.Environment.locale
-import ooo.akito.webmon.utils.ExceptionMessages.msgBackupUriPathInvalid
-import ooo.akito.webmon.utils.ExceptionMessages.msgCannotGetWebsiteEntryListValue
-import ooo.akito.webmon.utils.ExceptionMessages.msgCannotOpenOutputStreamBackupWebsiteEntries
-import ooo.akito.webmon.utils.ExceptionMessages.msgFileContent
-import ooo.akito.webmon.utils.ExceptionMessages.msgInputStreamNullBackupInterrupted
-import ooo.akito.webmon.utils.ExceptionMessages.msgInternetUnavailable
-import ooo.akito.webmon.utils.ExceptionMessages.msgParseBackupFail
-import ooo.akito.webmon.utils.ExceptionMessages.msgUriProvidedIsNull
-import ooo.akito.webmon.utils.ExceptionMessages.msgWebsitesNotReachable
+import ooo.akito.webmon.utils.ExceptionCompanion.msgBackupUriPathInvalid
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotGetWebsiteEntryListValue
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupWebsiteEntries
+import ooo.akito.webmon.utils.ExceptionCompanion.msgFileContent
+import ooo.akito.webmon.utils.ExceptionCompanion.msgInputStreamNullBackupInterrupted
+import ooo.akito.webmon.utils.ExceptionCompanion.msgInternetUnavailable
+import ooo.akito.webmon.utils.ExceptionCompanion.msgParseBackupFail
+import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
+import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Utils.appIsVisible
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
@@ -60,6 +58,8 @@ import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.startWorkManager
+import ooo.akito.webmon.utils.Utils.torAppIsAvailable
+import ooo.akito.webmon.utils.Utils.torIsEnabled
 import java.util.*
 
 
@@ -369,6 +369,26 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       )
     }, 1000)
 
+    //region TOR
+
+    torIsEnabled = SharedPrefsManager.customPrefs.getBoolean(Constants.SETTINGS_TOR_ENABLE, false)
+    torAppIsAvailable = packageIsInstalled(orbotFQID, packageManager)
+    if (torIsEnabled && torAppIsAvailable) {
+      Log.info("Tor is enabled!")
+      val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+      StrictMode.setThreadPolicy(policy)
+    }
+
+    //endregion TOR
+  }
+
+  private fun packageIsInstalled(packageName: String, pacman: PackageManager): Boolean {
+    return try {
+      pacman.getPackageInfo(packageName, 0)
+      true
+    } catch (e: Exception) {
+      false
+    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
