@@ -46,6 +46,9 @@ object ExceptionCompanion {
   val msgCannotConnectToTor: String by lazy {
     "Cannot connect to TOR!"
   }
+  val msgCannotOpenOnionInBrowser: String by lazy {
+    "Cannot open Onion address in clearnet browser!"
+  }
   val msgSpecificToRebirth: String by lazy {
     "Could not initialise Looper for triggering Rebirth!"
   }

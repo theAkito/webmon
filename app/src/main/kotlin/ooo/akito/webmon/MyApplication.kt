@@ -12,9 +12,9 @@ class MyApplication : Application(), LifecycleObserver {
   object ActivityVisibility {
     var appIsVisible: Boolean = false
     @JvmStatic
-    fun resumeApp() { ooo.akito.webmon.MyApplication.ActivityVisibility.appIsVisible = true }
+    fun resumeApp() { appIsVisible = true }
     @JvmStatic
-    fun pauseApp() { ooo.akito.webmon.MyApplication.ActivityVisibility.appIsVisible = false }
+    fun pauseApp() { appIsVisible = false }
   }
 
   override fun onCreate() {
@@ -25,11 +25,11 @@ class MyApplication : Application(), LifecycleObserver {
 
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
   fun onAppBackgrounded() {
-    ooo.akito.webmon.MyApplication.ActivityVisibility.pauseApp()
+    ActivityVisibility.pauseApp()
   }
 
   @OnLifecycleEvent(Lifecycle.Event.ON_START)
   fun onAppForegrounded() {
-    ooo.akito.webmon.MyApplication.ActivityVisibility.resumeApp()
+    ActivityVisibility.resumeApp()
   }
 }

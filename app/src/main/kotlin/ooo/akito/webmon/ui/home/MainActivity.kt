@@ -43,6 +43,7 @@ import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.Environment.locale
 import ooo.akito.webmon.utils.ExceptionCompanion.msgBackupUriPathInvalid
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotGetWebsiteEntryListValue
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOnionInBrowser
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupWebsiteEntries
 import ooo.akito.webmon.utils.ExceptionCompanion.msgFileContent
 import ooo.akito.webmon.utils.ExceptionCompanion.msgInputStreamNullBackupInterrupted
@@ -57,6 +58,7 @@ import ooo.akito.webmon.utils.Utils.joinToStringDescription
 import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
+import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.Utils.startWorkManager
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import ooo.akito.webmon.utils.Utils.torIsEnabled
@@ -546,7 +548,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
   override fun onVisitClicked(webSiteEntry: WebSiteEntry) {
     if (handleInternetUnavailable()) { return }
-    webSiteEntry.url.openInBrowser()
+    if (webSiteEntry.isOnionAddress.not()) {
+      webSiteEntry.url.openInBrowser()
+    } else {
+      showToast(this, msgCannotOpenOnionInBrowser)
+    }
 
   }
 
