@@ -9,8 +9,6 @@ import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.Utils
-import ooo.akito.webmon.utils.Utils.isValidUrl
 import ooo.akito.webmon.utils.Utils.torIsEnabled
 import ooo.akito.webmon.utils.Utils.totalAmountEntry
 
@@ -18,6 +16,22 @@ class CreateEntryActivity : AppCompatActivity() {
 
   var webSiteEntry: WebSiteEntry? = null
   private lateinit var activityCreateEntryBinding: ActivityCreateEntryBinding
+
+  private fun hideCheckDNSRecords() {
+    activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE
+  }
+
+  private fun hideIsOnionAddress() {
+    activityCreateEntryBinding.isOnionAddress.visibility = View.GONE
+  }
+
+  private fun showCheckDNSRecords() {
+    activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE
+  }
+
+  private fun showIsOnionAddress() {
+    activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -39,12 +53,32 @@ class CreateEntryActivity : AppCompatActivity() {
 
     if (torIsEnabled) {
       Log.info("Tor is enabled. Showing option to set Onion Address.")
-      activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE
-      activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE
+      showIsOnionAddress()
+      if (webSiteEntry != null && webSiteEntry!!.isOnionAddress) {
+        hideCheckDNSRecords()
+      } else if (webSiteEntry != null && webSiteEntry!!.isOnionAddress.not()) {
+        showCheckDNSRecords()
+      }
     } else {
       Log.info("Tor is enabled. Hiding option to set Onion Address.")
-      activityCreateEntryBinding.isOnionAddress.visibility = View.GONE
-      activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE
+      hideIsOnionAddress()
+      showCheckDNSRecords()
+    }
+
+    activityCreateEntryBinding.isOnionAddress.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked) {
+        hideCheckDNSRecords()
+      } else {
+        showCheckDNSRecords()
+      }
+    }
+
+    activityCreateEntryBinding.checkDNSRecords.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked) {
+        hideIsOnionAddress()
+      } else {
+        showIsOnionAddress()
+      }
     }
 
     activityCreateEntryBinding.btnSave.setOnClickListener { saveEntry() }
