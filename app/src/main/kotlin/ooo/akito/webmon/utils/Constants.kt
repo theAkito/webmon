@@ -4,6 +4,7 @@ object Constants {
 
   const val permissionReadExternalStorage = android.Manifest.permission.READ_EXTERNAL_STORAGE
   const val requestCodeReadExternalStorage = 1 /* Request Code is chosen arbitrarily. */
+  const val orbotFQID = "org.torproject.android"
 
   const val INTENT_OBJECT = "intent_object"
   const val INTENT_CREATE_ENTRY = 1
@@ -22,5 +23,9 @@ object Constants {
   const val MONITORING_INTERVAL: String = "monitoring_interval"
   const val IS_AUTO_START_SHOWN : String = "is_auto_start_shown"
   const val NOTIFY_ONLY_SERVER_ISSUES : String = "notify_only_server_issues"
+  const val SETTINGS_TOR_ENABLE : String = "settings_tor_enable"
+
+  const val HIDE_IS_ONION_ADDRESS: String = "hide_is_onion_address"
+  const val HIDE_CHECK_DNS_RECORD_A_AAAA: String = "hide_check_dns_record_a_aaaa"
 
 }

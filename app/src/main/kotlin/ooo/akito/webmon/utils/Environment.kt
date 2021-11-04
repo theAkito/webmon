@@ -7,6 +7,8 @@ import java.util.*
 
 object Environment {
 
+  const val nameTorApp = "Orbot"
+
   lateinit var locale: Locale
   lateinit var defaultTimeFormat: SimpleDateFormat
 
