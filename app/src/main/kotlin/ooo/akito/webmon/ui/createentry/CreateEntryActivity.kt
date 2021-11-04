@@ -12,6 +12,7 @@ import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.isValidUrl
 import ooo.akito.webmon.utils.Utils.torIsEnabled
+import ooo.akito.webmon.utils.Utils.totalAmountEntry
 
 class CreateEntryActivity : AppCompatActivity() {
 
@@ -64,12 +65,12 @@ class CreateEntryActivity : AppCompatActivity() {
    * */
   private fun saveEntry() {
     if (validateFields()) {
-      val id = if (webSiteEntry != null) webSiteEntry?.id else null
+      val id = webSiteEntry?.id
       val todo = WebSiteEntry(
         id = id,
         name = activityCreateEntryBinding.editName.text.toString(),
         url = activityCreateEntryBinding.editUrl.text.toString(),
-        itemPosition = Utils.totalAmountEntry,
+        itemPosition = if (webSiteEntry != null) { webSiteEntry?.itemPosition } else { totalAmountEntry },
         dnsRecordsAAAAA = activityCreateEntryBinding.checkDNSRecords.isChecked,
         isOnionAddress = activityCreateEntryBinding.isOnionAddress.isChecked
       )

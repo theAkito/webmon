@@ -246,7 +246,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         val cleanedWebsite = WebSiteEntry(
           name = website.name,
           url = website.url,
-          itemPosition = website.itemPosition
+          itemPosition = website.itemPosition,
+          dnsRecordsAAAAA = website.dnsRecordsAAAAA,
+          isOnionAddress = website.isOnionAddress
         )
         viewModel.saveWebSiteEntry(cleanedWebsite)
       }
