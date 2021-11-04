@@ -8,6 +8,7 @@ import java.util.*
 object Environment {
 
   const val nameTorApp = "Orbot"
+  const val msgGenericSuccess = "Success"
 
   lateinit var locale: Locale
   lateinit var defaultTimeFormat: SimpleDateFormat

@@ -2,42 +2,33 @@ package ooo.akito.webmon.ui.settings
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.os.HandlerCompat
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import ooo.akito.webmon.R
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
+import ooo.akito.webmon.utils.Constants.HIDE_IS_ONION_ADDRESS
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
+import ooo.akito.webmon.utils.ExceptionCompanion.msgSpecificToRebirth
 import ooo.akito.webmon.utils.Interval.nameList
 import ooo.akito.webmon.utils.Interval.valueList
+import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.getMonitorTime
 import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.startWorkManager
-import android.content.Intent
-
-import android.content.ComponentName
-import android.content.Context
-
-import android.content.pm.PackageManager
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
-import android.widget.Toast
-import androidx.core.os.HandlerCompat
-import com.google.android.material.snackbar.Snackbar
-import ooo.akito.webmon.utils.Constants.HIDE_IS_ONION_ADDRESS
-import ooo.akito.webmon.utils.ExceptionCompanion.msgSpecificToRebirth
-import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.Utils.showSnackBar
 import ooo.akito.webmon.utils.Utils.triggerRebirth
 
 
@@ -91,7 +82,7 @@ class SettingsActivity : AppCompatActivity() {
       val thisContext = this.applicationContext
       HandlerCompat.postDelayed(
         Handler(Looper.myLooper() ?: throw Exception(msgSpecificToRebirth)
-      ), Runnable {
+      ), {
         kotlin.run {
           triggerRebirth(thisContext)
         }
