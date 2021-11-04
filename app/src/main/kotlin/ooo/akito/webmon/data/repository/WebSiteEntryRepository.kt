@@ -10,13 +10,21 @@ import ooo.akito.webmon.data.db.DbHelper
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.db.WebSiteEntryDao
 import ooo.akito.webmon.data.model.WebSiteStatus
+import ooo.akito.webmon.net.Utils.onionConnectionIsSuccessful
 import ooo.akito.webmon.net.dns.DNS
 import ooo.akito.webmon.utils.Constants
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorConnFailed
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
+import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericFailure
+import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsEnabledButNotAvailable
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.addProtoHttp
 import ooo.akito.webmon.utils.Utils.currentDateTime
+import ooo.akito.webmon.utils.Utils.removeUrlProto
+import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -37,14 +45,18 @@ class WebSiteEntryRepository(context: Context) {
         WebSiteEntry(
           name = "Nim Homepage",
           url = "https://nim-lang.org/",
-          itemPosition = 0
+          itemPosition = 0,
+          dnsRecordsAAAAA = false,
+          isOnionAddress = false
         )
       )
       webSiteEntryDao?.saveWebSiteEntry(
         WebSiteEntry(
           name = "Unavailable Website",
           url = "https://error.duckduckgo.com/",
-          itemPosition = 1
+          itemPosition = 1,
+          dnsRecordsAAAAA = false,
+          isOnionAddress = false
         )
       )
       SharedPrefsManager.customPrefs[Constants.IS_ADDED_DEFAULT_DATA] = false
@@ -91,52 +103,83 @@ class WebSiteEntryRepository(context: Context) {
   suspend fun getWebsiteStatus(websiteEntry: WebSiteEntry): WebSiteStatus {
     var  webSiteStatus: WebSiteStatus
     withContext(Dispatchers.IO) {
+      var connSuccess = false
       var status = HttpURLConnection.HTTP_NOT_FOUND
       var msg = ""
       try {
         val rawUrl = websiteEntry.url
-        val checkRecordsAAAAA = websiteEntry.dnsRecordsAAAAA
-
-        val ipAddresses = if (checkRecordsAAAAA) {
-          dns.retrieveAllIPsFromDnsRecordsAsStrings(rawUrl)
+        if (websiteEntry.isOnionAddress && torAppIsAvailable) {
+          if (torAppIsAvailable.not()) {
+            Log.error(msgTorIsEnabledButNotAvailable)
+            connSuccess = false
+            status = connCodeTorAppUnavailable
+            msg = msgTorIsEnabledButNotAvailable
+          } else {
+            var excepted = false
+            connSuccess = try {
+              onionConnectionIsSuccessful(rawUrl.removeUrlProto())
+            } catch (e: Exception) {
+              excepted = true
+              false
+            }
+            status = if (connSuccess) {
+              HttpURLConnection.HTTP_OK /* If other than `HTTP_OK`, the entry is shown as unsuccessful. */
+            } else if (excepted) {
+              connCodeTorConnFailed
+            } else {
+              0
+            }
+            msg = if (connSuccess) {
+              "Success"
+            } else if (excepted) {
+              msgCannotConnectToTor
+            } else {
+              msgGenericFailure
+            }
+          }
         } else {
-          listOf(rawUrl)
-        }
-
-        val urls = ipAddresses.map { URL(it.addProtoHttp()) }
-
-        val connSuccessIfEmpty = urls.mapIndexedNotNull CONNECTIONS@{ index, url ->
-          val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
-          conn.connect()
-          val code = conn.responseCode
-          val msg = conn.responseMessage
-          val isLastInLine = if (urls.size == 1) {
-            true
+          val checkRecordsAAAAA = websiteEntry.dnsRecordsAAAAA
+          val ipAddresses = if (checkRecordsAAAAA) {
+            dns.retrieveAllIPsFromDnsRecordsAsStrings(rawUrl)
           } else {
-            index == urls.size.dec()
+            listOf(rawUrl.addProtoHttp())
           }
-          if (code == HttpURLConnection.HTTP_OK && isLastInLine.not()) {
-            Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + url)
-            return@CONNECTIONS code to msg
-          } else if (isLastInLine.not()) {
-            return@CONNECTIONS null
-          }
-          if (isLastInLine) {
-            return@CONNECTIONS code to msg
-          } else {
-            null
-          }
-        }
 
-        val connSuccess = connSuccessIfEmpty.isEmpty()
-        val codeToMsg = connSuccessIfEmpty.firstOrNull()
-        status = codeToMsg?.first ?: 0
-        msg = codeToMsg?.second ?: "Unknown"
+          val urls = ipAddresses.map { URL(it.addProtoHttp()) }
+
+          val connSuccessIfEmpty = urls.mapIndexedNotNull CONNECTIONS@{ index, url ->
+            val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
+            conn.connect()
+            status = conn.responseCode
+            msg = conn.responseMessage
+            val isLastInLine = if (urls.size == 1) {
+              true
+            } else {
+              index == urls.size.dec()
+            }
+            if (status == HttpURLConnection.HTTP_OK && isLastInLine.not()) {
+              Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + url)
+              return@CONNECTIONS status to msg
+            } else if (isLastInLine.not()) {
+              return@CONNECTIONS null
+            }
+            if (isLastInLine) {
+              return@CONNECTIONS status to msg
+            } else {
+              null
+            }
+          }
+
+          connSuccess = connSuccessIfEmpty.isEmpty()
+          val codeToMsg = connSuccessIfEmpty.firstOrNull()
+          status = codeToMsg?.first ?: 0
+          msg = codeToMsg?.second ?: "Unknown"
+        }
 
         webSiteStatus = WebSiteStatus(
           websiteEntry.name,
           websiteEntry.url,
-          codeToMsg?.first ?: 0,
+          status,
           connSuccess,
           msg
         )
