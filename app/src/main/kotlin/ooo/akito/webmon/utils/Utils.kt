@@ -22,6 +22,10 @@ import ooo.akito.webmon.utils.Constants.DEFAULT_INTERVAL_MIN
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import ooo.akito.webmon.utils.Environment.nameTorApp
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorConnFailed
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorFail
 import ooo.akito.webmon.utils.Interval.nameList
 import ooo.akito.webmon.utils.Interval.valueList
 import ooo.akito.webmon.utils.SharedPrefsManager.get
@@ -36,6 +40,22 @@ object Utils {
 
     val lineEnd = System.lineSeparator()
     var totalAmountEntry = 0
+    var torIsEnabled = false
+    var torAppIsAvailable = false
+
+    fun triggerRebirth(context: Context) {
+        /** https://stackoverflow.com/a/46848226/7061105 */
+        val packageManager: PackageManager = context.packageManager
+        val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+        if (intent == null) {
+            Log.error("Cannot restart App, because intent is null!")
+            return
+        }
+        val componentName = intent.component
+        val mainIntent = Intent.makeRestartActivityTask(componentName)
+        context.startActivity(mainIntent)
+        Runtime.getRuntime().exit(0)
+    }
 
     fun currentDateTime(): String {
         return SimpleDateFormat("dd-MMM-yyyy hh:mm:ss:a", Locale.ENGLISH).format(Date())
@@ -196,6 +216,9 @@ object Utils {
             HttpURLConnection.HTTP_UNAVAILABLE -> "Service Unavailable" // 503
             HttpURLConnection.HTTP_GATEWAY_TIMEOUT -> "Gateway Timeout" // 504
             HttpURLConnection.HTTP_VERSION -> "HTTP Version Not Supported" // 505
+            connCodeTorFail -> "TOR Failure"
+            connCodeTorAppUnavailable -> "${nameTorApp} is not installed!"
+            connCodeTorConnFailed -> "Connection to TOR failed!"
             else -> "Unknown"
         }
     }
