@@ -346,7 +346,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             Toast.LENGTH_LONG
           ).show()
         }
-      } else {
+      } else if (entriesWithFailedConnection.size > 1) {
         if (customMonitorEnabled) {
           showNotification(
             applicationContext,
