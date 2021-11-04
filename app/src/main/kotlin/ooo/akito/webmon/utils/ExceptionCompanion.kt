@@ -46,6 +46,9 @@ object ExceptionCompanion {
   val msgCannotConnectToTor: String by lazy {
     "Cannot connect to TOR!"
   }
+  val msgSpecificToRebirth: String by lazy {
+    "Could not initialise Looper for triggering Rebirth!"
+  }
 
   val msgErrorTryingToFetchData: String by lazy {
     "Error when trying to fetch data: "
