@@ -13,6 +13,7 @@ import ooo.akito.webmon.data.model.WebSiteStatus
 import ooo.akito.webmon.net.Utils.onionConnectionIsSuccessful
 import ooo.akito.webmon.net.dns.DNS
 import ooo.akito.webmon.utils.Constants
+import ooo.akito.webmon.utils.Environment.msgGenericSuccess
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorConnFailed
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
@@ -130,7 +131,7 @@ class WebSiteEntryRepository(context: Context) {
               0
             }
             msg = if (connSuccess) {
-              "Success"
+              msgGenericSuccess
             } else if (excepted) {
               msgCannotConnectToTor
             } else {
@@ -148,25 +149,37 @@ class WebSiteEntryRepository(context: Context) {
           val urls = ipAddresses.map { URL(it.addProtoHttp()) }
 
           val connSuccessIfEmpty = urls.mapIndexedNotNull CONNECTIONS@{ index, url ->
-            val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
-            conn.connect()
-            status = conn.responseCode
-            msg = conn.responseMessage
-            val isLastInLine = if (urls.size == 1) {
-              true
-            } else {
-              index == urls.size.dec()
-            }
-            if (status == HttpURLConnection.HTTP_OK && isLastInLine.not()) {
-              Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + url)
-              return@CONNECTIONS status to msg
-            } else if (isLastInLine.not()) {
+            var conn: HttpURLConnection? = null
+            try {
+              conn = url.openConnection() as HttpURLConnection
+              conn.connect()
+              status = conn.responseCode
+              msg = conn.responseMessage
+              val isLastInLine = if (urls.size == 1) {
+                true
+              } else {
+                index == urls.size.dec()
+              }
+              if (status == HttpURLConnection.HTTP_OK && isLastInLine.not()) {
+                Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + url)
+                return@CONNECTIONS status to msg
+              } else if (isLastInLine.not()) {
+                return@CONNECTIONS null
+              }
+              if (isLastInLine) {
+                return@CONNECTIONS status to msg
+              } else {
+                null
+              }
+            } catch (e: Exception) {
+              Log.error(e.stackTraceToString())
               return@CONNECTIONS null
-            }
-            if (isLastInLine) {
-              return@CONNECTIONS status to msg
-            } else {
-              null
+            } finally {
+              try {
+                conn?.disconnect()
+              } catch (e: Exception) {
+                Log.error(e.stackTraceToString())
+              }
             }
           }
 
