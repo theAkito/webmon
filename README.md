@@ -58,12 +58,7 @@
 
 This is a fork of the project [WebSite Monitor](https://gitlab.com/manimaran/website-monitor) made by [Manimaran](https://gitlab.com/manimaran).
 
-I forked this project, because it's not actively maintained, anymore. For example, some not that difficult to solve issues have been open since 10 months and there has been no work done on them, despite promises of doing that.
-It's also the case, that my [pull request](https://gitlab.com/manimaran/website-monitor/-/merge_requests/4#f71fe0455681aefe79c631fdf86cd2181c8735e6) with quite a number of improvements was neither accepted, nor was it even responded to in any way.
-
-I want to keep working on the project and keep maintaining it, because I find this app very useful. However, it's hard to make better versions available for all users, when issues don't get solved by the maintainer and contributions from third parties are, as well, not accepted.
-
-Therefore, I am maintaining my own fork of this project, to be able to contribute to it, without having to wait forever for a pull request to be accepted.
+This fork is [approved and kindly supported](https://gitlab.com/manimaran/website-monitor/-/merge_requests/4#note_724151423) by the maintainer of the original project.
 
 ## License
 
