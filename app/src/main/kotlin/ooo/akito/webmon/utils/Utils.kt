@@ -223,7 +223,7 @@ object Utils {
 
   fun getStatusMessage(website: WebSiteEntry): String {
     return when (website.status) {
-      HttpURLConnection.HTTP_OK -> "Success" // 200
+      HttpURLConnection.HTTP_OK -> msgGenericSuccess // 200
       HttpURLConnection.HTTP_CREATED -> website.chooseStatusMsg("Created") /* "Created" // 201 */
       HttpURLConnection.HTTP_ACCEPTED -> website.chooseStatusMsg("Accepted") /* "Accepted" // 202 */
       HttpURLConnection.HTTP_NOT_AUTHORITATIVE -> "Non-Authoritative Information" // 203
