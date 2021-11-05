@@ -25,3 +25,4 @@ app/release
 
 # ---> Temp & Test Files
 test.md
+app/src/main/kotlin/ooo/akito/webmon/net/http/HttpConfig.kt

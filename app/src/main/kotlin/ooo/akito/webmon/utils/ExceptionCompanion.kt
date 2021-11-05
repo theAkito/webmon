@@ -1,6 +1,5 @@
 package ooo.akito.webmon.utils
 
-import ooo.akito.webmon.utils.Environment.nameTorApp
 import org.minidns.dnsmessage.DnsMessage
 
 object ExceptionCompanion {
@@ -76,10 +75,13 @@ object ExceptionCompanion {
   val msgMiniNXDOMAIN: String by lazy {
     "NX_DOMAIN"
   }
+  val msgWebsiteEntriesUnavailable: String by lazy {
+    "WebsiteEntries must be available!"
+  }
+
   val msgDnsRootDomain: String by lazy {
     " Root Domain: "
   }
-
   val msgErrorTryingToFetchData: String by lazy {
     "Error when trying to fetch data: "
   }

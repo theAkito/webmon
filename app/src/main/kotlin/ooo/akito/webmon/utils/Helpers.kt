@@ -1,4 +1,7 @@
 package ooo.akito.webmon.utils
 
 typealias JString = String
-typealias ArrayIP = UShortArray
+
+const val nameTorApp = "Orbot"
+const val msgGenericSuccess = "Success"
+const val msgGenericAvailable = "Available"

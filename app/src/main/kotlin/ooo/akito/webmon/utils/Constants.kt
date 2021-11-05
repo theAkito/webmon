@@ -24,6 +24,7 @@ object Constants {
   const val IS_AUTO_START_SHOWN : String = "is_auto_start_shown"
   const val NOTIFY_ONLY_SERVER_ISSUES : String = "notify_only_server_issues"
   const val SETTINGS_TOR_ENABLE : String = "settings_tor_enable"
+  const val SETTINGS_AVAILABILITY_LAISSEZFAIRE: String = "settings_availability_laissezfaire"
 
   const val HIDE_IS_ONION_ADDRESS: String = "hide_is_onion_address"
   const val HIDE_CHECK_DNS_RECORD_A_AAAA: String = "hide_check_dns_record_a_aaaa"
