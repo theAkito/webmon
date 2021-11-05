@@ -13,6 +13,7 @@ import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ItemWebsiteRowBinding
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.currentDateTime
+import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import java.util.*
 
 class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter<WebSiteEntryAdapter.ViewHolder>(), Filterable {
@@ -56,8 +57,8 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 //                }
 
 
-        binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry.status)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
-        binding.imgIndicator.setImageResource(if(webSiteEntry.status != 200) R.drawable.ic_alert else R.drawable.ic_success)
+        binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.imgIndicator.setImageResource(if(webSiteEntry.isStatusAcceptable().not()) R.drawable.ic_alert else R.drawable.ic_success)
         binding.btnPause.setImageResource(if(webSiteEntry.isPaused) R.drawable.ic_play else R.drawable.ic_pause)
 
 

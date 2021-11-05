@@ -17,21 +17,12 @@ class CreateEntryActivity : AppCompatActivity() {
   var webSiteEntry: WebSiteEntry? = null
   private lateinit var activityCreateEntryBinding: ActivityCreateEntryBinding
 
-  private fun hideCheckDNSRecords() {
-    activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE
-  }
-
-  private fun hideIsOnionAddress() {
-    activityCreateEntryBinding.isOnionAddress.visibility = View.GONE
-  }
-
-  private fun showCheckDNSRecords() {
-    activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE
-  }
-
-  private fun showIsOnionAddress() {
-    activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE
-  }
+  private fun hideCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE }
+  private fun hideIsOnionAddress() { activityCreateEntryBinding.isOnionAddress.visibility = View.GONE }
+  private fun hideIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.GONE }
+  private fun showCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE }
+  private fun showIsOnionAddress() { activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE }
+  private fun showIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.VISIBLE }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -65,11 +56,20 @@ class CreateEntryActivity : AppCompatActivity() {
       showCheckDNSRecords()
     }
 
+    if (activityCreateEntryBinding.checkDNSRecords.isChecked) {
+      hideIsOnionAddress()
+    } else if (activityCreateEntryBinding.isOnionAddress.isChecked) {
+      hideCheckDNSRecords()
+      hideIsLaissezFaire()
+    }
+
     activityCreateEntryBinding.isOnionAddress.setOnCheckedChangeListener { _, isChecked ->
       if (isChecked) {
         hideCheckDNSRecords()
+        hideIsLaissezFaire()
       } else {
         showCheckDNSRecords()
+        showIsLaissezFaire()
       }
     }
 
@@ -85,10 +85,16 @@ class CreateEntryActivity : AppCompatActivity() {
   }
 
   private fun prePopulateData(todoRecord: WebSiteEntry) {
+    /*
+      After adding UI elements which directly correspond to an additional property in the `WebSiteEntry` data class,
+      CTRL+SHIFT+F for "WebsiteEntry Glue" and update the `WebSiteEntry` initialisations accordingly.
+    */
     val isOnion = todoRecord.isOnionAddress
+    fun Boolean.ifNotOnion(): Boolean = if (isOnion) { false } else { this }
     activityCreateEntryBinding.editName.setText(todoRecord.name)
     activityCreateEntryBinding.editUrl.setText(todoRecord.url)
-    activityCreateEntryBinding.checkDNSRecords.isChecked = if (isOnion) { false } else { todoRecord.dnsRecordsAAAAA }
+    activityCreateEntryBinding.isLaissezFaire.isChecked = todoRecord.isLaissezFaire.ifNotOnion()
+    activityCreateEntryBinding.checkDNSRecords.isChecked = todoRecord.dnsRecordsAAAAA.ifNotOnion()
     activityCreateEntryBinding.isOnionAddress.isChecked = isOnion /* No `if` check, because it would cause more harm to reset it, than to leave it be. */
     activityCreateEntryBinding.btnSave.text = getString(R.string.update)
   }
@@ -101,12 +107,14 @@ class CreateEntryActivity : AppCompatActivity() {
     if (validateFields()) {
       val id = webSiteEntry?.id
       val todo = WebSiteEntry(
+        /* WebsiteEntry Glue */
         id = id,
         name = activityCreateEntryBinding.editName.text.toString(),
         url = activityCreateEntryBinding.editUrl.text.toString(),
         itemPosition = if (webSiteEntry != null) { webSiteEntry?.itemPosition } else { totalAmountEntry },
         dnsRecordsAAAAA = activityCreateEntryBinding.checkDNSRecords.isChecked,
-        isOnionAddress = activityCreateEntryBinding.isOnionAddress.isChecked
+        isOnionAddress = activityCreateEntryBinding.isOnionAddress.isChecked,
+        isLaissezFaire = activityCreateEntryBinding.isLaissezFaire.isChecked
       )
       Log.info("WebsiteEntry after Edit: " + todo)
       val intent = Intent()

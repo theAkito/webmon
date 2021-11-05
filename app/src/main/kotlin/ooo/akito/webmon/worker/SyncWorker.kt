@@ -4,13 +4,17 @@ package ooo.akito.webmon.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.repository.WebSiteEntryRepository
 import ooo.akito.webmon.utils.ExceptionCompanion.msgErrorTryingToFetchData
+import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsiteEntriesUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
+import ooo.akito.webmon.utils.Utils.associateByUrl
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
+import java.lang.IllegalStateException
 
 
 class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -36,8 +40,13 @@ class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
     Log.info("Fetching Data from Remote hosts...")
     return try {
+      val urlToWebsite: Map<String, WebSiteEntry> = repository.getAllWebSiteEntryList().value?.associateByUrl()
+        ?: throw IllegalStateException(msgWebsiteEntriesUnavailable)
       val entriesWithFailedConnection =
-        repository.checkWebSiteStatus().filter { Utils.mayNotifyStatusFailure(it.status) }
+        repository.checkWebSiteStatus().filter {
+          val currentWebSite = urlToWebsite[it.url] ?: return@filter false
+          Utils.mayNotifyStatusFailure(currentWebSite)
+        }
       if (entriesWithFailedConnection.size == 1) {
         val entryWithFailedConnection = entriesWithFailedConnection.first()
         Utils.showNotification(

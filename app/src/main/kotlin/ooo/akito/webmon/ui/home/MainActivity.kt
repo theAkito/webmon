@@ -245,10 +245,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       newWebsites.forEach { website ->
         Log.info("WebsiteEntry: " + website)
         /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
+        /* WebsiteEntry Glue */
         val cleanedWebsite = WebSiteEntry(
           name = website.name,
           url = website.url,
           itemPosition = website.itemPosition,
+          isLaissezFaire = website.isLaissezFaire,
           dnsRecordsAAAAA = website.dnsRecordsAAAAA,
           isOnionAddress = website.isOnionAddress
         )
@@ -306,7 +308,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     })
 
     // Setting up Custom Monitor Option
-    viewModel.getAllWebSiteStatusList().observe(this, { status ->
+    viewModel.checkWebSiteStatus().observe(this, { status ->
       /*
         This block gets executed when Custom Monitor option is used,
         plus when pressing the Refresh option, manually.
@@ -325,10 +327,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         return@observe
       }
 
+      val urlToWebsite: Map<String, WebSiteEntry> = viewModel.getWebsiteUrlToWebsiteEntry()
       val entriesWithFailedConnection =
         status.filter {
-          Utils.mayNotifyStatusFailure(it.status) &&
-              customMonitorData.showNotification
+          val currentWebsite: WebSiteEntry = urlToWebsite[it.url] ?: return@filter false
+          Utils.mayNotifyStatusFailure(currentWebsite) && customMonitorData.showNotification
         }
 
       val customMonitorEnabled = runningCount >= 1

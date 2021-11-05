@@ -36,37 +36,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     return allWebSiteEntryList
   }
 
-  fun getAllWebSiteStatusList(): LiveData<List<WebSiteStatus>> {
-    return webSiteStatusList
+  fun getWebsiteUrlToWebsiteEntry(): Map<String, WebSiteEntry> {
+    return getWebSiteEntryList().value?.associateBy { it.url } ?: emptyMap()
   }
 
-  fun getWebSiteStatus(): LiveData<WebSiteStatus> {
-    return webSiteStatus
-  }
-
-  fun checkWebSiteStatus() {
+  fun checkWebSiteStatus(): LiveData<List<WebSiteStatus>> {
     viewModelScope.launch {
       webSiteStatusList.value = repository.checkWebSiteStatus()
     }
+    return webSiteStatusList
   }
 
-  fun getWebSiteStatus(webSiteEntry: WebSiteEntry) {
+  fun getWebSiteStatus(webSiteEntry: WebSiteEntry): LiveData<WebSiteStatus> {
     viewModelScope.launch {
       webSiteStatus.value = repository.getWebsiteStatus(webSiteEntry)
     }
+    return webSiteStatus
   }
 
   fun addDefaultData() {
     if (SharedPrefsManager.customPrefs.getBoolean(Constants.IS_ADDED_DEFAULT_DATA, true))
       repository.addDefaultData()
-  }
-
-  fun backupDataWebsites() {
-    //TODO: Back up all website entries.
-  }
-
-  fun backupDataSettings() {
-    //TODO: Back up all app settings (not websites).
   }
 
 }

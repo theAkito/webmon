@@ -13,7 +13,7 @@ import ooo.akito.webmon.data.model.WebSiteStatus
 import ooo.akito.webmon.net.Utils.onionConnectionIsSuccessful
 import ooo.akito.webmon.net.dns.DNS
 import ooo.akito.webmon.utils.Constants
-import ooo.akito.webmon.utils.Environment.msgGenericSuccess
+import ooo.akito.webmon.utils.msgGenericSuccess
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeGenericFail
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
@@ -30,18 +30,27 @@ import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.addProtoHttp
 import ooo.akito.webmon.utils.Utils.currentDateTime
+import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import ooo.akito.webmon.utils.Utils.removeTrailingSlashes
 import ooo.akito.webmon.utils.Utils.removeUrlProto
-import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
+import org.apache.hc.client5.http.classic.methods.HttpGet
+import org.apache.hc.client5.http.impl.DefaultRedirectStrategy
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse
+import org.apache.hc.client5.http.impl.classic.HttpClients
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 import java.net.UnknownHostException
 
 class WebSiteEntryRepository(context: Context) {
 
   companion object {
     private val dns = DNS()
+    private val http = HttpClients
+      .custom()
+      .setRedirectStrategy(DefaultRedirectStrategy())
+      .useSystemProperties()
+      .build()
   }
 
   private val webSiteEntryDao: WebSiteEntryDao? by lazy {
@@ -52,19 +61,23 @@ class WebSiteEntryRepository(context: Context) {
   fun addDefaultData() = runBlocking {
     this.launch(Dispatchers.IO) {
       webSiteEntryDao?.saveWebSiteEntry(
+        /* WebsiteEntry Glue */
         WebSiteEntry(
           name = "Nim Homepage",
           url = "https://nim-lang.org/",
           itemPosition = 0,
+          isLaissezFaire = false,
           dnsRecordsAAAAA = false,
           isOnionAddress = false
         )
       )
       webSiteEntryDao?.saveWebSiteEntry(
+        /* WebsiteEntry Glue */
         WebSiteEntry(
           name = "Unavailable Website",
           url = "https://error.duckduckgo.com/",
           itemPosition = 1,
+          isLaissezFaire = false,
           dnsRecordsAAAAA = false,
           isOnionAddress = false
         )
@@ -111,21 +124,21 @@ class WebSiteEntryRepository(context: Context) {
 
   private fun handleDnsRecordRetrieval(url: String): List<String> {
     return try {
-      dns.retrieveAllIPsFromDnsRecordsAsStrings(url)
+      dns.retrieveAllIPsFromDnsRecords(url)
     } catch (nx: DNS.ResolvesToNowhereException) {
       listOf(url)
     }
   }
 
-  suspend fun getWebsiteStatus(websiteEntry: WebSiteEntry): WebSiteStatus {
+  suspend fun getWebsiteStatus(website: WebSiteEntry): WebSiteStatus {
     var  webSiteStatus: WebSiteStatus
     withContext(Dispatchers.IO) {
       val connSuccess: Boolean
       var status = HttpURLConnection.HTTP_NOT_FOUND
       var msg: String
       try {
-        val rawUrl = websiteEntry.url
-        if (websiteEntry.isOnionAddress) {
+        val rawUrl = website.url
+        if (website.isOnionAddress) {
           if (torAppIsAvailable.not()) {
             Log.error(msgTorIsEnabledButNotAvailable)
             connSuccess = false
@@ -155,14 +168,14 @@ class WebSiteEntryRepository(context: Context) {
             }
           }
         } else {
-          val checkRecordsAAAAA = websiteEntry.dnsRecordsAAAAA
+          val checkRecordsAAAAA = website.dnsRecordsAAAAA
           val ipAddresses = if (checkRecordsAAAAA) {
             handleDnsRecordRetrieval(rawUrl.removeUrlProto().removeTrailingSlashes())
           } else {
             listOf(rawUrl)
           }
 
-          val urls = ipAddresses.map { URL(it.addProtoHttp()) }
+          val urls = ipAddresses.map { URI(it.addProtoHttp()) }
           val totalFailureNXDOMAIN = checkRecordsAAAAA && urls.size == 1 && ipAddresses.first() == rawUrl
 
           if (totalFailureNXDOMAIN) {
@@ -173,26 +186,27 @@ class WebSiteEntryRepository(context: Context) {
           val connSuccessIfEmpty = if (totalFailureNXDOMAIN) {
             listOf(connCodeNXDOMAIN to msgMiniNXDOMAIN)
           } else {
-            urls.mapIndexedNotNull CONNECTIONS@{ index, url ->
-              var conn: HttpURLConnection? = null
+            urls.mapIndexedNotNull CONNECTIONS@{ index, uri ->
+              var conn: CloseableHttpResponse? = null
               try {
                 try {
-                  conn = url.openConnection() as HttpURLConnection
-                  conn.connect()
+                  conn = http.execute(HttpGet(uri))
                 } catch (exUnknownHost: UnknownHostException) {
                   /* Do not spam logs with stacktrace from trying to connect to unreachable host. */
                   exUnknownHost.message?.let { Log.warn(it) }
                 }
                 if (conn == null) { return@CONNECTIONS null }
-                status = conn.responseCode
-                msg = conn.responseMessage
+                status = conn.code
+                msg = conn.reasonPhrase
                 val isLastInLine = if (urls.size == 1) {
                   true
                 } else {
                   index == urls.size.dec()
                 }
-                if (status != HttpURLConnection.HTTP_OK && isLastInLine.not()) {
-                  Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + url)
+                if (
+                  website.isStatusAcceptable().not() && isLastInLine.not()
+                ) {
+                  Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + uri)
                   return@CONNECTIONS status to msg
                 } else if (isLastInLine.not()) {
                   return@CONNECTIONS null
@@ -210,7 +224,7 @@ class WebSiteEntryRepository(context: Context) {
                 return@CONNECTIONS null
               } finally {
                 try {
-                  conn?.disconnect()
+                  conn?.close()
                 } catch (e: Exception) {
                   Log.error(e.stackTraceToString())
                 }
@@ -225,8 +239,8 @@ class WebSiteEntryRepository(context: Context) {
         }
 
         webSiteStatus = WebSiteStatus(
-          websiteEntry.name,
-          websiteEntry.url,
+          website.name,
+          website.url,
           status,
           connSuccess,
           msg
@@ -234,15 +248,15 @@ class WebSiteEntryRepository(context: Context) {
       } catch (e: Exception) {
         Log.error(e.stackTraceToString())
         webSiteStatus = WebSiteStatus(
-          websiteEntry.name,
-          websiteEntry.url,
+          website.name,
+          website.url,
           status,
           false,
           e.localizedMessage ?: "Please check."
         )
       }
 
-      updateWebSiteEntry(websiteEntry.apply {
+      updateWebSiteEntry(website.apply {
         this.status = status
         updatedAt = currentDateTime()
       })
