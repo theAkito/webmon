@@ -30,6 +30,7 @@
 - Custom Monitoring option. Useful for continually checking website status every 1 second or 5 minutes. The Second/Minute interval can be manually assigned.
 - Tap a website entry to quickly refresh that particular one.
 - Ability to notify only on Server issue. If enabled, does not notify, if the app has no internet connection.
+- Ability to notify only on serious issues. If enabled, does not notify, if the website responds with one of the following codes: 201, 202, 204, 401, 403.
 - Import & Export of Website entry list backups.
 - Check connectivity of common address records (A, AAAA) from a domain.
 - Check Onion Domains, when [Orbot](https://github.com/guardianproject/orbot) is running.

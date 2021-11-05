@@ -203,10 +203,11 @@ class WebSiteEntryRepository(context: Context) {
                 } else {
                   index == urls.size.dec()
                 }
+                website.status = status
                 if (
                   website.isStatusAcceptable().not() && isLastInLine.not()
                 ) {
-                  Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + uri)
+                  Log.warn("""WebsiteEntry with Domain "${rawUrl}" has IP "${uri}" with issues: """ + status)
                   return@CONNECTIONS status to msg
                 } else if (isLastInLine.not()) {
                   return@CONNECTIONS null
@@ -256,10 +257,12 @@ class WebSiteEntryRepository(context: Context) {
         )
       }
 
-      updateWebSiteEntry(website.apply {
-        this.status = status
-        updatedAt = currentDateTime()
-      })
+      updateWebSiteEntry(
+        website.apply {
+          this.status = status
+          updatedAt = currentDateTime()
+        }
+      )
     }
 
     return webSiteStatus
