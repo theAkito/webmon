@@ -1,0 +1,4 @@
+- Fix: Not resolving AAAA records correctly.
+- Improve: DNS Resolution efficiency.
+- Improve: Detect & indicate NX_DOMAIN failure, if present on all A/AAAA DNS Records' responses.
+- Add: Laissez Faire Mode. If enabled, does not notify, if the website responds with one of the following codes: 201, 202, 204, 401, 403.
