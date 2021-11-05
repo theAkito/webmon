@@ -14,7 +14,6 @@ import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.associateByUrl
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
-import java.lang.IllegalStateException
 
 
 class SyncWorker(appContext: Context, workerParams: WorkerParameters) :

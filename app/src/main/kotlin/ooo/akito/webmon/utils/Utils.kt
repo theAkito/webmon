@@ -43,7 +43,7 @@ import java.util.*
 
 object Utils {
 
-  val lineEnd = System.lineSeparator()
+  val lineEnd: String = System.lineSeparator()
   var totalAmountEntry = 0
   var torIsEnabled = false
   var torAppIsAvailable = false

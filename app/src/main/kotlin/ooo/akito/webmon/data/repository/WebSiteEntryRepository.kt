@@ -12,8 +12,7 @@ import ooo.akito.webmon.data.db.WebSiteEntryDao
 import ooo.akito.webmon.data.model.WebSiteStatus
 import ooo.akito.webmon.net.Utils.onionConnectionIsSuccessful
 import ooo.akito.webmon.net.dns.DNS
-import ooo.akito.webmon.utils.Constants
-import ooo.akito.webmon.utils.msgGenericSuccess
+import ooo.akito.webmon.utils.*
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeGenericFail
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
@@ -25,8 +24,6 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericFailure
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericUnknown
 import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsEnabledButNotAvailable
-import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.addProtoHttp
 import ooo.akito.webmon.utils.Utils.currentDateTime
@@ -63,8 +60,8 @@ class WebSiteEntryRepository(context: Context) {
       webSiteEntryDao?.saveWebSiteEntry(
         /* WebsiteEntry Glue */
         WebSiteEntry(
-          name = "Nim Homepage",
-          url = "https://nim-lang.org/",
+          name = defaultTitleNimHomepage,
+          url = defaultUrlNimHomepage,
           itemPosition = 0,
           isLaissezFaire = false,
           dnsRecordsAAAAA = false,
@@ -74,8 +71,8 @@ class WebSiteEntryRepository(context: Context) {
       webSiteEntryDao?.saveWebSiteEntry(
         /* WebsiteEntry Glue */
         WebSiteEntry(
-          name = "Unavailable Website",
-          url = "https://error.duckduckgo.com/",
+          name = defaultTitleUnavailableWebsite,
+          url = defaultUrlUnavailableWebsite,
           itemPosition = 1,
           isLaissezFaire = false,
           dnsRecordsAAAAA = false,
@@ -125,7 +122,7 @@ class WebSiteEntryRepository(context: Context) {
   private fun handleDnsRecordRetrieval(url: String): List<String> {
     return try {
       dns.retrieveAllIPsFromDnsRecords(url)
-    } catch (nx: DNS.ResolvesToNowhereException) {
+    } catch (e: DNS.ResolvesToNowhereException) {
       listOf(url)
     }
   }
@@ -152,19 +149,15 @@ class WebSiteEntryRepository(context: Context) {
               excepted = true
               false
             }
-            status = if (connSuccess) {
-              HttpURLConnection.HTTP_OK /* If other than `HTTP_OK`, the entry is shown as unsuccessful. */
-            } else if (excepted) {
-              connCodeTorConnFailed
-            } else {
-              connCodeGenericFail
+            status = when {
+              connSuccess -> HttpURLConnection.HTTP_OK
+              excepted -> connCodeTorConnFailed
+              else -> connCodeGenericFail
             }
-            msg = if (connSuccess) {
-              msgGenericSuccess
-            } else if (excepted) {
-              msgCannotConnectToTor
-            } else {
-              msgGenericFailure
+            msg = when {
+              connSuccess -> msgGenericSuccess
+              excepted -> msgCannotConnectToTor
+              else -> msgGenericFailure
             }
           }
         } else {
@@ -195,27 +188,24 @@ class WebSiteEntryRepository(context: Context) {
                   /* Do not spam logs with stacktrace from trying to connect to unreachable host. */
                   exUnknownHost.message?.let { Log.warn(it) }
                 }
+
                 if (conn == null) { return@CONNECTIONS null }
                 status = conn.code
                 msg = conn.reasonPhrase
-                val isLastInLine = if (urls.size == 1) {
-                  true
-                } else {
-                  index == urls.size.dec()
+                val isLastInLine = when (urls.size) {
+                  1 -> { true }
+                  else -> { index == urls.size.dec() }
                 }
+
                 website.status = status
-                if (
-                  website.isStatusAcceptable().not() && isLastInLine.not()
-                ) {
-                  Log.warn("""WebsiteEntry with Domain "${rawUrl}" has IP "${uri}" with issues: """ + status)
-                  return@CONNECTIONS status to msg
-                } else if (isLastInLine.not()) {
-                  return@CONNECTIONS null
-                }
-                if (isLastInLine) {
-                  return@CONNECTIONS status to msg
-                } else {
-                  null
+                when {
+                  website.isStatusAcceptable().not() && isLastInLine.not() -> {
+                    Log.warn("""WebsiteEntry with Domain "${rawUrl}" has IP "${uri}" with issues: """ + status)
+                    return@CONNECTIONS status to msg
+                  }
+                  isLastInLine.not() -> { return@CONNECTIONS null }
+                  isLastInLine -> { return@CONNECTIONS status to msg }
+                  else -> { null }
                 }
               } catch (exUnknownHost: UnknownHostException) {
                 /* Do not spam logs with stacktrace from trying to connect to unreachable host. */
