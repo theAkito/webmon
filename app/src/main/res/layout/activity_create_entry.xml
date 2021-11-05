@@ -57,6 +57,12 @@
 
 
         <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/isLaissezFaire"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/is_laissez_faire" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/checkDNSRecords"
             android:layout_width="match_parent"
             android:layout_height="48dp"
