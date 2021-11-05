@@ -23,9 +23,15 @@ import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
 import ooo.akito.webmon.utils.Environment.nameTorApp
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorConnFailed
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorFail
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
+import ooo.akito.webmon.utils.ExceptionCompanion.msgDnsOnlyNXDOMAIN
+import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericTorFailure
+import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
+import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
 import ooo.akito.webmon.utils.Interval.nameList
 import ooo.akito.webmon.utils.Interval.valueList
 import ooo.akito.webmon.utils.SharedPrefsManager.get
@@ -216,9 +222,10 @@ object Utils {
             HttpURLConnection.HTTP_UNAVAILABLE -> "Service Unavailable" // 503
             HttpURLConnection.HTTP_GATEWAY_TIMEOUT -> "Gateway Timeout" // 504
             HttpURLConnection.HTTP_VERSION -> "HTTP Version Not Supported" // 505
-            connCodeTorFail -> "TOR Failure"
-            connCodeTorAppUnavailable -> "${nameTorApp} is not installed!"
-            connCodeTorConnFailed -> "Connection to TOR failed!"
+            connCodeTorFail -> msgGenericTorFailure
+            connCodeTorAppUnavailable -> msgTorIsNotInstalled
+            connCodeTorConnFailed -> msgCannotConnectToTor
+            connCodeNXDOMAIN  -> msgMiniNXDOMAIN
             else -> "Unknown"
         }
     }
@@ -264,6 +271,7 @@ object Utils {
         return ooo.akito.webmon.MyApplication.ActivityVisibility.appIsVisible
     }
 
+    fun String.removeTrailingSlashes(): String = this.replace(Regex("""[/]*$"""), "")
     fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")
     fun String.addProtoHttp(): String = if (this.startsWith("http").not()) { "http://" + this } else { this }
 

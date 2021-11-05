@@ -1,7 +1,16 @@
 package ooo.akito.webmon.utils
 
+import ooo.akito.webmon.utils.Environment.nameTorApp
+import org.minidns.dnsmessage.DnsMessage
+
 object ExceptionCompanion {
 
+  val connCodeGenericFail: Int by lazy {
+    0
+  }
+  val connCodeNXDOMAIN: Int by lazy {
+    DnsMessage.RESPONSE_CODE.NX_DOMAIN.value.toInt()
+  }
   val connCodeTorFail: Int by lazy {
     9404
   }
@@ -14,6 +23,9 @@ object ExceptionCompanion {
 
   val msgGenericFailure: String by lazy {
     "Failure"
+  }
+  val msgGenericUnknown: String by lazy {
+    "Unknown"
   }
 
   val msgWebsitesNotReachable: String by lazy {
@@ -40,6 +52,12 @@ object ExceptionCompanion {
   val msgCannotOpenOutputStreamBackupWebsiteEntries: String by lazy {
     "Cannot open output stream when trying to write Backup Website Entries File!"
   }
+  val msgGenericTorFailure: String by lazy {
+    "TOR Failure!"
+  }
+  val msgTorIsNotInstalled: String by lazy {
+    "${nameTorApp} is not installed!"
+  }
   val msgTorIsEnabledButNotAvailable: String by lazy {
     "TOR is enabled but Orbot App is not available!"
   }
@@ -51,6 +69,15 @@ object ExceptionCompanion {
   }
   val msgSpecificToRebirth: String by lazy {
     "Could not initialise Looper for triggering Rebirth!"
+  }
+  val msgDnsOnlyNXDOMAIN: String by lazy {
+    "All DNS responses are NX_DOMAIN!"
+  }
+  val msgMiniNXDOMAIN: String by lazy {
+    "NX_DOMAIN"
+  }
+  val msgDnsRootDomain: String by lazy {
+    " Root Domain: "
   }
 
   val msgErrorTryingToFetchData: String by lazy {
