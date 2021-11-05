@@ -14,20 +14,29 @@ import ooo.akito.webmon.net.Utils.onionConnectionIsSuccessful
 import ooo.akito.webmon.net.dns.DNS
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.Environment.msgGenericSuccess
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeGenericFail
+import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorConnFailed
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
+import ooo.akito.webmon.utils.ExceptionCompanion.msgDnsOnlyNXDOMAIN
+import ooo.akito.webmon.utils.ExceptionCompanion.msgDnsRootDomain
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericFailure
+import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericUnknown
+import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsEnabledButNotAvailable
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.addProtoHttp
 import ooo.akito.webmon.utils.Utils.currentDateTime
+import ooo.akito.webmon.utils.Utils.removeTrailingSlashes
 import ooo.akito.webmon.utils.Utils.removeUrlProto
+import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.UnknownHostException
 
 class WebSiteEntryRepository(context: Context) {
 
@@ -92,7 +101,6 @@ class WebSiteEntryRepository(context: Context) {
 
   suspend fun checkWebSiteStatus(): ArrayList<WebSiteStatus> {
     val statusList = ArrayList<WebSiteStatus>()
-
     withContext(Dispatchers.IO) {
       webSiteEntryDao?.getAllValidWebSiteEntryDirectList()?.forEach {
         statusList.add(getWebsiteStatus(it))
@@ -101,15 +109,23 @@ class WebSiteEntryRepository(context: Context) {
     return statusList
   }
 
+  private fun handleDnsRecordRetrieval(url: String): List<String> {
+    return try {
+      dns.retrieveAllIPsFromDnsRecordsAsStrings(url)
+    } catch (nx: DNS.ResolvesToNowhereException) {
+      listOf(url)
+    }
+  }
+
   suspend fun getWebsiteStatus(websiteEntry: WebSiteEntry): WebSiteStatus {
     var  webSiteStatus: WebSiteStatus
     withContext(Dispatchers.IO) {
-      var connSuccess = false
+      val connSuccess: Boolean
       var status = HttpURLConnection.HTTP_NOT_FOUND
-      var msg = ""
+      var msg: String
       try {
         val rawUrl = websiteEntry.url
-        if (websiteEntry.isOnionAddress && torAppIsAvailable) {
+        if (websiteEntry.isOnionAddress) {
           if (torAppIsAvailable.not()) {
             Log.error(msgTorIsEnabledButNotAvailable)
             connSuccess = false
@@ -128,7 +144,7 @@ class WebSiteEntryRepository(context: Context) {
             } else if (excepted) {
               connCodeTorConnFailed
             } else {
-              0
+              connCodeGenericFail
             }
             msg = if (connSuccess) {
               msgGenericSuccess
@@ -141,52 +157,71 @@ class WebSiteEntryRepository(context: Context) {
         } else {
           val checkRecordsAAAAA = websiteEntry.dnsRecordsAAAAA
           val ipAddresses = if (checkRecordsAAAAA) {
-            dns.retrieveAllIPsFromDnsRecordsAsStrings(rawUrl)
+            handleDnsRecordRetrieval(rawUrl.removeUrlProto().removeTrailingSlashes())
           } else {
-            listOf(rawUrl.addProtoHttp())
+            listOf(rawUrl)
           }
 
           val urls = ipAddresses.map { URL(it.addProtoHttp()) }
+          val totalFailureNXDOMAIN = checkRecordsAAAAA && urls.size == 1 && ipAddresses.first() == rawUrl
 
-          val connSuccessIfEmpty = urls.mapIndexedNotNull CONNECTIONS@{ index, url ->
-            var conn: HttpURLConnection? = null
-            try {
-              conn = url.openConnection() as HttpURLConnection
-              conn.connect()
-              status = conn.responseCode
-              msg = conn.responseMessage
-              val isLastInLine = if (urls.size == 1) {
-                true
-              } else {
-                index == urls.size.dec()
-              }
-              if (status == HttpURLConnection.HTTP_OK && isLastInLine.not()) {
-                Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + url)
-                return@CONNECTIONS status to msg
-              } else if (isLastInLine.not()) {
-                return@CONNECTIONS null
-              }
-              if (isLastInLine) {
-                return@CONNECTIONS status to msg
-              } else {
-                null
-              }
-            } catch (e: Exception) {
-              Log.error(e.stackTraceToString())
-              return@CONNECTIONS null
-            } finally {
+          if (totalFailureNXDOMAIN) {
+            /* We only received NXDOMAIN responses from the nameserver lookup. */
+            Log.error(msgDnsOnlyNXDOMAIN + msgDnsRootDomain + rawUrl)
+          }
+
+          val connSuccessIfEmpty = if (totalFailureNXDOMAIN) {
+            listOf(connCodeNXDOMAIN to msgMiniNXDOMAIN)
+          } else {
+            urls.mapIndexedNotNull CONNECTIONS@{ index, url ->
+              var conn: HttpURLConnection? = null
               try {
-                conn?.disconnect()
+                try {
+                  conn = url.openConnection() as HttpURLConnection
+                  conn.connect()
+                } catch (exUnknownHost: UnknownHostException) {
+                  /* Do not spam logs with stacktrace from trying to connect to unreachable host. */
+                  exUnknownHost.message?.let { Log.warn(it) }
+                }
+                if (conn == null) { return@CONNECTIONS null }
+                status = conn.responseCode
+                msg = conn.responseMessage
+                val isLastInLine = if (urls.size == 1) {
+                  true
+                } else {
+                  index == urls.size.dec()
+                }
+                if (status != HttpURLConnection.HTTP_OK && isLastInLine.not()) {
+                  Log.warn("WebsiteEntry with Domain ${rawUrl} has unreachable IP: " + url)
+                  return@CONNECTIONS status to msg
+                } else if (isLastInLine.not()) {
+                  return@CONNECTIONS null
+                }
+                if (isLastInLine) {
+                  return@CONNECTIONS status to msg
+                } else {
+                  null
+                }
+              } catch (exUnknownHost: UnknownHostException) {
+                /* Do not spam logs with stacktrace from trying to connect to unreachable host. */
+                return@CONNECTIONS null
               } catch (e: Exception) {
                 Log.error(e.stackTraceToString())
-              }
+                return@CONNECTIONS null
+              } finally {
+                try {
+                  conn?.disconnect()
+                } catch (e: Exception) {
+                  Log.error(e.stackTraceToString())
+                }
+              } // try@CONNECTIONS
             }
           }
 
           connSuccess = connSuccessIfEmpty.isEmpty()
           val codeToMsg = connSuccessIfEmpty.firstOrNull()
-          status = codeToMsg?.first ?: 0
-          msg = codeToMsg?.second ?: "Unknown"
+          status = codeToMsg?.first ?: connCodeGenericFail
+          msg = codeToMsg?.second ?: msgGenericUnknown
         }
 
         webSiteStatus = WebSiteStatus(
