@@ -23,6 +23,8 @@ data class WebSiteEntry(
   var updatedAt: String? = null,
   @ColumnInfo(name = "item_position")
   var itemPosition: Int? = null,
+  @ColumnInfo(name = "is_laissez_faire", defaultValue = false.toString())
+  var isLaissezFaire: Boolean = false,
   @ColumnInfo(name = "dns_records_a_aaaa", defaultValue = false.toString())
   var dnsRecordsAAAAA: Boolean = false,
   @ColumnInfo(name = "is_onion_address", defaultValue = false.toString())
