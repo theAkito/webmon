@@ -31,15 +31,13 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
   override fun getItemCount(): Int = filteredList.size
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    with (holder) {
-      with (filteredList[position]) {
-        holder.itemView.tag = this
-        holder.bind(this, listener, position)
-      }
+    with (filteredList[position]) {
+      holder.itemView.tag = this
+      holder.bind(this, listener, position)
     }
   }
 
-  inner class ViewHolder(val binding: ItemWebsiteRowBinding) : RecyclerView.ViewHolder(binding.root) {
+  inner class ViewHolder(private val binding: ItemWebsiteRowBinding) : RecyclerView.ViewHolder(binding.root) {
     @SuppressLint("SetTextI18n")
     fun bind(webSiteEntry: WebSiteEntry, listener: WebSiteEntryEvents, position: Int) {
 
@@ -53,7 +51,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 //                try {
 //                    Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
 //                } catch (e: Exception) {
-//                    Print.log(e.message ?: "Exception occured when using Glide to load Website Logo.")
+//                    Print.log(e.message ?: "Exception occurred when using Glide to load Website Logo.")
 //                }
 
 
@@ -76,7 +74,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 
         binding.btnMore.setOnClickListener {
           try {
-            val popup = PopupMenu::class.java.getDeclaredField("mPopup")
+            val popup = PopupMenu::class.java.getDeclaredField("mPopup") //TODO: Do not use private API.
             popup.isAccessible =  true
             val menu = popup.get(popupMenu)
             menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
@@ -133,6 +131,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         return filterResults
       }
 
+      @SuppressLint("NotifyDataSetChanged")
       override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
         filteredList = (p1?.values as List<*>).filterIsInstance<WebSiteEntry>()
         notifyDataSetChanged()
@@ -144,6 +143,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
   /**
    * Activity uses this method to update todoList with the help of LiveData
    * */
+  @SuppressLint("NotifyDataSetChanged")
   fun setAllTodoItems(todoItems: List<WebSiteEntry>) {
     this.mList = todoItems
     this.filteredList = todoItems.sortedBy { it.itemPosition }

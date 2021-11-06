@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private lateinit var onBackupWebsiteEntriesResultLauncher: ActivityResultLauncher<String>
   private lateinit var onRestoreWebsiteEntriesResultLauncher: ActivityResultLauncher<String>
 
-  var handler = Handler(Looper.getMainLooper())
+  private var handler = Handler(Looper.getMainLooper())
 
   private var runningCount = 0
   private var customMonitorData: CustomMonitorData = CustomMonitorData()
@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     }
 
-    /** Floating Action Buttong (Add WebsiteEntry) Result Launcher */
+    /** Floating Action Button (Add WebsiteEntry) Result Launcher */
     val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       if (result.resultCode == Activity.RESULT_OK) {
         val data: Intent? = result.data
@@ -301,7 +301,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
 
     // Setting up ViewModel and LiveData
-    viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+    viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     viewModel.getWebSiteEntryList().observe(this, {
       webSiteEntryAdapter.setAllTodoItems(it)
       if (it.isEmpty()) { viewModel.addDefaultData() }
@@ -621,7 +621,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
       super.onSelectedChanged(viewHolder, actionState)
-      // Hanlde action state changes
+      // Handle action state changes
       val swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG
       binding.layout.swipeRefresh.isEnabled = swiping.not()
     }

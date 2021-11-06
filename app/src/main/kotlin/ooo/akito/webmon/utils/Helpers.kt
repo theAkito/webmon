@@ -10,3 +10,4 @@ val defaultTitleNimHomepage: String by lazy { "Nim Homepage" }
 val defaultUrlNimHomepage: String by lazy { "https://nim-lang.org/" }
 val defaultTitleUnavailableWebsite: String by lazy { "Unavailable Website" }
 val defaultUrlUnavailableWebsite: String by lazy { "https://error.duckduckgo.com/" }
+val msgGenericRestarting: String by lazy { "Restarting!" }
