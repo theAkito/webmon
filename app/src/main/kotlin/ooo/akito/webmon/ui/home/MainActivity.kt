@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     return if (!NetworkUtils.isConnected(applicationContext)) {
       if (binding.layout.swipeRefresh.isRefreshing)
         binding.layout.swipeRefresh.isRefreshing = false
-      Utils.showToast(applicationContext, getString(R.string.check_internet))
+      showToast(applicationContext, getString(R.string.check_internet))
       Log.error(msgInternetUnavailable)
       true
     } else {
@@ -243,7 +243,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       val newWebsites = providedWebsites.filterNot { provided -> currentWebsites.any { it.url == provided.url } }
       Log.info("Restoring WebsiteEntry List from Backup...")
       newWebsites.forEach { website ->
-        Log.info("WebsiteEntry: " + website)
+        Log.info("New WebsiteEntry: " + website)
         /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
         /* WebsiteEntry Glue */
         val cleanedWebsite = WebSiteEntry(
@@ -273,7 +273,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       if (!NetworkUtils.isConnected(applicationContext)) {
         if (binding.layout.swipeRefresh.isRefreshing)
           binding.layout.swipeRefresh.isRefreshing = false
-        Utils.showToast(applicationContext, getString(R.string.check_internet))
+        showToast(applicationContext, getString(R.string.check_internet))
         return@setOnRefreshListener
       }
       viewModel.checkWebSiteStatus()
@@ -485,7 +485,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     dialog.run {
       customRefreshInputBinding.btnSave.setOnClickListener {
         if (!NetworkUtils.isConnected(applicationContext)) {
-          Utils.showToast(applicationContext, getString(R.string.check_internet))
+          showToast(applicationContext, getString(R.string.check_internet))
           return@setOnClickListener
         }
         if (!TextUtils.isEmpty(customRefreshInputBinding.editDuration.text)) {
@@ -511,9 +511,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             startUpdateTask(isUpdate = false)
             dialog.dismiss()
           } else
-            Utils.showToast(applicationContext, getString(R.string.error_read_and_agree_checkbox))
+            showToast(applicationContext, getString(R.string.error_read_and_agree_checkbox))
         } else
-          Utils.showToast(applicationContext, getString(R.string.enter_valid_input))
+          showToast(applicationContext, getString(R.string.enter_valid_input))
       }
     }
     dialog.show()

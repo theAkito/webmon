@@ -63,14 +63,15 @@
                 android:id="@+id/btnEnableAutoStart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                app:cornerRadius="5dp"
-                app:backgroundTint="@color/colorPrimary"
-                android:layout_marginTop="5dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:text="@string/enable_auto_start"/>
+                android:text="@string/enable_auto_start"
+                app:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="5dp"
+                tools:ignore="DuplicateSpeakableTextCheck,DuplicateSpeakableTextCheck" />
         </LinearLayout>
 
         <LinearLayout
@@ -121,12 +122,52 @@
                 android:text="@string/enable_tor_msg" />
         </LinearLayout>
 
-        <TextView
-            android:text="**************"
-            android:textAlignment="center"
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:ignore="HardcodedText" />
+            android:layout_height="32dp" />
+
+        <LinearLayout
+            android:id="@+id/layout_root_settings_advanced"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ToggleButton
+                android:id="@+id/toggle_settings_advanced"
+                android:layout_width="411dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="-1000dp"
+                android:background="#BCBFD8"
+                android:textOff="@string/text_advanced_settings_show"
+                android:textOn="@string/text_advanced_settings_hide"
+                android:textColor="@color/white"
+                tools:ignore="TextContrastCheck" />
+
+            <LinearLayout
+                android:id="@+id/layout_settings_advanced"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="11dp" />
+
+                <Button
+                    android:id="@+id/switch_website_entries_delete_all"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:text="@string/text_delete_all_website_entries"
+                    android:textColor="#FF4D4D" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="36dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

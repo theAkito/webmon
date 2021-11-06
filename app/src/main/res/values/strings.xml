@@ -64,4 +64,8 @@
     <string name="enable_tor_msg">Enable Tor (Requires running Orbot and App Restart!)</string>
     <string name="is_onion_address">Is TOR .onion Address</string>
     <string name="is_laissez_faire">Is fine with HTTP Codes 20x, 401, 403</string>
+    <string name="settings_advanced">Advanced Settings</string>
+    <string name="text_advanced_settings_show">Show Advanced Settings</string>
+    <string name="text_advanced_settings_hide">Hide Advanced Settings</string>
+    <string name="text_delete_all_website_entries">Delete all Website Entries</string>
 </resources>

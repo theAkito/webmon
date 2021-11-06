@@ -4,13 +4,17 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.HandlerCompat
+import androidx.transition.Slide
+import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import ooo.akito.webmon.R
@@ -88,6 +92,48 @@ class SettingsActivity : AppCompatActivity() {
         }
       }, 0, 2000)
     }
+
+    //region Advanced Settings
+
+    activitySettingsBinding.toggleSettingsAdvanced.isActivated = false
+
+    //region Slide Animation
+
+    fun slideLayoutSettingsAdvanced(show: Boolean) {
+      val layout = activitySettingsBinding.layoutSettingsAdvanced
+      val parent = activitySettingsBinding.layoutSettingsAdvanced.parent as ViewGroup
+
+      val transition = Slide().apply {
+        if (show) {
+          duration = 500 // Milliseconds
+        } else {
+          duration = 0 // Milliseconds
+        }
+        addTarget(layout)
+        slideEdge = Gravity.TOP
+      }
+
+      TransitionManager.beginDelayedTransition(parent, transition)
+      layout.visibility = if (show) {
+        View.VISIBLE
+      } else {
+        TransitionManager.endTransitions(parent)
+        View.GONE
+      }
+    }
+
+    //endregion Slide Animation
+
+    /* Hide by default. */
+    activitySettingsBinding.layoutSettingsAdvanced.visibility = View.GONE
+
+    activitySettingsBinding.toggleSettingsAdvanced.setOnCheckedChangeListener { _, isActivated ->
+      slideLayoutSettingsAdvanced(isActivated)
+    }
+
+    activitySettingsBinding.toggleSettingsAdvanced.visibility = View.VISIBLE
+
+    //endregion Advanced Settings
   }
 
   private fun showIntervalChooseDialog() {
