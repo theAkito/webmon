@@ -68,4 +68,7 @@
     <string name="text_advanced_settings_show">Show Advanced Settings</string>
     <string name="text_advanced_settings_hide">Hide Advanced Settings</string>
     <string name="text_delete_all_website_entries">Delete all Website Entries</string>
+    <string name="text_delete_all_website_entries_are_you_sure">Are you sure you want to delete ALL Website Entries?!</string>
+    <string name="text_delete_all_website_entries_are_you_sure_yes">Yes</string>
+    <string name="text_delete_all_website_entries_are_you_sure_no">No</string>
 </resources>

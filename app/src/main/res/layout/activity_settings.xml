@@ -155,7 +155,7 @@
                     android:layout_height="11dp" />
 
                 <Button
-                    android:id="@+id/switch_website_entries_delete_all"
+                    android:id="@+id/btn_website_entries_delete_all"
                     android:layout_width="300dp"
                     android:layout_height="49dp"
                     android:layout_gravity="center"

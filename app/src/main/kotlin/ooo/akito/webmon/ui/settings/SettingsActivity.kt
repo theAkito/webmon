@@ -13,12 +13,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.HandlerCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import ooo.akito.webmon.R
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
+import ooo.akito.webmon.ui.home.MainViewModel
 import ooo.akito.webmon.utils.Constants.HIDE_IS_ONION_ADDRESS
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
@@ -34,10 +36,12 @@ import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.startWorkManager
 import ooo.akito.webmon.utils.Utils.triggerRebirth
+import ooo.akito.webmon.utils.msgGenericRestarting
 
 
 class SettingsActivity : AppCompatActivity() {
 
+  private lateinit var viewModel: MainViewModel
   private lateinit var activitySettingsBinding: ActivitySettingsBinding
   private lateinit var btnMonitorInterval: LinearLayout
   private lateinit var layoutEnableAutoStart: LinearLayout
@@ -49,6 +53,9 @@ class SettingsActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    // Setting up ViewModel and LiveData
+    viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
     activitySettingsBinding = ActivitySettingsBinding.inflate(layoutInflater)
     setContentView(activitySettingsBinding.root)
@@ -82,7 +89,7 @@ class SettingsActivity : AppCompatActivity() {
         Workaround for Shared Preference not being saved, when App is restarted too quickly.
         https://www.py4u.net/discuss/612951
       */
-      Snackbar.make(activitySettingsBinding.root, "Restarting!", Snackbar.LENGTH_LONG).show()
+      Snackbar.make(activitySettingsBinding.root, msgGenericRestarting, Snackbar.LENGTH_LONG).show()
       val thisContext = this.applicationContext
       HandlerCompat.postDelayed(
         Handler(Looper.myLooper() ?: throw Exception(msgSpecificToRebirth)
@@ -104,10 +111,10 @@ class SettingsActivity : AppCompatActivity() {
       val parent = activitySettingsBinding.layoutSettingsAdvanced.parent as ViewGroup
 
       val transition = Slide().apply {
-        if (show) {
-          duration = 500 // Milliseconds
+        duration = if (show) {
+          500 // Milliseconds
         } else {
-          duration = 0 // Milliseconds
+          0 // Milliseconds
         }
         addTarget(layout)
         slideEdge = Gravity.TOP
@@ -132,6 +139,32 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     activitySettingsBinding.toggleSettingsAdvanced.visibility = View.VISIBLE
+
+    //region Advanced Setting: Delete All Website Entries
+
+    val context = this
+    activitySettingsBinding.btnWebsiteEntriesDeleteAll.setOnClickListener {
+      AlertDialog.Builder(this).apply {
+        setMessage(R.string.text_delete_all_website_entries_are_you_sure)
+        setTitle(R.string.text_delete_all_website_entries)
+        setPositiveButton(
+          R.string.text_delete_all_website_entries_are_you_sure_yes
+        ) { _, _ ->
+          with(viewModel) {
+            viewModel.getWebSiteEntryList().observe(
+              context, { websites ->
+                websites.forEach { website ->
+                  deleteWebSiteEntry(website)
+                }
+              }
+            )
+          }
+        }
+        setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ -> }
+      }.create().show()
+    }
+
+    //endregion Advanced Setting: Delete All Website Entries
 
     //endregion Advanced Settings
   }
