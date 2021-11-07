@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ooo.akito.webmon.ui.home.MainActivity
 
+
 class SplashActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {

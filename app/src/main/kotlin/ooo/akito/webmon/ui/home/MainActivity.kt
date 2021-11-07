@@ -30,6 +30,7 @@ import ooo.akito.webmon.data.model.BackupWebsites
 import ooo.akito.webmon.data.model.CustomMonitorData
 import ooo.akito.webmon.databinding.ActivityMainBinding
 import ooo.akito.webmon.databinding.CustomRefreshInputBinding
+import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
@@ -51,10 +52,10 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgInternetUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.msgParseBackupFail
 import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
-import ooo.akito.webmon.utils.Utils.appIsVisible
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
+import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
@@ -126,9 +127,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   }
 
   private fun handleInternetUnavailable(): Boolean {
-    return if (!NetworkUtils.isConnected(applicationContext)) {
-      if (binding.layout.swipeRefresh.isRefreshing)
+    return if (isConnected(applicationContext).not()) {
+      if (binding.layout.swipeRefresh.isRefreshing) {
         binding.layout.swipeRefresh.isRefreshing = false
+      }
       showToast(applicationContext, getString(R.string.check_internet))
       Log.error(msgInternetUnavailable)
       true
@@ -270,9 +272,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     binding.layout.btnStop.setOnClickListener { stopTask() }
 
     binding.layout.swipeRefresh.setOnRefreshListener {
-      if (!NetworkUtils.isConnected(applicationContext)) {
-        if (binding.layout.swipeRefresh.isRefreshing)
+      if (isConnected(applicationContext).not()) {
+        if (binding.layout.swipeRefresh.isRefreshing) {
           binding.layout.swipeRefresh.isRefreshing = false
+        }
         showToast(applicationContext, getString(R.string.check_internet))
         return@setOnRefreshListener
       }
@@ -307,7 +310,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       if (it.isEmpty()) { viewModel.addDefaultData() }
     })
 
-    // Setting up Custom Monitor Option
+    // Setting up Website Status Refresh on Swipe & Custom Monitoring
     viewModel.checkWebSiteStatus().observe(this, { status ->
       /*
         This block gets executed when Custom Monitor option is used,
@@ -318,20 +321,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         binding.layout.swipeRefresh.isRefreshing = false
       }
 
-      if (appIsVisible().not()) {
-        /*
-          If Custom Monitoring option is used,
-          we only want to send notifications,
-          when App is in Foreground.
-        */
-        return@observe
-      }
-
       val urlToWebsite: Map<String, WebSiteEntry> = viewModel.getWebsiteUrlToWebsiteEntry()
       val entriesWithFailedConnection =
         status.filter {
           val currentWebsite: WebSiteEntry = urlToWebsite[it.url] ?: return@filter false
-          Utils.mayNotifyStatusFailure(currentWebsite) && customMonitorData.showNotification
+          mayNotifyStatusFailure(currentWebsite) && customMonitorData.showNotification
         }
 
       val customMonitorEnabled = runningCount >= 1
@@ -484,7 +478,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     dialog.run {
       customRefreshInputBinding.btnSave.setOnClickListener {
-        if (!NetworkUtils.isConnected(applicationContext)) {
+        if (isConnected(applicationContext).not()) {
           showToast(applicationContext, getString(R.string.check_internet))
           return@setOnClickListener
         }

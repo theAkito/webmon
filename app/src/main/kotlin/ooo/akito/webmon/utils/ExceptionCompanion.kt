@@ -2,6 +2,7 @@ package ooo.akito.webmon.utils
 
 import org.minidns.dnsmessage.DnsMessage
 
+
 object ExceptionCompanion {
 
   val connCodeGenericFail: Int by lazy {

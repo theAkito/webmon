@@ -39,6 +39,7 @@ import java.net.HttpURLConnection
 import java.net.URI
 import java.net.UnknownHostException
 
+
 class WebSiteEntryRepository(context: Context) {
 
   companion object {
@@ -54,6 +55,10 @@ class WebSiteEntryRepository(context: Context) {
     DbHelper.getInstance(context)?.webSiteEntryDao()
   }
   private val allWebSiteEntry: LiveData<List<WebSiteEntry>> = webSiteEntryDao?.getAllWebSiteEntryList()!!
+
+  suspend fun getRecordedWebsiteEntry(): List<WebSiteEntry> =
+    webSiteEntryDao?.getAllWebSiteEntryDirectList()
+      ?: throw IllegalStateException("Cannot get WebsiteEntry List from DAO!")
 
   fun addDefaultData() = runBlocking {
     this.launch(Dispatchers.IO) {
@@ -223,10 +228,14 @@ class WebSiteEntryRepository(context: Context) {
             }
           }
 
-          connSuccess = connSuccessIfEmpty.isEmpty()
           val codeToMsg = connSuccessIfEmpty.firstOrNull()
           status = codeToMsg?.first ?: connCodeGenericFail
           msg = codeToMsg?.second ?: msgGenericUnknown
+          connSuccess = if (status == connCodeGenericFail || msg == msgGenericUnknown) {
+            false
+          } else {
+            connSuccessIfEmpty.isEmpty()
+          }
         }
 
         webSiteStatus = WebSiteStatus(

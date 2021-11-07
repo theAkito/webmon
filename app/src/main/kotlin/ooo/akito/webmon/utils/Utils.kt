@@ -19,10 +19,15 @@ import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.model.WebSiteStatus
 import ooo.akito.webmon.ui.home.MainActivity
+import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
+import ooo.akito.webmon.utils.BackgroundCheckInterval.valueList
 import ooo.akito.webmon.utils.Constants.DEFAULT_INTERVAL_MIN
+import ooo.akito.webmon.utils.Constants.IS_SCHEDULED
+import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import ooo.akito.webmon.utils.Environment.manufacturer
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorConnFailed
@@ -31,8 +36,6 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericTorFailure
 import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
-import ooo.akito.webmon.utils.Interval.nameList
-import ooo.akito.webmon.utils.Interval.valueList
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.worker.WorkManagerScheduler
@@ -40,6 +43,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 object Utils {
 
@@ -100,18 +104,17 @@ object Utils {
   }
 
   fun startWorkManager(context: Context, isForce : Boolean = false) {
-    val isScheduled: Boolean? = SharedPrefsManager.customPrefs[Constants.IS_SCHEDULED, false]
-
+    val isScheduled: Boolean? = SharedPrefsManager.customPrefs[IS_SCHEDULED, false]
     isScheduled?.let { scheduled ->
       if (!scheduled || isForce) {
-        SharedPrefsManager.customPrefs.set(Constants.IS_SCHEDULED, true)
+        SharedPrefsManager.customPrefs[IS_SCHEDULED] = true
         WorkManagerScheduler.refreshPeriodicWork(context)
       }
     }
   }
 
   fun getMonitorInterval() : Long {
-    return (SharedPrefsManager.customPrefs[Constants.MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN] ?: DEFAULT_INTERVAL_MIN).toLong()
+    return (SharedPrefsManager.customPrefs[MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN] ?: DEFAULT_INTERVAL_MIN).toLong()
   }
 
   fun getMonitorTime() : String {
@@ -119,60 +122,53 @@ object Utils {
     var refreshTime: String? = null
     if (valueList.contains(interval)) {
       val pos = valueList.indexOf(interval)
-      if (pos >= 0 && pos < nameList.size)
+      if (pos >= 0 && pos < nameList.size) {
         refreshTime = nameList[pos]
+      }
     }
-    return "Checking every ${refreshTime ?: "1 hour once"}"
+    return "Checking ${refreshTime?.replaceFirst('E', 'e') ?: "every hour"}."
   }
 
-  fun isCustomRom(): Boolean {
-    return listOf("xiaomi", "oppo", "vivo")
-      .contains(
-        android.os.Build.MANUFACTURER.lowercase(Locale.ROOT)
-      )
-  }
+  fun isCustomRom(): Boolean = listOf("xiaomi", "oppo", "vivo").contains(manufacturer)
 
   fun openAutoStartScreen(context: Context) {
     val intent = Intent()
-    when(android.os.Build.MANUFACTURER.lowercase(Locale.ROOT)) {
+    when(manufacturer) {
       "xiaomi" -> intent.component= ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
       "oppo" -> intent.component = ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")
       "vivo" -> intent.component = ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")
     }
-
     val list = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-    if (list.size > 0) {
-      context.startActivity(intent)
-    }
+    if (list.size > 0) { context.startActivity(intent) }
   }
 
   fun showAutoStartEnableDialog(context: Context) {
     if (isCustomRom() && !SharedPrefsManager.customPrefs.getBoolean(Constants.IS_AUTO_START_SHOWN, false)) {
-      val alertBuilder = AlertDialog.Builder(context)
-      alertBuilder.setTitle(context.getString(R.string.enable_auto_start))
-      alertBuilder.setMessage(context.getString(R.string.message_auto_start_reason))
-      alertBuilder.setPositiveButton(context.getString(R.string.ok)) { dialog, _ ->
-        SharedPrefsManager.customPrefs[Constants.IS_AUTO_START_SHOWN] = true
-        openAutoStartScreen(context)
-        dialog.dismiss()
-      }
-      alertBuilder.setNegativeButton(context.getString(R.string.cancel), null)
-      val dialog = alertBuilder.create()
-      dialog.setCancelable(false)
-      dialog.show()
+      AlertDialog.Builder(context).apply {
+        setTitle(context.getString(R.string.enable_auto_start))
+        setMessage(context.getString(R.string.message_auto_start_reason))
+        setPositiveButton(context.getString(R.string.ok)) { dialog, _ ->
+          SharedPrefsManager.customPrefs[Constants.IS_AUTO_START_SHOWN] = true
+          openAutoStartScreen(context)
+          dialog.dismiss()
+        }
+        setNegativeButton(context.getString(R.string.cancel), null)
+        setCancelable(false)
+      }.create().show()
     }
   }
 
   fun openUrl(context: Context, url: String) {
     try {
       val intents = Intent(Intent.ACTION_VIEW)
-      intents.data = Uri.parse(url)
-      intents.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(url)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      }
       context.startActivity(intents)
     } catch (e: Exception) {
       Log.error(e.toString())
-      Toast.makeText(context, context.getString(R.string.no_apps_found), Toast.LENGTH_LONG)
-        .show()
+      Toast.makeText(context, context.getString(R.string.no_apps_found), Toast.LENGTH_LONG).show()
     }
   }
 
@@ -282,6 +278,15 @@ object Utils {
     }
   }
 
+  fun Boolean.doIfAppIsVisible(action: () -> Unit) {
+    /* We only want to send notifications, when App is in Background. */
+    return if (appIsVisible() == this) {
+      action()
+    } else {
+      Log.info("Skipping job iteration, because app is visible.")
+    }
+  }
+
   fun Context.getStringNotWorking(url: String): String {
     return String.format(
       this.getString(
@@ -301,17 +306,7 @@ object Utils {
     return this.associateBy { it.url }
   }
 
-  fun resumeApp() {
-    ooo.akito.webmon.MyApplication.ActivityVisibility.resumeApp()
-  }
-
-  fun pauseApp() {
-    ooo.akito.webmon.MyApplication.ActivityVisibility.pauseApp()
-  }
-
-  fun appIsVisible(): Boolean {
-    return ooo.akito.webmon.MyApplication.ActivityVisibility.appIsVisible
-  }
+  fun appIsVisible(): Boolean = ooo.akito.webmon.MyApplication.ActivityVisibility.appIsVisible
 
   fun String.removeTrailingSlashes(): String = this.replace(Regex("""[/]*$"""), "")
   fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")

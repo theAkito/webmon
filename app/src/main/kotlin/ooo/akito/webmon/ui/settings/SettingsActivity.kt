@@ -21,13 +21,13 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import ooo.akito.webmon.R
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
 import ooo.akito.webmon.ui.home.MainViewModel
+import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
+import ooo.akito.webmon.utils.BackgroundCheckInterval.valueList
 import ooo.akito.webmon.utils.Constants.HIDE_IS_ONION_ADDRESS
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.ExceptionCompanion.msgSpecificToRebirth
-import ooo.akito.webmon.utils.Interval.nameList
-import ooo.akito.webmon.utils.Interval.valueList
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.set
@@ -90,12 +90,11 @@ class SettingsActivity : AppCompatActivity() {
         https://www.py4u.net/discuss/612951
       */
       Snackbar.make(activitySettingsBinding.root, msgGenericRestarting, Snackbar.LENGTH_LONG).show()
-      val thisContext = this.applicationContext
       HandlerCompat.postDelayed(
         Handler(Looper.myLooper() ?: throw Exception(msgSpecificToRebirth)
       ), {
         kotlin.run {
-          triggerRebirth(thisContext)
+          triggerRebirth(this@SettingsActivity.applicationContext)
         }
       }, 0, 2000)
     }
@@ -142,7 +141,6 @@ class SettingsActivity : AppCompatActivity() {
 
     //region Advanced Setting: Delete All Website Entries
 
-    val context = this
     activitySettingsBinding.btnWebsiteEntriesDeleteAll.setOnClickListener {
       AlertDialog.Builder(this).apply {
         setMessage(R.string.text_delete_all_website_entries_are_you_sure)
@@ -151,8 +149,8 @@ class SettingsActivity : AppCompatActivity() {
           R.string.text_delete_all_website_entries_are_you_sure_yes
         ) { _, _ ->
           with(viewModel) {
-            viewModel.getWebSiteEntryList().observe(
-              context, { websites ->
+            getWebSiteEntryList().observe(
+              this@SettingsActivity, { websites ->
                 websites.forEach { website ->
                   deleteWebSiteEntry(website)
                 }
@@ -170,26 +168,21 @@ class SettingsActivity : AppCompatActivity() {
   }
 
   private fun showIntervalChooseDialog() {
-
-    val alertBuilder = AlertDialog.Builder(this)
-    alertBuilder.setTitle(getString(R.string.choose_interval))
-
-    val checkedItem = valueList.indexOf(SharedPrefsManager.customPrefs.getInt(MONITORING_INTERVAL, 60))
-    alertBuilder.setSingleChoiceItems(
-      nameList,
-      checkedItem
-    ) { dialog: DialogInterface, which: Int ->
-      SharedPrefsManager.customPrefs[MONITORING_INTERVAL] = valueList[which]
-      startWorkManager(this, true)
-      updateIntervalTimeOnUi()
-      dialog.dismiss()
-    }
-    alertBuilder.setNegativeButton(getString(R.string.cancel), null)
-    val dialog = alertBuilder.create()
-    dialog.show()
+    AlertDialog.Builder(this).apply {
+      val checkedItem = valueList.indexOf(SharedPrefsManager.customPrefs.getInt(MONITORING_INTERVAL, 60))
+      setTitle(getString(R.string.choose_interval))
+      setSingleChoiceItems(
+        nameList,
+        checkedItem
+      ) { dialog: DialogInterface, chosenIntervalPosition: Int ->
+        SharedPrefsManager.customPrefs[MONITORING_INTERVAL] = valueList[chosenIntervalPosition]
+        startWorkManager(this@SettingsActivity, true)
+        updateIntervalTimeOnUi()
+        dialog.dismiss()
+      }
+      setNegativeButton(getString(R.string.cancel), null)
+    }.create().show()
   }
 
-  private fun updateIntervalTimeOnUi() {
-    txtIntervalDetails.text = getMonitorTime()
-  }
+  private fun updateIntervalTimeOnUi() { txtIntervalDetails.text = getMonitorTime() }
 }

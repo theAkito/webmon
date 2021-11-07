@@ -12,6 +12,7 @@ import ooo.akito.webmon.data.repository.WebSiteEntryRepository
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.SharedPrefsManager
 
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
   private val repository: WebSiteEntryRepository = WebSiteEntryRepository(application)

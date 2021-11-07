@@ -12,6 +12,7 @@ import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils.torIsEnabled
 import ooo.akito.webmon.utils.Utils.totalAmountEntry
 
+
 class CreateEntryActivity : AppCompatActivity() {
 
   var webSiteEntry: WebSiteEntry? = null

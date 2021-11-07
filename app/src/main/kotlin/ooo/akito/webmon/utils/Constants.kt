@@ -12,8 +12,8 @@ object Constants {
   const val DEFAULT_INTERVAL_MIN = 60
 
   const val IS_SCHEDULED: String = "is_scheduled"
-  const val TAG_GLOBAL: String = "Website Monitor ##--> "
-  const val TAG_WORK_MANAGER: String = "WebSiteMonitorWorkManager"
+  const val TAG_GLOBAL: String = "Webmon ##--> "
+  const val TAG_WORK_MANAGER: String = "MainWorkManager"
 
   const val NOTIFICATION_CHANNEL_ID = "WEB_SITE_MONITOR_CHANNEL_ID"
   const val NOTIFICATION_CHANNEL_NAME = "Web Site Monitor"

@@ -16,6 +16,7 @@ import ooo.akito.webmon.utils.Utils.currentDateTime
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import java.util.*
 
+
 class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter<WebSiteEntryAdapter.ViewHolder>(), Filterable {
 
   private var mList: List<WebSiteEntry> = arrayListOf()

@@ -5,7 +5,10 @@ import androidx.core.os.ConfigurationCompat
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 object Environment {
+
+  val manufacturer = android.os.Build.MANUFACTURER.lowercase(Locale.ROOT)
 
   lateinit var locale: Locale
   lateinit var defaultTimeFormat: SimpleDateFormat

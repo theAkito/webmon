@@ -8,6 +8,7 @@ import org.minidns.record.A
 import org.minidns.record.AAAA
 import org.minidns.record.Data
 
+
 class DNS {
 
   class ResolvesToNowhereException(message:String): Exception(message)
