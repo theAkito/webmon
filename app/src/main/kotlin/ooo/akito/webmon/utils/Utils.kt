@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
@@ -170,6 +171,14 @@ object Utils {
       Log.error(e.toString())
       Toast.makeText(context, context.getString(R.string.no_apps_found), Toast.LENGTH_LONG).show()
     }
+  }
+
+  fun Context.safelyStartSyncWorker(force: Boolean = false) {
+    /* Make sure SyncWorker is not run by SettingsActivity and this one, simultaneously. */
+    val workManager = WorkManager.getInstance(this)
+    workManager.cancelUniqueWork(Constants.TAG_WORK_MANAGER)
+    workManager.cancelAllWorkByTag(Constants.TAG_WORK_MANAGER)
+    startWorkManager(this, force)
   }
 
   fun showToast(context: Context, message: String) {

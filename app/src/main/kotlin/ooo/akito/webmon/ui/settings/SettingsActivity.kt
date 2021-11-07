@@ -16,6 +16,7 @@ import androidx.core.os.HandlerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
+import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import ooo.akito.webmon.R
@@ -23,6 +24,7 @@ import ooo.akito.webmon.databinding.ActivitySettingsBinding
 import ooo.akito.webmon.ui.home.MainViewModel
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
 import ooo.akito.webmon.utils.BackgroundCheckInterval.valueList
+import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.Constants.HIDE_IS_ONION_ADDRESS
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
@@ -34,6 +36,7 @@ import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.getMonitorTime
 import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
+import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.utils.Utils.startWorkManager
 import ooo.akito.webmon.utils.Utils.triggerRebirth
 import ooo.akito.webmon.utils.msgGenericRestarting
@@ -176,7 +179,8 @@ class SettingsActivity : AppCompatActivity() {
         checkedItem
       ) { dialog: DialogInterface, chosenIntervalPosition: Int ->
         SharedPrefsManager.customPrefs[MONITORING_INTERVAL] = valueList[chosenIntervalPosition]
-        startWorkManager(this@SettingsActivity, true)
+        /* Make sure SyncWorker is not run by SettingsActivity and this one, simultaneously. */
+        this@SettingsActivity.safelyStartSyncWorker(true)
         updateIntervalTimeOnUi()
         dialog.dismiss()
       }

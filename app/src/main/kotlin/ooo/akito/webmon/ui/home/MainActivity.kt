@@ -20,6 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkManager
+import androidx.work.await
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -34,6 +36,7 @@ import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
+import ooo.akito.webmon.utils.Constants.TAG_WORK_MANAGER
 import ooo.akito.webmon.utils.Constants.orbotFQID
 import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
@@ -57,6 +60,7 @@ import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
+import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.showToast
@@ -362,7 +366,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     })
 
-    startWorkManager(this)
+    /* Make sure SyncWorker is not run by SettingsActivity and this one, simultaneously. */
+    this.safelyStartSyncWorker()
 
     Handler(Looper.getMainLooper()).postDelayed({
       if (!isDestroyed) showAutoStartEnableDialog(

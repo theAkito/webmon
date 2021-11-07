@@ -7,13 +7,14 @@ import androidx.work.WorkerParameters
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.repository.WebSiteEntryRepository
 import ooo.akito.webmon.utils.ExceptionCompanion.msgErrorTryingToFetchData
-import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsiteEntriesUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.associateByUrl
+import ooo.akito.webmon.utils.Utils.doIfAppIsVisible
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
+import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
+import ooo.akito.webmon.utils.Utils.showNotification
 
 
 class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -26,39 +27,36 @@ class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
       Shows Notifications for failed Websites, when App is in Background.
     */
 
-    if (Utils.appIsVisible()) {
-      /*
-        We only want to send notifications, when App is in Background.
-      */
-      return Result.success()
-    }
-
-    val applicationContext: Context = applicationContext
-
     repository = WebSiteEntryRepository(applicationContext)
+
+    val websites: List<WebSiteEntry> = repository.getRecordedWebsiteEntry()
+    val websiteStates = repository.checkWebSiteStatus()
 
     Log.info("Fetching Data from Remote hosts...")
     return try {
-      val urlToWebsite: Map<String, WebSiteEntry> = repository.getAllWebSiteEntryList().value?.associateByUrl()
-        ?: throw IllegalStateException(msgWebsiteEntriesUnavailable)
+      val urlToWebsite: Map<String, WebSiteEntry> = websites.associateByUrl()
       val entriesWithFailedConnection =
-        repository.checkWebSiteStatus().filter {
+        websiteStates.filter {
           val currentWebSite = urlToWebsite[it.url] ?: return@filter false
-          Utils.mayNotifyStatusFailure(currentWebSite)
+          mayNotifyStatusFailure(currentWebSite)
         }
       if (entriesWithFailedConnection.size == 1) {
         val entryWithFailedConnection = entriesWithFailedConnection.first()
-        Utils.showNotification(
-          applicationContext,
-          entryWithFailedConnection.name,
-          applicationContext.getStringNotWorking(entryWithFailedConnection.url)
-        )
-      } else {
-        Utils.showNotification(
-          applicationContext,
-          msgWebsitesNotReachable,
-          entriesWithFailedConnection.joinToStringDescription()
-        )
+        false.doIfAppIsVisible {
+          showNotification(
+            applicationContext,
+            entryWithFailedConnection.name,
+            applicationContext.getStringNotWorking(entryWithFailedConnection.url)
+          )
+        }
+      } else if (entriesWithFailedConnection.size > 1) {
+        false.doIfAppIsVisible {
+          showNotification(
+            applicationContext,
+            msgWebsitesNotReachable,
+            entriesWithFailedConnection.joinToStringDescription()
+          )
+        }
       }
       Result.success()
     } catch (e: Throwable) {
