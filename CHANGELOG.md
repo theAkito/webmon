@@ -1,3 +1,10 @@
+# 2.4.0 [Code 9] (2021/11/06)
+- Fix: Ensure only one Notification per event is dispatched.
+- Fix: Periodic Background Check reliability.
+- Improve: Various Code Details.
+- Add: Advanced Settings Area to Settings Page.
+- Add: Advanced Setting: Delete All Website Entries.
+
 # 2.3.0 [Code 8] (2021/11/05)
 - Fix: Not resolving AAAA records correctly.
 - Improve: DNS Resolution efficiency.

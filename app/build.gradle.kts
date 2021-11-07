@@ -27,8 +27,8 @@ android {
     applicationId = "ooo.akito.webmon"
     minSdk = 19
     targetSdk = defaultSdkVersion
-    versionCode = 8
-    versionName = "2.3.0"
+    versionCode = 9
+    versionName = "2.4.0"
 
     multiDexEnabled = true
 
@@ -93,7 +93,7 @@ dependencies {
   implementation("com.google.android.material:material:1.4.0")
   implementation("androidx.constraintlayout:constraintlayout:2.1.1")
 
-  // Retrofit and relevant converters
+  // Retrofit and Relevant Converters
   val retrofit_version = "2.9.0"
   api("com.squareup.retrofit2:retrofit:$retrofit_version")
   api("com.squareup.retrofit2:converter-gson:$retrofit_version")
@@ -115,7 +115,7 @@ dependencies {
 
   implementation("androidx.work:work-runtime-ktx:2.7.0")
 
-  // Swipe refresh
+  // Swipe Refresh
   implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
   // Glide
@@ -140,5 +140,7 @@ dependencies {
   //testImplementation("junit:junit:4.13.2")
   //androidTestImplementation("androidx.test.ext:junit:1.1.3")
   androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+  /* https://stackoverflow.com/a/61586889/7061105 */
+  androidTestImplementation("androidx.work:work-testing:2.7.0")
 
 }

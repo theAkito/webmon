@@ -1,0 +1,5 @@
+- Fix: Ensure only one Notification per event is dispatched.
+- Fix: Periodic Background Check reliability.
+- Improve: Various Code Details.
+- Add: Advanced Settings Area to Settings Page.
+- Add: Advanced Setting: Delete All Website Entries.
