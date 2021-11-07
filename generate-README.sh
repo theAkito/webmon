@@ -18,5 +18,5 @@
 # https://github.com/github/markup/issues/360#issuecomment-55700463
 
 
-rm README.html
+rm docs/index.html
 asciidoctor -o docs/index.html README.adoc

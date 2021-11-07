@@ -1,3 +1,4 @@
+:imagesdir: https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/
 :stylesdir: .asciidoc/
 :stylesheet: styler.css
 :last-update-label!:
@@ -5,7 +6,7 @@
 [.text-center]
 == Webmon
 
-image::fastlane/metadata/android/en-US/images/icon.png[]
+image::icon.png?raw=true[]
 
 [.text-center]
 _Monitor web services and get notified, if a service becomes unavailable._
@@ -49,20 +50,20 @@ https://github.com/guardianproject/orbot[Orbot] is running.
 [cols="^,^,^,^",options="header",]
 |===
 |Main |Settings |Monitor Intervals |Custom Monitoring Setup
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true[First]
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true[Second]
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true[Third]
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true[Fourth]
+|image:phoneScreenshots/1.png?raw=true[First]
+|image:phoneScreenshots/2.png?raw=true[Second]
+|image:phoneScreenshots/3.png?raw=true[Third]
+|image:phoneScreenshots/4.png?raw=true[Fourth]
 |===
 
 [cols="^,^,^,^",options="header",]
 |===
 |Backup & Restore |Monitor A/AAAA DNS Records |Monitor Onion Sites
 |Search
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true[Fifth]
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true[Sixth]
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true[Seventh]
-|image:fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true[Eighth]
+|image:phoneScreenshots/5.png?raw=true[Fifth]
+|image:phoneScreenshots/6.png?raw=true[Sixth]
+|image:phoneScreenshots/7.png?raw=true[Seventh]
+|image:phoneScreenshots/8.png?raw=true[Eighth]
 |===
 
 == TODO
