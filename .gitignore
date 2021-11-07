@@ -16,6 +16,13 @@
 test.md
 app/src/main/kotlin/ooo/akito/webmon/net/http/HttpConfig.kt
 
+# ---> Vendored Files according to Linguist https://stackoverflow.com/a/26948938/7061105
+clean-up-repository-by-gitignore.sh linguist-vendored
+generate-README.sh linguist-vendored
+.asciidoc/* linguist-vendored
+docs/* linguist-vendored
+
+
 
 
 ############################################################
@@ -392,5 +399,3 @@ hs_err_pid*
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,android,androidstudio,gradle,intellij,windows
-
-# Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)

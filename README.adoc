@@ -1,0 +1,120 @@
+:stylesdir: .asciidoc/
+:stylesheet: styler.css
+:last-update-label!:
+
+[.text-center]
+== Webmon
+
+image::fastlane/metadata/android/en-US/images/icon.png[]
+
+[.text-center]
+_Monitor web services and get notified, if a service becomes unavailable._
+{sp} +
+{sp}
+
+https://kotlinlang.org/[image:https://img.shields.io/badge/project-language-blue?style=plastic[Language]]
+
+https://gitlab.com/manimaran/website-monitor[image:https://img.shields.io/badge/project-upstream-yellow?style=plastic[Upstream]]
+
+image:https://img.shields.io/github/license/theAkito/webmon?style=plastic[GitHub]
+image:https://img.shields.io/liberapay/patrons/Akito?style=plastic[Liberapay
+patrons]
+
+https://github.com/theAkito/webmon/releases[*Early Bird Releases*]
+
+== App Features
+
+* Simple UI.
+* No login required.
+* Get notified when site becomes unavailable.
+* Check website status according to chosen interval.
+* Pause/Resume Monitoring for a particular site.
+* Custom Monitoring option. Useful for continually checking website
+status every 1 second or 5 minutes. The Second/Minute interval can be
+manually assigned.
+* Tap a website entry to quickly refresh that particular one.
+* Ability to notify only on Server issue. If enabled, does not notify,
+if the app has no internet connection.
+* Ability to notify only on serious issues. If enabled, does not notify,
+if the website responds with one of the following codes: 201, 202, 204,
+401, 403.
+* Import & Export of Website entry list backups.
+* Check connectivity of common address records (A, AAAA) from a domain.
+* Check Onion Domains, when
+https://github.com/guardianproject/orbot[Orbot] is running.
+
+[.text-center]
+== Screenshots
+
+[cols="^,^,^,^",options="header",]
+|===
+|Main |Settings |Monitor Intervals |Custom Monitoring Setup
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true[First]
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true[Second]
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true[Third]
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true[Fourth]
+|===
+
+[cols="^,^,^,^",options="header",]
+|===
+|Backup & Restore |Monitor A/AAAA DNS Records |Monitor Onion Sites
+|Search
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true[Fifth]
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true[Sixth]
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true[Seventh]
+|image:fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true[Eighth]
+|===
+
+== TODO
+
+* https://gitlab.com/manimaran/website-monitor/-/issues/3[Add Dark
+Mode]
+* https://gitlab.com/manimaran/website-monitor/-/issues/14[Use
+Notification workaround to ensure App never gets killed, when in
+background]
+* [line-through]#https://gitlab.com/manimaran/website-monitor/-/issues/2[Support
+Tor Proxy]#
+* [line-through]#https://gitlab.com/manimaran/website-monitor/-/issues/11[Check
+common address records (A, AAAA)]#
+* [line-through]#Export Website Entries to JSON as Backup#
+* [line-through]#Enable Import of Backups#
+* [line-through]#Publish to F-Droid#
+* [line-through]#Merge Notifications into single one, if more than one
+Website is down#
+
+== Note
+
+This is a fork of the project
+https://gitlab.com/manimaran/website-monitor[WebSite Monitor] made by
+https://gitlab.com/manimaran[Manimaran].
+
+This fork is
+https://gitlab.com/manimaran/website-monitor/-/merge_requests/4#note_724151423[approved
+and kindly supported] by the maintainer of the original project.
+
+[.text-center]
+== License
+
+[.text-center]
+image::https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg[]
+
+--
+{sp} +
+[.license-text-line-first ]#Copyright (C) 2021 Akito the@akito.ooo# +
+{sp}
+[.license-text]
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version. +
+{sp} +
+{sp}
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details. +
+{sp} +
+{sp}
+You should have received a copy of the GNU General Public License along
+with this program. If not, see https://www.gnu.org/licenses/.
+--

@@ -1,0 +1,19 @@
+/* Import Default AsciiDoc Stylesheet and Webfonts */
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+@import "https://cdn.jsdelivr.net/gh/asciidoctor/asciidoctor@2.0/data/stylesheets/asciidoctor-default.css";
+
+.license-text-line-first {
+  text-align: center !important;
+}
+
+.license-text {
+  display: block;
+  background-color: "#FFFFF";
+  text-align: justify;
+  border: none !important;
+  border-style: none !important;
+  outline: none;
+/*   margin: -8px; */
+  width: 75%;
+  margin: auto;
+}

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.12">
+<title>Webmon</title>
+<style>
+/* Import Default AsciiDoc Stylesheet and Webfonts */
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+@import "https://cdn.jsdelivr.net/gh/asciidoctor/asciidoctor@2.0/data/stylesheets/asciidoctor-default.css";
+
+.license-text-line-first {
+  text-align: center !important;
+}
+
+.license-text {
+  display: block;
+  background-color: "#FFFFF";
+  text-align: justify;
+  border: none !important;
+  border-style: none !important;
+  outline: none;
+/*   margin: -8px; */
+  width: 75%;
+  margin: auto;
+}
+</style>
+</head>
+<body class="article">
+<div id="header">
+</div>
+<div id="content">
+<div class="sect1 text-center">
+<h2 id="_webmon">Webmon</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="fastlane/metadata/android/en-US/images/icon.png" alt="icon">
+</div>
+</div>
+<div class="paragraph text-center">
+<p><em>Monitor web services and get notified, if a service becomes unavailable.</em>
+ <br>
+ </p>
+</div>
+<div class="paragraph">
+<p><a href="https://kotlinlang.org/"><span class="image"><img src="https://img.shields.io/badge/project-language-blue?style=plastic" alt="Language"></span></a></p>
+</div>
+<div class="paragraph">
+<p><a href="https://gitlab.com/manimaran/website-monitor"><span class="image"><img src="https://img.shields.io/badge/project-upstream-yellow?style=plastic" alt="Upstream"></span></a></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="https://img.shields.io/github/license/theAkito/webmon?style=plastic" alt="GitHub"></span>
+<span class="image"><img src="https://img.shields.io/liberapay/patrons/Akito?style=plastic" alt="Liberapay patrons"></span></p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/theAkito/webmon/releases"><strong>Early Bird Releases</strong></a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_app_features">App Features</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Simple UI.</p>
+</li>
+<li>
+<p>No login required.</p>
+</li>
+<li>
+<p>Get notified when site becomes unavailable.</p>
+</li>
+<li>
+<p>Check website status according to chosen interval.</p>
+</li>
+<li>
+<p>Pause/Resume Monitoring for a particular site.</p>
+</li>
+<li>
+<p>Custom Monitoring option. Useful for continually checking website
+status every 1 second or 5 minutes. The Second/Minute interval can be
+manually assigned.</p>
+</li>
+<li>
+<p>Tap a website entry to quickly refresh that particular one.</p>
+</li>
+<li>
+<p>Ability to notify only on Server issue. If enabled, does not notify,
+if the app has no internet connection.</p>
+</li>
+<li>
+<p>Ability to notify only on serious issues. If enabled, does not notify,
+if the website responds with one of the following codes: 201, 202, 204,
+401, 403.</p>
+</li>
+<li>
+<p>Import &amp; Export of Website entry list backups.</p>
+</li>
+<li>
+<p>Check connectivity of common address records (A, AAAA) from a domain.</p>
+</li>
+<li>
+<p>Check Onion Domains, when
+<a href="https://github.com/guardianproject/orbot">Orbot</a> is running.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1 text-center">
+<h2 id="_screenshots">Screenshots</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-center valign-top">Main</th>
+<th class="tableblock halign-center valign-top">Settings</th>
+<th class="tableblock halign-center valign-top">Monitor Intervals</th>
+<th class="tableblock halign-center valign-top">Custom Monitoring Setup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" alt="First"></span></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" alt="Second"></span></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" alt="Third"></span></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" alt="Fourth"></span></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-center valign-top">Backup &amp; Restore</th>
+<th class="tableblock halign-center valign-top">Monitor A/AAAA DNS Records</th>
+<th class="tableblock halign-center valign-top">Monitor Onion Sites</th>
+<th class="tableblock halign-center valign-top">Search</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" alt="Fifth"></span></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" alt="Sixth"></span></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true" alt="Seventh"></span></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true" alt="Eighth"></span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_todo">TODO</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://gitlab.com/manimaran/website-monitor/-/issues/3">Add Dark
+Mode</a></p>
+</li>
+<li>
+<p><a href="https://gitlab.com/manimaran/website-monitor/-/issues/14">Use
+Notification workaround to ensure App never gets killed, when in
+background</a></p>
+</li>
+<li>
+<p><span class="line-through"><a href="https://gitlab.com/manimaran/website-monitor/-/issues/2">Support
+Tor Proxy</a></span></p>
+</li>
+<li>
+<p><span class="line-through"><a href="https://gitlab.com/manimaran/website-monitor/-/issues/11">Check
+common address records (A, AAAA)</a></span></p>
+</li>
+<li>
+<p><span class="line-through">Export Website Entries to JSON as Backup</span></p>
+</li>
+<li>
+<p><span class="line-through">Enable Import of Backups</span></p>
+</li>
+<li>
+<p><span class="line-through">Publish to F-Droid</span></p>
+</li>
+<li>
+<p><span class="line-through">Merge Notifications into single one, if more than one
+Website is down</span></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_note">Note</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is a fork of the project
+<a href="https://gitlab.com/manimaran/website-monitor">WebSite Monitor</a> made by
+<a href="https://gitlab.com/manimaran">Manimaran</a>.</p>
+</div>
+<div class="paragraph">
+<p>This fork is
+<a href="https://gitlab.com/manimaran/website-monitor/-/merge_requests/4#note_724151423">approved
+and kindly supported</a> by the maintainer of the original project.</p>
+</div>
+</div>
+</div>
+<div class="sect1 text-center">
+<h2 id="_license">License</h2>
+<div class="sectionbody">
+<div class="imageblock text-center">
+<div class="content">
+<img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg" alt="gplv3">
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p> <br>
+<span class="license-text-line-first">Copyright &#169; 2021 Akito <a href="mailto:the@akito.ooo">the@akito.ooo</a></span><br>
+ </p>
+</div>
+<div class="paragraph license-text">
+<p>This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.<br>
+ <br>
+ 
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.<br>
+ <br>
+ 
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <a href="https://www.gnu.org/licenses/" class="bare">https://www.gnu.org/licenses/</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+</div>
+</div>
+</body>
+</html>
