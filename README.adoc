@@ -96,7 +96,7 @@ and kindly supported] by the maintainer of the original project.
 == License
 
 [.text-center]
-image::https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg[]
+image::https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg[width=600]
 
 --
 {sp} +
