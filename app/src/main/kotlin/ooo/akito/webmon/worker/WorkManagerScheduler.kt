@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit
 
 
 object WorkManagerScheduler {
+  /**
+    https://developer.android.com/codelabs/android-workmanager-java#0
+  */
 
   fun refreshPeriodicWork(context: Context) {
     val myConstraints = Constraints.Builder()

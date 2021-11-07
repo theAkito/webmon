@@ -366,7 +366,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     })
 
-    /* Make sure SyncWorker is not run by SettingsActivity and this one, simultaneously. */
+    /* Make sure SyncWorker is not run more than once, simultaneously. */
     this.safelyStartSyncWorker()
 
     Handler(Looper.getMainLooper()).postDelayed({

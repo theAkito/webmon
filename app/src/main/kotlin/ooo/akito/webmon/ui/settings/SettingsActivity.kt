@@ -40,6 +40,7 @@ import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.utils.Utils.startWorkManager
 import ooo.akito.webmon.utils.Utils.triggerRebirth
 import ooo.akito.webmon.utils.msgGenericRestarting
+import ooo.akito.webmon.utils.workaroundRebirthMillis
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -53,6 +54,21 @@ class SettingsActivity : AppCompatActivity() {
   private lateinit var switchSettingsTorEnable: SwitchMaterial
   private lateinit var txtIntervalDetails: AppCompatTextView
 
+
+  private fun restartApp() {
+    /*
+      Workaround for Shared Preference not being saved, when App is restarted too quickly.
+      https://www.py4u.net/discuss/612951
+    */
+    Snackbar.make(activitySettingsBinding.root, msgGenericRestarting, Snackbar.LENGTH_LONG).show()
+    HandlerCompat.postDelayed(
+      Handler(Looper.myLooper() ?: throw Exception(msgSpecificToRebirth)
+      ), {
+        kotlin.run {
+          triggerRebirth(this@SettingsActivity.applicationContext)
+        }
+      }, 0, workaroundRebirthMillis)
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -88,18 +104,7 @@ class SettingsActivity : AppCompatActivity() {
       SharedPrefsManager.customPrefs[SETTINGS_TOR_ENABLE] = isChecked
       SharedPrefsManager.customPrefs[HIDE_IS_ONION_ADDRESS] = false
       Log.warn("Tor switched to ${isChecked}!")
-      /*
-        Workaround for Shared Preference not being saved, when App is restarted too quickly.
-        https://www.py4u.net/discuss/612951
-      */
-      Snackbar.make(activitySettingsBinding.root, msgGenericRestarting, Snackbar.LENGTH_LONG).show()
-      HandlerCompat.postDelayed(
-        Handler(Looper.myLooper() ?: throw Exception(msgSpecificToRebirth)
-      ), {
-        kotlin.run {
-          triggerRebirth(this@SettingsActivity.applicationContext)
-        }
-      }, 0, 2000)
+      restartApp()
     }
 
     //region Advanced Settings
@@ -179,10 +184,13 @@ class SettingsActivity : AppCompatActivity() {
         checkedItem
       ) { dialog: DialogInterface, chosenIntervalPosition: Int ->
         SharedPrefsManager.customPrefs[MONITORING_INTERVAL] = valueList[chosenIntervalPosition]
-        /* Make sure SyncWorker is not run by SettingsActivity and this one, simultaneously. */
-        this@SettingsActivity.safelyStartSyncWorker(true)
         updateIntervalTimeOnUi()
         dialog.dismiss()
+        /*
+          SyncWorker is only started from MainActivity,
+          to make sure it is not run by MainActivity and this one, simultaneously.
+        */
+        restartApp()
       }
       setNegativeButton(getString(R.string.cancel), null)
     }.create().show()

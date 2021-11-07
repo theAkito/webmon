@@ -19,6 +19,10 @@ import ooo.akito.webmon.utils.Utils.showNotification
 
 class SyncWorker(appContext: Context, workerParams: WorkerParameters) :
   CoroutineWorker(appContext, workerParams) {
+  /**
+    https://developer.android.com/codelabs/android-workmanager-java#0
+    https://developer.android.com/reference/androidx/work/ListenableWorker#isStopped()
+  */
   private lateinit var repository: WebSiteEntryRepository
 
   override suspend fun doWork(): Result {

@@ -174,7 +174,7 @@ object Utils {
   }
 
   fun Context.safelyStartSyncWorker(force: Boolean = false) {
-    /* Make sure SyncWorker is not run by SettingsActivity and this one, simultaneously. */
+    /* Make sure SyncWorker is not run more than once, simultaneously. */
     val workManager = WorkManager.getInstance(this)
     workManager.cancelUniqueWork(Constants.TAG_WORK_MANAGER)
     workManager.cancelAllWorkByTag(Constants.TAG_WORK_MANAGER)
