@@ -1,0 +1,5 @@
+# ---> Vendored Files according to Linguist https://stackoverflow.com/a/26948938/7061105
+clean-up-repository-by-gitignore.sh linguist-vendored
+generate-README.sh linguist-vendored
+.asciidoc/* linguist-vendored
+docs/* linguist-vendored

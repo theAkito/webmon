@@ -16,12 +16,6 @@
 test.md
 app/src/main/kotlin/ooo/akito/webmon/net/http/HttpConfig.kt
 
-# ---> Vendored Files according to Linguist https://stackoverflow.com/a/26948938/7061105
-clean-up-repository-by-gitignore.sh linguist-vendored
-generate-README.sh linguist-vendored
-.asciidoc/* linguist-vendored
-docs/* linguist-vendored
-
 
 
 
