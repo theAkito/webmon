@@ -71,4 +71,13 @@
     <string name="text_delete_all_website_entries_are_you_sure">Are you sure you want to delete ALL Website Entries?!</string>
     <string name="text_delete_all_website_entries_are_you_sure_yes">Yes</string>
     <string name="text_delete_all_website_entries_are_you_sure_no">No</string>
+    <string name="enable_refresh_on_swipe_down">Enable Refresh on Swipe Down</string>
+    <string name="backup_import">Import Backup</string>
+    <string name="backup_export">Export Backup</string>
+    <string name="backup_settings_share">Share Backup of Settings</string>
+    <string name="btn_backup_data_share">Share Backup of Data</string>
+    <string name="backup_settings_export">Export Backup of Settings</string>
+    <string name="backup_settings_import">Import Backup of Settings</string>
+    <string name="backup_data_export">Export Backup of Data</string>
+    <string name="backup_data_import">Import Backup of Data</string>
 </resources>

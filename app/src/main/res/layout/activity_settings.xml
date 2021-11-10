@@ -148,11 +148,102 @@
                 android:id="@+id/layout_settings_advanced"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="11dp" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/toggle_swipe_refresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp"
+                    android:text="@string/enable_refresh_on_swipe_down" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp" />
+
+                <Button
+                    android:id="@+id/btn_backup_data_export"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:text="@string/backup_data_export"
+                    android:layout_marginVertical="5dp"
+                    android:textColor="#FFFF" />
+
+                <Button
+                    android:id="@+id/btn_backup_settings_export"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:text="@string/backup_settings_export"
+                    android:layout_marginVertical="5dp"
+                    android:textColor="#FFFF" />
+
+                <View
+                    android:id="@+id/divider_zone_end_backup_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginHorizontal="115dp"
+                    android:layout_marginVertical="15dp"
+                    android:background="@color/colorAccent" />
+
+                <Button
+                    android:id="@+id/btn_backup_data_import"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="5dp"
+                    android:text="@string/backup_data_import"
+                    android:textColor="#FFFF" />
+
+                <Button
+                    android:id="@+id/btn_backup_settings_import"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="5dp"
+                    android:text="@string/backup_settings_import"
+                    android:textColor="#FFFF" />
+
+                <View
+                    android:id="@+id/divider_zone_end_backup_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginHorizontal="115dp"
+                    android:layout_marginVertical="15dp"
+                    android:background="@color/colorAccent" />
+
+                <Button
+                    android:id="@+id/btn_backup_data_share"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="5dp"
+                    android:text="@string/btn_backup_data_share"
+                    android:textColor="#FFFF" />
+
+                <Button
+                    android:id="@+id/btn_backup_settings_share"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="5dp"
+                    android:text="@string/backup_settings_share"
+                    android:textColor="#FFFF" />
+
+
+                <View
+                    android:id="@+id/divider_zone_danger"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginVertical="15dp"
+                    android:layout_marginHorizontal="20dp"
+                    android:background="#BCBFD8" />
 
                 <Button
                     android:id="@+id/btn_website_entries_delete_all"
