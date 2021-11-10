@@ -46,8 +46,11 @@ object ExceptionCompanion {
   val msgInputStreamNullBackupInterrupted: String by lazy {
     "InputStream is null! The Backup Action was probably interrupted."
   }
-  val msgParseBackupFail: String by lazy {
+  val msgParseBackupDataFail: String by lazy {
     "Could not parse Backup Website Entries File!"
+  }
+  val msgParseBackupSettingsFail: String by lazy {
+    "Could not parse Backup Settings File!"
   }
   val msgCannotOpenOutputStreamBackupWebsiteEntries: String by lazy {
     "Cannot open output stream when trying to write Backup Website Entries File!"

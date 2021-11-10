@@ -1,6 +1,9 @@
 package ooo.akito.webmon.utils
 
 object Constants {
+  /**
+    If you add further global settings, you need to add them to `BackupSettingsManager`, as well!
+  */
 
   const val permissionReadExternalStorage = android.Manifest.permission.READ_EXTERNAL_STORAGE
   const val requestCodeReadExternalStorage = 1 /* Request Code is chosen arbitrarily. */

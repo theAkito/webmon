@@ -15,6 +15,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.WorkManager
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.android.material.snackbar.Snackbar
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
@@ -53,6 +55,8 @@ object Utils {
   var torIsEnabled = false
   var torAppIsAvailable = false
   var swipeRefreshIsEnabled = true
+
+  val mapper: ObjectMapper = jacksonObjectMapper()
 
   fun triggerRebirth(context: Context) {
     /** https://stackoverflow.com/a/46848226/7061105 */
