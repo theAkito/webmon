@@ -52,6 +52,7 @@ object Utils {
   var totalAmountEntry = 0
   var torIsEnabled = false
   var torAppIsAvailable = false
+  var swipeRefreshIsEnabled = true
 
   fun triggerRebirth(context: Context) {
     /** https://stackoverflow.com/a/46848226/7061105 */

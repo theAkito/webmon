@@ -1,6 +1,6 @@
 package ooo.akito.webmon.utils
 
-typealias JString = String
+typealias jString = String
 
 const val nameTorApp = "Orbot"
 const val msgGenericSuccess = "Success"

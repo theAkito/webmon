@@ -15,20 +15,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkManager
-import androidx.work.await
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
-import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVersion
-import ooo.akito.webmon.data.model.BackupWebsites
 import ooo.akito.webmon.data.model.CustomMonitorData
 import ooo.akito.webmon.databinding.ActivityMainBinding
 import ooo.akito.webmon.databinding.CustomRefreshInputBinding
@@ -36,23 +28,13 @@ import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
-import ooo.akito.webmon.utils.Constants.TAG_WORK_MANAGER
 import ooo.akito.webmon.utils.Constants.orbotFQID
-import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
-import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.defaultTimeFormat
 import ooo.akito.webmon.utils.Environment.getCurrentLocale
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeFormat
-import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.Environment.locale
-import ooo.akito.webmon.utils.ExceptionCompanion.msgBackupUriPathInvalid
-import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotGetWebsiteEntryListValue
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOnionInBrowser
-import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupWebsiteEntries
-import ooo.akito.webmon.utils.ExceptionCompanion.msgFileContent
-import ooo.akito.webmon.utils.ExceptionCompanion.msgInputStreamNullBackupInterrupted
 import ooo.akito.webmon.utils.ExceptionCompanion.msgInternetUnavailable
-import ooo.akito.webmon.utils.ExceptionCompanion.msgParseBackupFail
 import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Utils.asUri
@@ -64,7 +46,7 @@ import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.showToast
-import ooo.akito.webmon.utils.Utils.startWorkManager
+import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import ooo.akito.webmon.utils.Utils.torIsEnabled
 import java.util.*
@@ -73,7 +55,6 @@ import java.util.*
 class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents {
 
   companion object {
-    val mapper: ObjectMapper = jacksonObjectMapper()
     val fileTypeFilter = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
       /* Older Android versions do not support filtering for JSON... */
       """*/*"""
@@ -91,8 +72,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private lateinit var customRefreshInputBinding: CustomRefreshInputBinding
 
   private lateinit var onEditClickedResultLauncher: ActivityResultLauncher<Intent>
-  private lateinit var onBackupWebsiteEntriesResultLauncher: ActivityResultLauncher<String>
-  private lateinit var onRestoreWebsiteEntriesResultLauncher: ActivityResultLauncher<String>
 
   private var handler = Handler(Looper.getMainLooper())
 
@@ -152,20 +131,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     this@MainActivity.openInBrowser(uri)
   }
 
-  private fun generateBackupWebsites(locationSave: String): BackupWebsites {
-    return BackupWebsites(
-      version = defaultBackupWebsitesVersion,
-      timestamp = getDefaultDateTimeString(),
-      locationSaved = locationSave,
-      entries = viewModel.getWebSiteEntryList().value
-        ?: throw IllegalAccessError(msgCannotGetWebsiteEntryListValue)
-    )
-  }
-
-  private fun generateBackupWebsitesJString(locationSave: String): JString {
-    return mapper.writeValueAsString(generateBackupWebsites(locationSave))
-  }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     locale = getCurrentLocale()
@@ -195,77 +160,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     }
 
-    /** Backup Website Entries */
-    onBackupWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-      fun logErr() = Log.error(msgBackupUriPathInvalid)
-      val backupFilePathRelative = try {
-        uri.path
-      } catch (e: Exception) {
-        logErr()
-        return@registerForActivityResult
-      }
-      if (backupFilePathRelative == null) {
-        logErr()
-        return@registerForActivityResult
-      }
-      val backupFileContent = generateBackupWebsitesJString(backupFilePathRelative)
-      val resolver = this@MainActivity.contentResolver
-      /** https://stackoverflow.com/a/64733499/7061105 */
-      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError(msgCannotOpenOutputStreamBackupWebsiteEntries)
-      out.use { stream ->
-        Log.info("Writing WebsiteEntry from Backup...")
-        Log.info("BackupWebsites: " + backupFileContent)
-        stream.write(backupFileContent.toByteArray())
-        stream.flush()
-      }
-    }
-
-    onRestoreWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-      fun logErr() = Log.error(msgInputStreamNullBackupInterrupted)
-      val resolver = this@MainActivity.contentResolver
-      val input = try {
-        resolver.openInputStream(uri)
-      } catch (e: Exception) {
-        logErr()
-        return@registerForActivityResult
-      }
-      if (input == null) {
-        logErr()
-        return@registerForActivityResult
-      }
-      val rawContent: ByteArray = input.use { it.readBytes() }
-      val backupWebsites = try {
-        mapper.readValue<BackupWebsites>(rawContent)
-      } catch (e: Exception) {
-        Log.error(msgFileContent + rawContent)
-        throw IllegalStateException(msgParseBackupFail)
-      }
-      val currentWebsites = viewModel.getWebSiteEntryList().value ?: throw IllegalAccessError(msgCannotGetWebsiteEntryListValue)
-      val providedWebsites = backupWebsites.entries
-      /**
-        Do not import Websites that are already available.
-        Filtered by Website URL.
-      */
-      val newWebsites = providedWebsites.filterNot { provided -> currentWebsites.any { it.url == provided.url } }
-      Log.info("Restoring WebsiteEntry List from Backup...")
-      newWebsites.forEach { website ->
-        Log.info("New WebsiteEntry: " + website)
-        /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
-        /* WebsiteEntry Glue */
-        val cleanedWebsite = WebSiteEntry(
-          name = website.name,
-          url = website.url,
-          itemPosition = website.itemPosition,
-          isLaissezFaire = website.isLaissezFaire,
-          dnsRecordsAAAAA = website.dnsRecordsAAAAA,
-          isOnionAddress = website.isOnionAddress
-        )
-        viewModel.saveWebSiteEntry(cleanedWebsite)
-      }
-      Log.info("Finished restoring WebsiteEntry List from Backup!")
-    }
-
-
     binding.fabAdd.setOnClickListener {
       resetSearchView()
       Utils.totalAmountEntry = webSiteEntryAdapter.itemCount
@@ -274,17 +168,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
     binding.layout.btnStop.setOnClickListener { stopTask() }
-
-    binding.layout.swipeRefresh.setOnRefreshListener {
-      if (isConnected(applicationContext).not()) {
-        if (binding.layout.swipeRefresh.isRefreshing) {
-          binding.layout.swipeRefresh.isRefreshing = false
-        }
-        showToast(applicationContext, getString(R.string.check_internet))
-        return@setOnRefreshListener
-      }
-      viewModel.checkWebSiteStatus()
-    }
 
     // Setting up RecyclerView
     val thisContext = this
@@ -386,6 +269,25 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
     //endregion TOR
+
+    //region Toggle SwipeRefresh
+
+    swipeRefreshIsEnabled = SharedPrefsManager.customPrefs.getBoolean(Constants.SETTINGS_TOGGLE_SWIPE_REFRESH, true)
+    binding.layout.swipeRefresh.isEnabled = swipeRefreshIsEnabled
+    if (swipeRefreshIsEnabled) {
+      binding.layout.swipeRefresh.setOnRefreshListener {
+        if (binding.layout.swipeRefresh.isRefreshing) {
+          binding.layout.swipeRefresh.isRefreshing = false
+        }
+        if (isConnected(applicationContext).not()) {
+          showToast(applicationContext, getString(R.string.check_internet))
+          return@setOnRefreshListener
+        }
+        viewModel.checkWebSiteStatus()
+      }
+    }
+
+    //endregion Toggle SwipeRefresh
   }
 
   private fun packageIsInstalled(packageName: String, pacman: PackageManager): Boolean {
@@ -418,20 +320,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     return true
   }
 
-  private fun permissionIsGranted(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@MainActivity, permission) == PackageManager.PERMISSION_GRANTED
-  private fun permissionIsDenied(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@MainActivity, permission) == PackageManager.PERMISSION_DENIED
-
-  override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<out String>,
-    grantResults: IntArray
-  ) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    if (permissionIsGranted()) {
-      onRestoreWebsiteEntriesResultLauncher.launch(fileTypeFilter)
-    }
-  }
-
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
     return when (item.itemId) {
       R.id.action_settings -> {
@@ -450,19 +338,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         true
       }
       R.id.action_backup -> {
-        onBackupWebsiteEntriesResultLauncher.launch("backup-webmon_${getDefaultDateTimeString()}.json")
         true
       }
       R.id.action_restore -> {
-        if (
-          permissionIsDenied() &&
-          Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-          Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
-        ) {
-          ActivityCompat.requestPermissions(this, arrayOf(permissionReadExternalStorage), requestCodeReadExternalStorage)
-        } else {
-          onRestoreWebsiteEntriesResultLauncher.launch(fileTypeFilter)
-        }
         true
       }
       else -> super.onOptionsItemSelected(item)
@@ -622,7 +500,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       super.onSelectedChanged(viewHolder, actionState)
       // Handle action state changes
       val swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG
-      binding.layout.swipeRefresh.isEnabled = swiping.not()
+      binding.layout.swipeRefresh.isEnabled = if (swipeRefreshIsEnabled) {
+        swiping.not()
+      } else {
+        false
+      }
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {

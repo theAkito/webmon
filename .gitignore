@@ -73,6 +73,8 @@ captures/
 .idea/modules.xml
 # Comment next line if keeping position of elements in Navigation Editor is relevant for you
 .idea/navEditor.xml
+# Emulator AVD Metadata
+.idea/deploymentTargetDropDown.xml
 
 # Keystore files
 # Uncomment the following lines if you do not want to check your keystore files in.
@@ -391,5 +393,3 @@ hs_err_pid*
 ### AndroidStudio Patch ###
 
 !/gradle/wrapper/gradle-wrapper.jar
-
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,android,androidstudio,gradle,intellij,windows
