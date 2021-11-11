@@ -109,6 +109,14 @@ class SettingsActivity : AppCompatActivity() {
     )
   }
 
+  private fun warnOfBackupImportParsingFailure(backupType: String) {
+    AlertDialog.Builder(this).apply {
+      setTitle("""Failed to restore ${backupType} Backup from File!""")
+      setMessage("""When trying to load the ${backupType} Backup from File, an error was encountered. Are you sure you selected the correct file?""")
+      setNeutralButton(R.string.text_backup_import_failure_confirmation, null)
+    }.create().show()
+  }
+
   private fun generateBackupWebsitesJString(locationSave: String): jString = mapper.writeValueAsString(generateBackupWebsites(locationSave))
   private fun permissionIsGranted(permission: String = Constants.permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_GRANTED
   private fun permissionIsDenied(permission: String = Constants.permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_DENIED
@@ -269,7 +277,7 @@ class SettingsActivity : AppCompatActivity() {
 
     //endregion Advanced Setting: Export Backup of Data
 
-    //region Advanced Setting: Impor Backup of Data
+    //region Advanced Setting: Import Backup of Data
 
     onRestoreWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
       fun logErr() = Log.error(ExceptionCompanion.msgInputStreamNullBackupInterrupted)
@@ -289,7 +297,8 @@ class SettingsActivity : AppCompatActivity() {
         mapper.readValue<BackupWebsites>(rawContent)
       } catch (e: Exception) {
         Log.error(ExceptionCompanion.msgFileContent + rawContent)
-        throw IllegalStateException(ExceptionCompanion.msgParseBackupDataFail)
+        warnOfBackupImportParsingFailure("Data")
+        return@registerForActivityResult
       }
       val providedWebsites = backupWebsites.entries
       /**
@@ -392,7 +401,8 @@ class SettingsActivity : AppCompatActivity() {
         mapper.readValue<BackupSettings>(rawContent)
       } catch (e: Exception) {
         Log.error(ExceptionCompanion.msgFileContent + rawContent)
-        throw IllegalStateException(ExceptionCompanion.msgParseBackupSettingsFail)
+        warnOfBackupImportParsingFailure("Settings")
+        return@registerForActivityResult
       }
       Log.info("Restoring Settings from Backup...")
       with(SharedPrefsManager.customPrefs) {
