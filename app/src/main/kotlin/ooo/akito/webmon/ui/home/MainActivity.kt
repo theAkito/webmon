@@ -39,6 +39,7 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
+import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
@@ -205,6 +206,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
       if (binding.layout.swipeRefresh.isRefreshing) {
         binding.layout.swipeRefresh.isRefreshing = false
+      }
+      if (isEntryCreated) {
+        isEntryCreated = false
+        return@observe
       }
 
       val urlToWebsite: Map<String, WebSiteEntry> = viewModel.getWebsiteUrlToWebsiteEntry()
