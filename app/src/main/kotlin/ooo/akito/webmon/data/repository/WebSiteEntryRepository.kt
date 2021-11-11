@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import ooo.akito.webmon.data.db.DbHelper
+import ooo.akito.webmon.data.db.DatabaseController
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.db.WebSiteEntryDao
 import ooo.akito.webmon.data.model.WebSiteStatus
@@ -52,7 +52,7 @@ class WebSiteEntryRepository(context: Context) {
   }
 
   private val webSiteEntryDao: WebSiteEntryDao? by lazy {
-    DbHelper.getInstance(context)?.webSiteEntryDao()
+    DatabaseController.getInstance(context)?.webSiteEntryDao()
   }
   private val allWebSiteEntry: LiveData<List<WebSiteEntry>> = webSiteEntryDao?.getAllWebSiteEntryList()!!
 

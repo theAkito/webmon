@@ -9,83 +9,106 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center"
+        android:gravity="top"
         android:padding="10dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/inputName"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_marginTop="10dp">
+            android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/editName"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints="@string/name"
-                android:gravity="start"
-                android:hint="@string/name"
-                android:inputType="textCapSentences"
-                android:singleLine="true"
-                android:textStyle="bold"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:orientation="vertical" >
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/inputName"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/inputUrl"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="67dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp">
+                    <EditText
+                        android:id="@+id/editName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="@string/name"
+                        android:gravity="start"
+                        android:hint="@string/name"
+                        android:inputType="textCapSentences"
+                        android:singleLine="true"
+                        android:textStyle="bold"
+                        tools:ignore="SpeakableTextPresentCheck" />
 
-            <EditText
-                android:id="@+id/editUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints="@string/name"
-                android:gravity="start"
-                android:hint="@string/url"
-                android:inputType="textUri"
-                android:singleLine="true"
-                android:textStyle="bold"
-                tools:ignore="SpeakableTextPresentCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/inputUrl"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="67dp"
+                    android:layout_marginTop="10dp">
 
+                    <EditText
+                        android:id="@+id/editUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="@string/name"
+                        android:gravity="start"
+                        android:hint="@string/url"
+                        android:inputType="textUri"
+                        android:singleLine="true"
+                        android:textStyle="bold"
+                        tools:ignore="SpeakableTextPresentCheck" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/isLaissezFaire"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="@string/is_laissez_faire" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/checkDNSRecords"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="@string/check_a_aaaa_dns_records" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:text="@string/save"
+                    app:backgroundTint="@color/colorPrimary"
+                    app:cornerRadius="5dp" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/isOnionAddress"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="@string/is_onion_address" />
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginVertical="15dp"
+                    android:background="#BCBFD8" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            app:cornerRadius="5dp"
-            app:backgroundTint="@color/colorPrimary"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            android:paddingStart="30dp"
-            android:paddingEnd="30dp"
-            android:text="@string/save"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/isLaissezFaire"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/is_laissez_faire" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/checkDNSRecords"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/check_a_aaaa_dns_records" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/isOnionAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/is_onion_address" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/entry_create_tag_cloud"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp">
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
+        </ScrollView>
 
 
     </LinearLayout>
