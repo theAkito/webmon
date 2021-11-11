@@ -19,4 +19,4 @@
 
 
 rm docs/index.html
-asciidoctor -o docs/index.html README.adoc
+asciidoctor -o docs/index.html README-index.adoc
