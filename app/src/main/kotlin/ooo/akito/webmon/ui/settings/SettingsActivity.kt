@@ -1,6 +1,7 @@
 package ooo.akito.webmon.ui.settings
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
@@ -30,12 +32,13 @@ import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVer
 import ooo.akito.webmon.data.model.BackupSettings
 import ooo.akito.webmon.data.model.BackupWebsites
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
+import ooo.akito.webmon.ui.home.MainActivity
 import ooo.akito.webmon.ui.home.MainActivity.Companion.fileTypeFilter
 import ooo.akito.webmon.ui.home.MainViewModel
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
 import ooo.akito.webmon.utils.BackgroundCheckInterval.valueList
 import ooo.akito.webmon.utils.BackupSettingsManager
-import ooo.akito.webmon.utils.Constants
+import ooo.akito.webmon.utils.Constants.BACKUP_LAST_SAVED_LOCATION
 import ooo.akito.webmon.utils.Constants.DEFAULT_INTERVAL_MIN
 import ooo.akito.webmon.utils.Constants.HIDE_IS_ONION_ADDRESS
 import ooo.akito.webmon.utils.Constants.IS_ADDED_DEFAULT_DATA
@@ -48,6 +51,7 @@ import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.ExceptionCompanion
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupSettings
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupWebsiteEntries
 import ooo.akito.webmon.utils.ExceptionCompanion.msgSpecificToRebirth
 import ooo.akito.webmon.utils.Log
@@ -59,8 +63,14 @@ import ooo.akito.webmon.utils.Utils.mapper
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.triggerRebirth
+import ooo.akito.webmon.utils.defaultBackupShareType
 import ooo.akito.webmon.utils.jString
 import ooo.akito.webmon.utils.msgGenericRestarting
+import ooo.akito.webmon.utils.nameBackupDataCaseLower
+import ooo.akito.webmon.utils.nameBackupDataCasePascal
+import ooo.akito.webmon.utils.nameBackupSettingsCaseLower
+import ooo.akito.webmon.utils.nameBackupSettingsCasePascal
+import ooo.akito.webmon.utils.nameNoneCaseLower
 import ooo.akito.webmon.utils.workaroundRebirthMillis
 
 
@@ -80,7 +90,7 @@ class SettingsActivity : AppCompatActivity() {
   private lateinit var onBackupSettingsResultLauncher: ActivityResultLauncher<String>
   private lateinit var onRestoreSettingsResultLauncher: ActivityResultLauncher<String>
 
-  private lateinit var websites: List<WebSiteEntry>
+  private var websites: List<WebSiteEntry> = listOf()
 
   private val backupSettingsManager: BackupSettingsManager by lazy { BackupSettingsManager() }
 
@@ -118,8 +128,76 @@ class SettingsActivity : AppCompatActivity() {
   }
 
   private fun generateBackupWebsitesJString(locationSave: String): jString = mapper.writeValueAsString(generateBackupWebsites(locationSave))
-  private fun permissionIsGranted(permission: String = Constants.permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_GRANTED
-  private fun permissionIsDenied(permission: String = Constants.permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_DENIED
+  private fun permissionIsGranted(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_GRANTED
+  private fun permissionIsDenied(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_DENIED
+
+  private fun Button.shareButtonSetOnClickListener(backupType: String, backupFileContent: String) {
+    this.setOnClickListener {
+      val shareIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_STREAM, backupFileContent.toByteArray())
+        putExtra(Intent.EXTRA_TITLE, "backup-webmon-${backupType}_${getDefaultDateTimeString()}.json")
+        type = defaultBackupShareType
+      }
+      startActivity(Intent.createChooser(shareIntent, resources.getText(R.string.send_to)))
+    }
+  }
+
+  private fun Button.backupImportButtongSetOnClickListener(backupType: String) {
+    this.setOnClickListener {
+      /*
+        At some point, this will open a new activity instead,
+        where the user can read more information about the backup and customise it.
+      */
+      if (
+        permissionIsDenied() &&
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+        Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
+      ) {
+        ActivityCompat.requestPermissions(this@SettingsActivity, arrayOf(permissionReadExternalStorage),
+          requestCodeReadExternalStorage
+        )
+      } else {
+        when (backupType.lowercase()) {
+          nameBackupDataCaseLower -> onRestoreWebsiteEntriesResultLauncher.launch(fileTypeFilter)
+          nameBackupSettingsCaseLower -> onRestoreSettingsResultLauncher.launch(fileTypeFilter)
+          else -> throw IllegalArgumentException("[SettingsActivity.generateBackupDataExportLauncher()] Cannot generate BackupFileContent!")
+        }
+      }
+    }
+  }
+
+  private fun generateBackupDataExportLauncher(backupType: String, illegalAccessErrorMsg: String): ActivityResultLauncher<String> {
+    return registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
+      fun logErr() = Log.error(ExceptionCompanion.msgBackupUriPathInvalid)
+      val backupFilePathRelative = try {
+        uri.path
+      } catch (e: Exception) {
+        logErr()
+        return@registerForActivityResult
+      }
+      if (backupFilePathRelative == null) {
+        logErr()
+        return@registerForActivityResult
+      }
+      /* On next backup, the same destination folder will be opened. */
+      SharedPrefsManager.customPrefs[BACKUP_LAST_SAVED_LOCATION] = uri.toString()
+      val backupFileContent = when (backupType.lowercase()) {
+        nameBackupDataCaseLower -> generateBackupWebsitesJString(backupFilePathRelative)
+        nameBackupSettingsCaseLower -> backupSettingsManager.generateBackupFileContent(backupFilePathRelative)
+        else -> throw IllegalArgumentException("[SettingsActivity.generateBackupDataExportLauncher()] Cannot generate BackupFileContent!")
+      }
+      val resolver = this@SettingsActivity.contentResolver
+      /** https://stackoverflow.com/a/64733499/7061105 */
+      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError(illegalAccessErrorMsg)
+      out.use { stream ->
+        Log.info("Writing ${backupType} as Backup...")
+        Log.info("${backupType}: " + backupFileContent)
+        stream.write(backupFileContent.toByteArray())
+        stream.flush()
+      }
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -165,7 +243,7 @@ class SettingsActivity : AppCompatActivity() {
     switchSettingsTorEnable.setOnCheckedChangeListener { _, isChecked ->
       SharedPrefsManager.customPrefs[SETTINGS_TOR_ENABLE] = isChecked
       SharedPrefsManager.customPrefs[HIDE_IS_ONION_ADDRESS] = false
-      Log.warn("Tor switched to ${isChecked}!")
+      Log.warn("TOR switched to ${isChecked}!")
       restartApp()
     }
 
@@ -243,36 +321,17 @@ class SettingsActivity : AppCompatActivity() {
     //region Advanced Setting: Export Backup of Data
 
     /** Backup Website Entries */
-    onBackupWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-      fun logErr() = Log.error(ExceptionCompanion.msgBackupUriPathInvalid)
-      val backupFilePathRelative = try {
-        uri.path
-      } catch (e: Exception) {
-        logErr()
-        return@registerForActivityResult
-      }
-      if (backupFilePathRelative == null) {
-        logErr()
-        return@registerForActivityResult
-      }
-      val backupFileContent = generateBackupWebsitesJString(backupFilePathRelative)
-      val resolver = this@SettingsActivity.contentResolver
-      /** https://stackoverflow.com/a/64733499/7061105 */
-      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError(msgCannotOpenOutputStreamBackupWebsiteEntries)
-      out.use { stream ->
-        Log.info("Writing WebsiteEntry List as Backup...")
-        Log.info("BackupWebsites: " + backupFileContent)
-        stream.write(backupFileContent.toByteArray())
-        stream.flush()
-      }
-    }
+    onBackupWebsiteEntriesResultLauncher = generateBackupDataExportLauncher(
+      backupType = nameBackupDataCasePascal,
+      illegalAccessErrorMsg = msgCannotOpenOutputStreamBackupWebsiteEntries
+    )
 
     activitySettingsBinding.btnBackupDataExport.setOnClickListener {
       /*
         At some point, this will open a new activity instead,
         where the user can read more information about the backup and customise it.
       */
-      onBackupWebsiteEntriesResultLauncher.launch("backup-webmon-data_${getDefaultDateTimeString()}.json") //TODO: Fix dangling String.
+      onBackupWebsiteEntriesResultLauncher.launch("backup-webmon-${nameBackupDataCaseLower}_${getDefaultDateTimeString()}.json")
     }
 
     //endregion Advanced Setting: Export Backup of Data
@@ -324,59 +383,24 @@ class SettingsActivity : AppCompatActivity() {
       Log.info("Finished restoring WebsiteEntry List from Backup!")
     }
 
-    activitySettingsBinding.btnBackupDataImport.setOnClickListener {
-      /*
-        At some point, this will open a new activity instead,
-        where the user can read more information about the backup and customise it.
-      */
-      if (
-        permissionIsDenied() &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-        Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
-      ) {
-        ActivityCompat.requestPermissions(this, arrayOf(permissionReadExternalStorage),
-          requestCodeReadExternalStorage
-        )
-      } else {
-          onRestoreWebsiteEntriesResultLauncher.launch(fileTypeFilter)
-      }
-    }
+    activitySettingsBinding.btnBackupDataImport.backupImportButtongSetOnClickListener(nameBackupDataCaseLower)
 
     //endregion Advanced Setting: Import Backup of Data
 
     //region Advanced Setting: Export Backup of Settings
 
     /** Backup App Settings */
-    onBackupSettingsResultLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-      fun logErr() = Log.error(ExceptionCompanion.msgBackupUriPathInvalid)
-      val backupFilePathRelative = try {
-        uri.path
-      } catch (e: Exception) {
-        logErr()
-        return@registerForActivityResult
-      }
-      if (backupFilePathRelative == null) {
-        logErr()
-        return@registerForActivityResult
-      }
-      val backupFileContent = backupSettingsManager.generateBackupFileContent(backupFilePathRelative)
-      val resolver = this@SettingsActivity.contentResolver
-      /** https://stackoverflow.com/a/64733499/7061105 */
-      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError(msgCannotOpenOutputStreamBackupWebsiteEntries)
-      out.use { stream ->
-        Log.info("Writing Settings as Backup...")
-        Log.info("BackupSettings: " + backupFileContent)
-        stream.write(backupFileContent.toByteArray())
-        stream.flush()
-      }
-    }
+    onBackupSettingsResultLauncher = generateBackupDataExportLauncher(
+      backupType = nameBackupSettingsCasePascal,
+      illegalAccessErrorMsg = msgCannotOpenOutputStreamBackupSettings
+    )
 
     activitySettingsBinding.btnBackupSettingsExport.setOnClickListener {
       /*
         At some point, this will open a new activity instead,
         where the user can read more information about the backup and customise it.
       */
-      onBackupSettingsResultLauncher.launch("backup-webmon-settings_${getDefaultDateTimeString()}.json") //TODO: Fix dangling String.
+      onBackupSettingsResultLauncher.launch("backup-webmon-${nameBackupSettingsCaseLower}_${getDefaultDateTimeString()}.json")
     }
 
     //endregion Advanced Setting: Export Backup of Settings
@@ -417,25 +441,29 @@ class SettingsActivity : AppCompatActivity() {
       Log.info("Finished restoring Settings from Backup!")
     }
 
-    activitySettingsBinding.btnBackupSettingsImport.setOnClickListener {
-      /*
-        At some point, this will open a new activity instead,
-        where the user can read more information about the backup and customise it.
-      */
-      if (
-        permissionIsDenied() &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-        Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
-      ) {
-        ActivityCompat.requestPermissions(this, arrayOf(permissionReadExternalStorage),
-          requestCodeReadExternalStorage
-        )
-      } else {
-        onRestoreSettingsResultLauncher.launch(fileTypeFilter)
-      }
-    }
+    activitySettingsBinding.btnBackupSettingsImport.backupImportButtongSetOnClickListener(nameBackupSettingsCaseLower)
 
     //endregion Advanced Setting: Import Backup of Settings
+
+    //region Advanced Setting: Share Backup of Data
+
+    /** Share Backup Website Entries */
+    activitySettingsBinding.btnBackupDataShare.shareButtonSetOnClickListener(
+      nameBackupDataCaseLower,
+      generateBackupWebsitesJString(nameNoneCaseLower)
+    )
+
+    //endregion Advanced Setting: Share Backup of Data
+
+    //region Advanced Setting: Share Backup of Settings
+
+    /** Share Backup Settings */
+    activitySettingsBinding.btnBackupDataShare.shareButtonSetOnClickListener(
+      nameBackupSettingsCaseLower,
+      backupSettingsManager.generateBackupFileContent(nameNoneCaseLower)
+    )
+
+    //endregion Advanced Setting: Share Backup of Settings
 
     //endregion Advanced Settings
   }
