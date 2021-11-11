@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:name="ooo.akito.webmon.MyApplication"
+        android:name="ooo.akito.webmon.Webmon"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup"
         tools:targetApi="m">

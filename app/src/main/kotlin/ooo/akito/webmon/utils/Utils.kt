@@ -325,7 +325,7 @@ object Utils {
     return this.associateBy { it.url }
   }
 
-  fun appIsVisible(): Boolean = ooo.akito.webmon.MyApplication.ActivityVisibility.appIsVisible
+  fun appIsVisible(): Boolean = ooo.akito.webmon.Webmon.ActivityVisibility.appIsVisible
 
   fun String.removeTrailingSlashes(): String = this.replace(Regex("""[/]*$"""), "")
   fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")

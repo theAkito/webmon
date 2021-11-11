@@ -7,7 +7,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import ooo.akito.webmon.utils.SharedPrefsManager
 
-class MyApplication : Application(), LifecycleObserver {
+class Webmon : Application(), LifecycleObserver {
 
   object ActivityVisibility {
     var appIsVisible: Boolean = false
