@@ -33,4 +33,6 @@ object Constants {
   const val HIDE_IS_ONION_ADDRESS: String = "hide_is_onion_address"
   const val HIDE_CHECK_DNS_RECORD_A_AAAA: String = "hide_check_dns_record_a_aaaa"
 
+  const val BACKUP_LAST_SAVED_LOCATION: String = "backup_last_saved_location"
+
 }
