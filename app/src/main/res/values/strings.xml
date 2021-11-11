@@ -81,4 +81,5 @@
     <string name="backup_settings_import">Import Backup of Settings</string>
     <string name="backup_data_export">Export Backup of Data</string>
     <string name="backup_data_import">Import Backup of Data</string>
+    <string name="send_to">Share Backup with...</string>
 </resources>

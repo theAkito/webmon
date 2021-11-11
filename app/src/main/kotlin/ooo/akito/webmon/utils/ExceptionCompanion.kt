@@ -55,6 +55,9 @@ object ExceptionCompanion {
   val msgCannotOpenOutputStreamBackupWebsiteEntries: String by lazy {
     "Cannot open output stream when trying to write Backup Website Entries File!"
   }
+  val msgCannotOpenOutputStreamBackupSettings: String by lazy {
+    "Cannot open output stream when trying to write Backup Settings File!"
+  }
   val msgGenericTorFailure: String by lazy {
     "TOR Failure!"
   }
