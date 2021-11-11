@@ -9,7 +9,6 @@ import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.torIsEnabled
 import ooo.akito.webmon.utils.Utils.totalAmountEntry
@@ -44,6 +43,8 @@ class CreateEntryActivity : AppCompatActivity() {
     }
 
     title = if (webSiteEntry != null) getString(R.string.update_entry) else getString(R.string.create_entry)
+
+    activityCreateEntryBinding.editUrl.text.append("https://")
 
     /* Because `hideIsOnionAddress()` has a conditional check. */
     activityCreateEntryBinding.isOnionAddress.visibility = View.GONE
