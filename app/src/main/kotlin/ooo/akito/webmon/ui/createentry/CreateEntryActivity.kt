@@ -44,7 +44,12 @@ class CreateEntryActivity : AppCompatActivity() {
 
     title = if (webSiteEntry != null) getString(R.string.update_entry) else getString(R.string.create_entry)
 
-    activityCreateEntryBinding.editUrl.text.append("https://")
+    if (activityCreateEntryBinding.editUrl.text.isBlank()) {
+      activityCreateEntryBinding.editUrl.text.let {
+        it.clear()
+        it.append("https://")
+      }
+    }
 
     /* Because `hideIsOnionAddress()` has a conditional check. */
     activityCreateEntryBinding.isOnionAddress.visibility = View.GONE
