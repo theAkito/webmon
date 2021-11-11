@@ -9,6 +9,8 @@ import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.Log
+import ooo.akito.webmon.utils.Utils
+import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.torIsEnabled
 import ooo.akito.webmon.utils.Utils.totalAmountEntry
 
@@ -19,10 +21,10 @@ class CreateEntryActivity : AppCompatActivity() {
   private lateinit var activityCreateEntryBinding: ActivityCreateEntryBinding
 
   private fun hideCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE }
-  private fun hideIsOnionAddress() { activityCreateEntryBinding.isOnionAddress.visibility = View.GONE }
+  private fun hideIsOnionAddress() { if (torIsEnabled) { activityCreateEntryBinding.isOnionAddress.visibility = View.GONE } }
   private fun hideIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.GONE }
   private fun showCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE }
-  private fun showIsOnionAddress() { activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE }
+  private fun showIsOnionAddress() { if (torIsEnabled) { activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE } }
   private fun showIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.VISIBLE }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,8 +45,11 @@ class CreateEntryActivity : AppCompatActivity() {
 
     title = if (webSiteEntry != null) getString(R.string.update_entry) else getString(R.string.create_entry)
 
+    /* Because `hideIsOnionAddress()` has a conditional check. */
+    activityCreateEntryBinding.isOnionAddress.visibility = View.GONE
+
     if (torIsEnabled) {
-      Log.info("Tor is enabled. Showing option to set Onion Address.")
+      Log.info("TOR is enabled. Showing option to set Onion Address.")
       showIsOnionAddress()
       if (webSiteEntry != null && webSiteEntry!!.isOnionAddress) {
         hideCheckDNSRecords()
@@ -52,7 +57,7 @@ class CreateEntryActivity : AppCompatActivity() {
         showCheckDNSRecords()
       }
     } else {
-      Log.info("Tor is enabled. Hiding option to set Onion Address.")
+      Log.info("TOR is not enabled. Hiding option to set Onion Address.")
       hideIsOnionAddress()
       showCheckDNSRecords()
     }
@@ -106,6 +111,7 @@ class CreateEntryActivity : AppCompatActivity() {
    * */
   private fun saveEntry() {
     if (validateFields()) {
+      isEntryCreated = true
       val id = webSiteEntry?.id
       val todo = WebSiteEntry(
         /* WebsiteEntry Glue */
