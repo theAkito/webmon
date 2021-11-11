@@ -43,7 +43,6 @@ import ooo.akito.webmon.utils.Utils.joinToStringDescription
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
-import ooo.akito.webmon.utils.Utils.showAutoStartEnableDialog
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
@@ -251,12 +250,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     /* Make sure SyncWorker is not run more than once, simultaneously. */
     this.safelyStartSyncWorker()
-
-    Handler(Looper.getMainLooper()).postDelayed({
-      if (!isDestroyed) showAutoStartEnableDialog(
-        this
-      )
-    }, 1000)
 
     //region TOR
 

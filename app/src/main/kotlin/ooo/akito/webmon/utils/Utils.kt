@@ -138,6 +138,7 @@ object Utils {
   fun isCustomRom(): Boolean = listOf("xiaomi", "oppo", "vivo").contains(manufacturer)
 
   fun openAutoStartScreen(context: Context) {
+    /* Currently not in use. */
     val intent = Intent()
     when(manufacturer) {
       "xiaomi" -> intent.component= ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")
@@ -149,6 +150,7 @@ object Utils {
   }
 
   fun showAutoStartEnableDialog(context: Context) {
+    /* Currently not in use. */
     if (isCustomRom() && !SharedPrefsManager.customPrefs.getBoolean(Constants.IS_AUTO_START_SHOWN, false)) {
       AlertDialog.Builder(context).apply {
         setTitle(context.getString(R.string.enable_auto_start))
