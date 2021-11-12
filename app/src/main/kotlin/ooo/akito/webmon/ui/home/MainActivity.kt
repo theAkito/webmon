@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.model.CustomMonitorData
@@ -113,11 +114,24 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     binding.layout.layoutForceRefreshInfo.visibility = View.GONE
   }
 
+  private fun String?.openInBrowser() {
+    val uri = this.asUri()
+    if (uri == null) {
+      Log.error(msgUriProvidedIsNull)
+      return
+    }
+    this@MainActivity.openInBrowser(uri)
+  }
+
+  private fun disableSwipeRefreshIsRefreshing() {
+    if (binding.layout.swipeRefresh.isRefreshing || swipeRefreshIsEnabled.not()) {
+      binding.layout.swipeRefresh.isRefreshing = false
+    }
+  }
+
   private fun handleInternetUnavailable(): Boolean {
     return if (isConnected(applicationContext).not()) {
-      if (binding.layout.swipeRefresh.isRefreshing) {
-        binding.layout.swipeRefresh.isRefreshing = false
-      }
+      disableSwipeRefreshIsRefreshing()
       showToast(applicationContext, getString(R.string.check_internet))
       Log.error(msgInternetUnavailable)
       true
@@ -126,13 +140,24 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
   }
 
-  private fun String?.openInBrowser() {
-    val uri = this.asUri()
-    if (uri == null) {
-      Log.error(msgUriProvidedIsNull)
-      return
+  private fun SwipeRefreshLayout.setOnRefreshListener() {
+    this.setOnRefreshListener LISTENER@{
+      disableSwipeRefreshIsRefreshing()
+      if (isConnected(applicationContext).not()) {
+        showToast(applicationContext, getString(R.string.check_internet))
+        return@LISTENER
+      }
+      viewModel.checkWebSiteStatus()
     }
-    this@MainActivity.openInBrowser(uri)
+  }
+
+  private fun packageIsInstalled(packageName: String, pacman: PackageManager): Boolean {
+    return try {
+      pacman.getPackageInfo(packageName, 0)
+      true
+    } catch (e: Exception) {
+      false
+    }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -183,6 +208,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
           if (dy > 0) {
+            //TODO: Fix https://github.com/theAkito/webmon/issues/17
             binding.fabAdd.hide()
           } else if (dy < 0)
             binding.fabAdd.show()
@@ -209,9 +235,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         plus when pressing the Refresh option, manually.
       */
 
-      if (binding.layout.swipeRefresh.isRefreshing) {
-        binding.layout.swipeRefresh.isRefreshing = false
-      }
+      disableSwipeRefreshIsRefreshing()
       if (isEntryCreated) {
         isEntryCreated = false
         return@observe
@@ -276,30 +300,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     //region Toggle SwipeRefresh
 
     swipeRefreshIsEnabled = SharedPrefsManager.customPrefs.getBoolean(Constants.SETTINGS_TOGGLE_SWIPE_REFRESH, true)
-    binding.layout.swipeRefresh.isEnabled = swipeRefreshIsEnabled
-    if (swipeRefreshIsEnabled) {
-      binding.layout.swipeRefresh.setOnRefreshListener {
-        if (binding.layout.swipeRefresh.isRefreshing) {
-          binding.layout.swipeRefresh.isRefreshing = false
-        }
-        if (isConnected(applicationContext).not()) {
-          showToast(applicationContext, getString(R.string.check_internet))
-          return@setOnRefreshListener
-        }
-        viewModel.checkWebSiteStatus()
-      }
-    }
+    binding.layout.swipeRefresh.isEnabled = true
+    binding.layout.swipeRefresh.setOnRefreshListener()
 
     //endregion Toggle SwipeRefresh
-  }
-
-  private fun packageIsInstalled(packageName: String, pacman: PackageManager): Boolean {
-    return try {
-      pacman.getPackageInfo(packageName, 0)
-      true
-    } catch (e: Exception) {
-      false
-    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -503,11 +507,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       super.onSelectedChanged(viewHolder, actionState)
       // Handle action state changes
       val swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG
-      binding.layout.swipeRefresh.isEnabled = if (swipeRefreshIsEnabled) {
-        swiping.not()
-      } else {
-        false
-      }
+      binding.layout.swipeRefresh.isEnabled = swiping.not()
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
