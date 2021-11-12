@@ -28,6 +28,8 @@ import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
+import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
+import ooo.akito.webmon.utils.Constants.defaultJArrayAsString
 import ooo.akito.webmon.utils.Constants.orbotFQID
 import ooo.akito.webmon.utils.Environment.defaultTimeFormat
 import ooo.akito.webmon.utils.Environment.getCurrentLocale
@@ -39,8 +41,10 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
+import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
+import ooo.akito.webmon.utils.Utils.mapperUgly
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
@@ -138,6 +142,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
     binding = ActivityMainBinding.inflate(layoutInflater)
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater, binding.root, false)
+    globalEntryTagsNames = mapperUgly.readTree(SharedPrefsManager.customPrefs.getString(WEBSITE_ENTRY_TAG_CLOUD_DATA, defaultJArrayAsString)).asIterable().mapNotNull { it.asText() }
 
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
