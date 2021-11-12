@@ -10,10 +10,12 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.work.WorkManager
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -58,8 +60,17 @@ object Utils {
   var swipeRefreshIsEnabled = true
   var isEntryCreated = false /** Do not observe "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
 
+  var globalEntryTagsNames: List<String> = listOf("default")
+    set(value) {
+      val readyValue = value.distinct().sorted()
+      field = readyValue
+      SharedPrefsManager.customPrefs[Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA] = mapperUgly.writeValueAsString(readyValue)
+    }
+
   val mapper: ObjectMapper = jacksonObjectMapper()
     .enable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
+  val mapperUgly: ObjectMapper = jacksonObjectMapper()
+    .disable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
 
   fun triggerRebirth(context: Context) {
     /** https://stackoverflow.com/a/46848226/7061105 */
@@ -73,6 +84,12 @@ object Utils {
     val mainIntent = Intent.makeRestartActivityTask(componentName)
     context.startActivity(mainIntent)
     Runtime.getRuntime().exit(0)
+  }
+
+  fun Context.showKeyboard(view: View) {
+    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).apply {
+      showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
   }
 
   fun currentDateTime(): String {

@@ -28,6 +28,9 @@ object ExceptionCompanion {
     "Unknown"
   }
 
+  val msgNullNotNull: String by lazy {
+    """This variable is null, even though it cannot be null."""
+  }
   val msgWebsitesNotReachable: String by lazy {
     "Several Websites are not reachable!"
   }

@@ -124,6 +124,7 @@ class SettingsActivity : AppCompatActivity() {
       setTitle("""Failed to restore ${backupType} Backup from File!""")
       setMessage("""When trying to load the ${backupType} Backup from File, an error was encountered. Are you sure you selected the correct file?""")
       setNeutralButton(R.string.text_backup_import_failure_confirmation, null)
+      setCancelable(false)
     }.create().show()
   }
 
