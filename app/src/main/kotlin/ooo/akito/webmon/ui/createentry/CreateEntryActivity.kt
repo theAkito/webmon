@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
+import com.google.android.material.textfield.TextInputEditText
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
@@ -65,7 +66,6 @@ class CreateEntryActivity : AppCompatActivity() {
     }
   }
 
-  //checkedTagNameToIsChecked[text]
   private fun fillTagCloud(init: Boolean = false, newTagName: String? = null) {
     activityCreateEntryBinding.entryCreateTagCloud.apply CHIP_GROUP@{
       fun loadChips(): List<Chip> = children.mapNotNull { it as Chip }.toList()
@@ -168,10 +168,10 @@ class CreateEntryActivity : AppCompatActivity() {
 
     title = if (webSiteEntry != null) getString(R.string.update_entry) else getString(R.string.create_entry)
 
-    if (activityCreateEntryBinding.editUrl.text.isBlank()) {
+    if (activityCreateEntryBinding.editUrl.text?.isBlank() == true) {
       activityCreateEntryBinding.editUrl.text.let {
-        it.clear()
-        it.append("https://")
+        it?.clear()
+        it?.append("https://")
       }
     }
 
@@ -276,7 +276,7 @@ class CreateEntryActivity : AppCompatActivity() {
         setNegativeButton(R.string.text_create_entry_tag_cloud_cancel) { dialog, _ -> dialog.dismiss() }
 
         setNeutralButton(R.string.text_create_entry_tag_cloud_add) { _, _ ->
-          val editText: EditText = EditText(this@CreateEntryActivity).apply {
+          val editText: TextInputEditText = TextInputEditText(this@CreateEntryActivity).apply {
             inputType = InputType.TYPE_CLASS_TEXT
           }.apply EDIT_TEXT@{
             rootView.apply VIEW_EDIT_TEXT@{
@@ -401,12 +401,12 @@ class CreateEntryActivity : AppCompatActivity() {
    * Validation of EditText
    * */
   private fun validateFields(): Boolean {
-    if (activityCreateEntryBinding.editName.text.isEmpty()) {
+    if (activityCreateEntryBinding.editName.text?.isEmpty() == true) {
       activityCreateEntryBinding.inputName.error = getString(R.string.enter_valid_name)
       activityCreateEntryBinding.editName.requestFocus()
       return false
     }
-    if (activityCreateEntryBinding.editUrl.text.isEmpty()) {
+    if (activityCreateEntryBinding.editUrl.text?.isEmpty() == true) {
       activityCreateEntryBinding.inputUrl.error = getString(R.string.enter_valid_url)
       activityCreateEntryBinding.editUrl.requestFocus()
       return false
