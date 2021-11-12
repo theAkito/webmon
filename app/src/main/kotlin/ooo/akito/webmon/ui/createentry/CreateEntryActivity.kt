@@ -66,12 +66,13 @@ class CreateEntryActivity : AppCompatActivity() {
     }
   }
 
-  private fun fillTagCloud(init: Boolean = false, newTagName: String? = null) {
+  private fun fillTagCloud(init: Boolean = false, newTagName: String? = null, oldTagName: String? = null) {
     activityCreateEntryBinding.entryCreateTagCloud.apply CHIP_GROUP@{
       fun loadChips(): List<Chip> = children.mapNotNull { it as Chip }.toList()
       var chips = loadChips()
       if (init) { /* Only going through `init` once, on opening the `CreateEntryActivity`. */
         /* Fill it only with custom tags, which are actually turned on for this WebsiteEntry. */
+        /* Additionally, implicitly removes all orphaned custom tags, as only globally available tags will be taken. */
         thisWebsiteEntryCustomTags = thisWebsiteEntryCustomTags.intersect(globalEntryTagsNames).toMutableList()
         /* Intialising Chips in ChipGroup. The latter is staticaly there, but all Chips are generated dynamically. */
         checkedTagNameToIsChecked = globalEntryTagsNames.map { tagName ->
@@ -104,6 +105,13 @@ class CreateEntryActivity : AppCompatActivity() {
             }
           )
         }
+      } /* END: newTagName */ else if (oldTagName != null) {
+        /* Removing Chip, because its tag was removed. */
+        val chip = chips.firstOrNull { chip -> chip.text.toString() == oldTagName }
+        if (chip != null) {
+          this.removeView(chip)
+        }
+        fillTagCloud()
       }
       /* Chips were added, so we need to load them. */
       chips = loadChips()
@@ -123,6 +131,16 @@ class CreateEntryActivity : AppCompatActivity() {
                 thisWebsiteEntryCustomTags.remove(chipTextAsString)
               }
             }
+          }
+          /* Deleting tag from global list. */
+          setOnLongClickListener {
+            val chipTextAsString = text.toString()
+            globalEntryTagsNames -= chipTextAsString
+            fillTagCloud(oldTagName = chipTextAsString)
+            /* Remove this tag from the current WebsiteEntry. */
+            thisWebsiteEntryCustomTags.remove(chipTextAsString)
+            updateWebsiteEntryCustomTags()
+            true
           }
           /* If changed by un/checking in Cloud Tag Editor. */
           apply {

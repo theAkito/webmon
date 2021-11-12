@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     viewModel.getWebSiteEntryList().observe(this, {
       webSiteEntryAdapter.setAllTodoItems(it)
-      if (it.isEmpty()) { viewModel.addDefaultData() }
+      if (it.isEmpty()) { viewModel.addDefaultData() } // TODO: 2021/11/12 Does this need to be called on every observation? No.
     })
 
     // Setting up Website Status Refresh on Swipe & Custom Monitoring
