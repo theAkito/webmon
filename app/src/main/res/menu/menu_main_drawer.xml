@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:menuCategory="secondary">
+        <item
+            android:title="@string/greetings_pascal"
+            android:clickable="true"
+            android:visible="true"
+            android:orderInCategory="1"
+            android:icon="@android:drawable/ic_btn_speak_now" />
+    </group>
+</menu>

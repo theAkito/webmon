@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -194,21 +195,20 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
           this@MainActivity,
           drawer,
           binding.toolbar,
-          R.string.text_delete_all_website_entries_are_you_sure_yes,
-          R.string.text_delete_all_website_entries_are_you_sure_no
+          R.string.text_delete_all_website_entries_are_you_sure_yes, // TODO: 2021/11/13 Fix randomly chosen text.
+          R.string.text_delete_all_website_entries_are_you_sure_no // TODO: 2021/11/13 Fix randomly chosen text.
         ).apply {
           isDrawerIndicatorEnabled = enable
         }
         drawer.apply {
           addDrawerListener(drawerToggle)
+          setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         }
         drawerToggle.apply {
           syncState()
         }
         setDisplayHomeAsUpEnabled(disable)
         setHomeButtonEnabled(enable)
-//        setHomeAsUpIndicator(R.drawable.)
-//        it.setStackedBackgroundDrawable()
       }
     }
 

@@ -5,11 +5,12 @@
     android:id="@+id/layout_main_drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:layout_gravity="start"
-    android:foregroundGravity="right"
-    android:fitsSystemWindows="true"
+    android:clickable="false"
+    android:fitsSystemWindows="false"
     android:layoutDirection="ltr"
-    tools:openDrawer="start"
+
     >
 
     <!--
@@ -18,22 +19,6 @@
         Content must be inside a layout.
         This layout and its contents must all have the above mentioned gravity attributes set.
     -->
-
-    <LinearLayout
-        android:id="@+id/layout_main_drawer_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:gravity="start"
-        android:foregroundGravity="right"
-        android:orientation="vertical">
-
-        <com.google.android.material.navigation.NavigationView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="90dp" />
-
-    </LinearLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -74,5 +59,48 @@
             layout="@layout/content_main" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- https://stackoverflow.com/a/65475374/7061105 -->
+    <!-- This layout with NavigationView MUST be at the end of this XML! -->
+
+    <LinearLayout
+        android:id="@+id/layout_main_drawer_content"
+        android:layout_width="match_parent"
+
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_gravity="start"
+        android:layout_marginEnd="90dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="start"
+        android:foregroundGravity="right"
+        android:orientation="vertical">
+
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/main_drawer_nav"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            android:fitsSystemWindows="true"
+            android:clickable="false"
+            android:focusable="false"
+            app:elevation="0dp"
+            android:foregroundGravity="right"
+            app:menu="@menu/menu_main_drawer"
+            app:itemIconTint="@color/colorPrimary"
+            app:itemShapeAppearance="@color/colorPrimary" />
+
+        <include
+            android:id="@+id/incl_group_about"
+            layout="@layout/group_about"
+            android:layout_height="30dp"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
+
 
 </androidx.drawerlayout.widget.DrawerLayout>
