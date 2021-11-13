@@ -5,6 +5,7 @@ typealias jString = String
 const val nameTorApp = "Orbot"
 const val msgGenericSuccess = "Success"
 const val msgGenericAvailable = "Available"
+const val msgGenericDefault = "default"
 const val workaroundRebirthMillis = 2000L
 
 val defaultTitleNimHomepage: String by lazy { "Nim Homepage" }

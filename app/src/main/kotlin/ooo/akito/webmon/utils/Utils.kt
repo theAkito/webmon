@@ -36,6 +36,7 @@ import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Environment.manufacturer
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
@@ -45,6 +46,7 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericTorFailure
 import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.worker.WorkManagerScheduler
@@ -63,11 +65,11 @@ object Utils {
   var swipeRefreshIsEnabled = true
   var isEntryCreated = false /** Do not observe "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
 
-  var globalEntryTagsNames: List<String> = listOf("default")
+  var globalEntryTagsNames: List<String> = listOf(msgGenericDefault)
     set(value) {
       val readyValue = value.distinct().sorted()
       field = readyValue
-      SharedPrefsManager.customPrefs[Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA] = mapperUgly.writeValueAsString(readyValue)
+      customPrefs[WEBSITE_ENTRY_TAG_CLOUD_DATA] = mapperUgly.writeValueAsString(readyValue)
     }
 
   val mapper: ObjectMapper = jacksonObjectMapper()
@@ -349,6 +351,8 @@ object Utils {
   fun List<WebSiteEntry>.associateByUrl(): Map<String, WebSiteEntry> {
     return this.associateBy { it.url }
   }
+
+  fun List<WebSiteEntry>.cleanCustomTags(): List<WebSiteEntry> = this.map { it.customTags = listOf(); it }
 
   fun appIsVisible(): Boolean = ooo.akito.webmon.Webmon.ActivityVisibility.appIsVisible
 
