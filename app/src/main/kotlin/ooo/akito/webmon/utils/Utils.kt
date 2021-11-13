@@ -4,11 +4,14 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -114,7 +117,12 @@ object Utils {
 
     val intent = Intent(context, MainActivity::class.java)
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    val pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    /** https://stackoverflow.com/a/67046334/7061105 */
+    val pi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
+    } else {
+      PendingIntent.getActivity(context, 0, intent, FLAG_UPDATE_CURRENT)
+    }
     mBuilder.setContentIntent(pi)
     mNotificationManager.notify(Random().nextInt(), mBuilder.build())
   }

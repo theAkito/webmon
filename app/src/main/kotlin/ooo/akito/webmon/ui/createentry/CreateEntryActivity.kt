@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import android.view.ViewTreeObserver
-import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
@@ -74,7 +73,7 @@ class CreateEntryActivity : AppCompatActivity() {
         /* Fill it only with custom tags, which are actually turned on for this WebsiteEntry. */
         /* Additionally, implicitly removes all orphaned custom tags, as only globally available tags will be taken. */
         thisWebsiteEntryCustomTags = thisWebsiteEntryCustomTags.intersect(globalEntryTagsNames).toMutableList()
-        /* Intialising Chips in ChipGroup. The latter is staticaly there, but all Chips are generated dynamically. */
+        /* Initialising Chips in ChipGroup. The latter is statically there, but all Chips are generated dynamically. */
         checkedTagNameToIsChecked = globalEntryTagsNames.map { tagName ->
           val isTagChecked = thisWebsiteEntryCustomTags.contains(tagName)
           /*
@@ -100,7 +99,7 @@ class CreateEntryActivity : AppCompatActivity() {
               isChecked = false
               text = newTagName
               /* Adding new Tag to global full list of possible tags. */
-              globalEntryTagsNames += text.toString()
+              globalEntryTagsNames = globalEntryTagsNames + text.toString()
               globalEntryTagsNames = globalEntryTagsNames.distinct()
             }
           )
@@ -135,7 +134,7 @@ class CreateEntryActivity : AppCompatActivity() {
           /* Deleting tag from global list. */
           setOnLongClickListener {
             val chipTextAsString = text.toString()
-            globalEntryTagsNames -= chipTextAsString
+            globalEntryTagsNames = globalEntryTagsNames - chipTextAsString
             fillTagCloud(oldTagName = chipTextAsString)
             /* Remove this tag from the current WebsiteEntry. */
             thisWebsiteEntryCustomTags.remove(chipTextAsString)
@@ -334,13 +333,13 @@ class CreateEntryActivity : AppCompatActivity() {
             /** https://stackoverflow.com/a/26087003/7061105 */
             /** https://stackoverflow.com/a/27345656/7061105 */
             /** https://stackoverflow.com/a/46742001/7061105 */
-            getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { view ->
+            getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
               val newTagName = editText.text.toString()
               val defSize = 16 /* TODO: Fix dangling Int. */
               if (newTagName.length >= defSize) {
                 showToast(this@CreateEntryActivity, "${defSize} characters maximum!")
               } else {
-                globalEntryTagsNames += newTagName
+                globalEntryTagsNames = globalEntryTagsNames + newTagName
                 checkedTagNameToIsChecked[newTagName] = false
                 fillTagCloud(newTagName = newTagName)
                 dismiss()

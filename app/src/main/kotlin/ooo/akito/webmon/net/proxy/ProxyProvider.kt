@@ -57,20 +57,20 @@ object ProxyProvider {
     socket.connect(socksAddress, CONNECT_TIMEOUT_MILLISECONDS)
 
     val outputStream = java.io.DataOutputStream(socket.getOutputStream())
-    outputStream.write(kotlin.byteArrayOf(0x04.toByte()))
-    outputStream.write(kotlin.byteArrayOf(0x01.toByte()))
+    outputStream.write(byteArrayOf(0x04.toByte()))
+    outputStream.write(byteArrayOf(0x01.toByte()))
     outputStream.writeShort(networkPort)
     outputStream.writeInt(0x01)
-    outputStream.write(kotlin.byteArrayOf(0x00.toByte()))
+    outputStream.write(byteArrayOf(0x00.toByte()))
     outputStream.write(networkHost.toByteArray())
-    outputStream.write(kotlin.byteArrayOf(0x00.toByte()))
+    outputStream.write(byteArrayOf(0x00.toByte()))
 
     val inputStream = java.io.DataInputStream(socket.getInputStream())
     val firstByte = inputStream.readByte()
     val secondByte = inputStream.readByte()
     if (firstByte != 0x00.toByte() || secondByte != 0x5a.toByte()) {
       socket.close()
-      throw java.io.IOException(
+      throw IOException(
         "SOCKS4a connect failed, got $firstByte - $secondByte, but expected 0x00 - 0x5a: "
             + "networkHost = $networkHost, networkPort = $networkPort, "
             + "socksHost = $socksHost, socksPort = $socksPort"

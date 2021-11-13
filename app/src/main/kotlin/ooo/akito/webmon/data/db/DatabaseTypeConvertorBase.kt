@@ -2,7 +2,6 @@ package ooo.akito.webmon.data.db
 
 import androidx.room.TypeConverter
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.gson.reflect.TypeToken
 import ooo.akito.webmon.utils.Utils.mapper
 import ooo.akito.webmon.utils.jString
 
