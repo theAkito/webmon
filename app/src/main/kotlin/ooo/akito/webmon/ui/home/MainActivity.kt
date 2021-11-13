@@ -283,7 +283,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     })
 
     /* Make sure SyncWorker is not run more than once, simultaneously. */
-    this.safelyStartSyncWorker()
+    safelyStartSyncWorker()
 
     //region TOR
 

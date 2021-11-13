@@ -47,6 +47,7 @@ import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
+import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
@@ -431,6 +432,8 @@ class SettingsActivity : AppCompatActivity() {
       }
       Log.info("Restoring Settings from Backup...")
       with(SharedPrefsManager.customPrefs) {
+        this[WEBSITE_ENTRY_TAG_CLOUD_DATA] = providedSettings.website_entry_tag_cloud_data
+        this[BACKUP_LAST_SAVED_LOCATION] = providedSettings.backup_last_saved_location
         this[HIDE_IS_ONION_ADDRESS] = providedSettings.hide_is_onion_address
         this[SETTINGS_TOR_ENABLE] = providedSettings.settings_tor_enable
         this[SETTINGS_TOGGLE_SWIPE_REFRESH] = providedSettings.settings_toggle_swipe_refresh
