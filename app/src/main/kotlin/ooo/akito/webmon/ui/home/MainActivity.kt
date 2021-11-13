@@ -6,15 +6,19 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.res.ResourcesCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,6 +88,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private var customMonitorData: CustomMonitorData = CustomMonitorData()
 
   private lateinit var itemTouchHelper: ItemTouchHelper
+  private lateinit var drawerToggle: ActionBarDrawerToggle
 
   private val runnableTask: Runnable = Runnable {
     if (runningCount == 0) {
@@ -171,6 +176,41 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
+
+    /** Set up Drawer */
+    /* https://stackoverflow.com/a/32614629/7061105 */
+    /* https://stackoverflow.com/a/36677279/7061105 */
+    /* https://stackoverflow.com/a/27352273/7061105 */
+    binding.toolbar.apply {
+      navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_icon, null)
+    }
+    with(supportActionBar) {
+      this?.let {
+        val enable = true
+        val disable = false
+//        val drawer = DrawerLayout(this@MainActivity)
+        val drawer = binding.layoutMainDrawer
+        drawerToggle = ActionBarDrawerToggle(
+          this@MainActivity,
+          drawer,
+          binding.toolbar,
+          R.string.text_delete_all_website_entries_are_you_sure_yes,
+          R.string.text_delete_all_website_entries_are_you_sure_no
+        ).apply {
+          isDrawerIndicatorEnabled = enable
+        }
+        drawer.apply {
+          addDrawerListener(drawerToggle)
+        }
+        drawerToggle.apply {
+          syncState()
+        }
+        setDisplayHomeAsUpEnabled(disable)
+        setHomeButtonEnabled(enable)
+//        setHomeAsUpIndicator(R.drawable.)
+//        it.setStackedBackgroundDrawable()
+      }
+    }
 
     /** Edit Website Entry Result Launcher */
     onEditClickedResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -304,6 +344,20 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     binding.layout.swipeRefresh.setOnRefreshListener()
 
     //endregion Toggle SwipeRefresh
+  } /* END: onCreate */
+
+  override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+    super.onPostCreate(savedInstanceState, persistentState)
+    drawerToggle.apply {
+      syncState()
+    }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    drawerToggle.apply {
+      onConfigurationChanged(newConfig)
+    }
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
