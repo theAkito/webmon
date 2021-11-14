@@ -55,7 +55,10 @@ import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.utils.Utils.showNotification
+import ooo.akito.webmon.utils.Utils.showSnackBar
+import ooo.akito.webmon.utils.Utils.showSnackbarNotImplemented
 import ooo.akito.webmon.utils.Utils.showToast
+import ooo.akito.webmon.utils.Utils.showToastNotImplemented
 import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import ooo.akito.webmon.utils.Utils.torIsEnabled
@@ -178,6 +181,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
 
+    //region Main Drawer
+
     /** Set up Drawer */
     /* https://stackoverflow.com/a/32614629/7061105 */
     /* https://stackoverflow.com/a/36677279/7061105 */
@@ -211,6 +216,17 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         setHomeButtonEnabled(enable)
       }
     }
+
+    /** What happens when the "About" item in the Drawer was clicked. */
+    binding.inclGroupAbout.groupAboutNav.menu.apply {
+      getItem(0).setOnMenuItemClickListener { about ->
+        val viewAbout: View = findViewById(about.itemId)
+        viewAbout.showSnackbarNotImplemented()
+        true
+      }
+    }
+
+    //endregion Main Drawer
 
     /** Edit Website Entry Result Launcher */
     onEditClickedResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -290,6 +306,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
       val customMonitorEnabled = runningCount >= 1
       val runningCountText = if (customMonitorEnabled) { "#${runningCount - 1} " } else { "" }
+      val viewMain: View = findViewById(R.id.layout_main_drawer)
       if (entriesWithFailedConnection.size == 1) {
         val entryWithFailedConnection = entriesWithFailedConnection.first()
         if (customMonitorEnabled) {
@@ -299,11 +316,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             getStringNotWorking(entryWithFailedConnection.url)
           )
         } else {
-          Toast.makeText(
-            applicationContext,
-            getStringNotWorking(entryWithFailedConnection.url),
-            Toast.LENGTH_LONG
-          ).show()
+          showSnackBar(viewMain, getStringNotWorking(entryWithFailedConnection.url))
         }
       } else if (entriesWithFailedConnection.size > 1) {
         if (customMonitorEnabled) {
@@ -313,11 +326,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             entriesWithFailedConnection.joinToStringDescription()
           )
         } else {
-          Toast.makeText(
-            applicationContext,
-            msgWebsitesNotReachable,
-            Toast.LENGTH_LONG
-          ).show()
+          showSnackBar(viewMain, msgWebsitesNotReachable)
         }
       }
     })

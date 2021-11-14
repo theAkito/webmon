@@ -45,6 +45,7 @@ import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorFail
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericTorFailure
 import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
+import ooo.akito.webmon.utils.ExceptionCompanion.msgNotImplemented
 import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
@@ -224,6 +225,14 @@ object Utils {
 
   fun showSnackBar(view: View, message: String) {
     Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+  }
+
+  fun Context.showToastNotImplemented() {
+    showToast(this, msgNotImplemented)
+  }
+
+  fun View.showSnackbarNotImplemented() {
+    showSnackBar(this, msgNotImplemented)
   }
 
   fun Int?.isStatusAcceptable(): Boolean {

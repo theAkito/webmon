@@ -88,6 +88,9 @@ object ExceptionCompanion {
   val msgWebsiteEntriesUnavailable: String by lazy {
     "WebsiteEntries must be available!"
   }
+  val msgNotImplemented: String by lazy {
+    """Oops! This feature is not implemented, yet."""
+  }
 
   val msgDnsRootDomain: String by lazy {
     " Root Domain: "
