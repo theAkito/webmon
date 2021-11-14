@@ -398,12 +398,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         viewModel.checkWebSiteStatus()
         true
       }
-      R.id.action_backup -> {
-        true
-      }
-      R.id.action_restore -> {
-        true
-      }
       else -> super.onOptionsItemSelected(item)
     }
   }
