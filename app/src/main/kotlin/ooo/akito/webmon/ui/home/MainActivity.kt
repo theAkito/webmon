@@ -10,7 +10,6 @@ import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,7 +17,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -58,7 +56,6 @@ import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.showSnackBar
 import ooo.akito.webmon.utils.Utils.showSnackbarNotImplemented
 import ooo.akito.webmon.utils.Utils.showToast
-import ooo.akito.webmon.utils.Utils.showToastNotImplemented
 import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import ooo.akito.webmon.utils.Utils.torIsEnabled

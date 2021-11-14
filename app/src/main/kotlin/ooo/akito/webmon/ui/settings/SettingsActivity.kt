@@ -32,7 +32,6 @@ import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVer
 import ooo.akito.webmon.data.model.BackupSettings
 import ooo.akito.webmon.data.model.BackupWebsites
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
-import ooo.akito.webmon.ui.home.MainActivity
 import ooo.akito.webmon.ui.home.MainActivity.Companion.fileTypeFilter
 import ooo.akito.webmon.ui.home.MainViewModel
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
@@ -48,7 +47,6 @@ import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
-import ooo.akito.webmon.utils.Constants.defaultJArrayAsString
 import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
