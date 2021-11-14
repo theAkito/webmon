@@ -35,6 +35,7 @@ import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.DefaultRedirectStrategy
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse
 import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.core5.http.ConnectionClosedException
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.UnknownHostException
@@ -221,6 +222,8 @@ class WebSiteEntryRepository(context: Context) {
               } finally {
                 try {
                   conn?.close()
+                } catch (connClosed: ConnectionClosedException) {
+                  /* Unimportant exception. */
                 } catch (e: Exception) {
                   Log.error(e.stackTraceToString())
                 }

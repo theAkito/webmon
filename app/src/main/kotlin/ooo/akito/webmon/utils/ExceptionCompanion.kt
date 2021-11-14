@@ -91,6 +91,9 @@ object ExceptionCompanion {
   val msgNotImplemented: String by lazy {
     """Oops! This feature is not implemented, yet."""
   }
+  val msgGlideLoadIconFailure: String by lazy {
+    """Exception occurred when using Glide to load Website Logo."""
+  }
 
   val msgDnsRootDomain: String by lazy {
     " Root Domain: "

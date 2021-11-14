@@ -36,6 +36,7 @@ import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Environment.manufacturer
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
@@ -330,7 +331,7 @@ object Utils {
 
   fun mayNotifyStatusFailure(website: WebSiteEntry): Boolean {
     val status = website.status
-    val isEnabledServerFailOnly = customPrefs.getBoolean(Constants.NOTIFY_ONLY_SERVER_ISSUES, false)
+    val isEnabledServerFailOnly = customPrefs.getBoolean(NOTIFY_ONLY_SERVER_ISSUES, false)
     val statusIsNotAcceptable = website.isStatusAcceptable().not()
     return if (isEnabledServerFailOnly) {
       statusIsNotAcceptable && isServerRelatedFail(status ?: 0)

@@ -1,19 +1,26 @@
 package ooo.akito.webmon.ui.home
 
 import android.annotation.SuppressLint
+import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.PopupMenu
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.databinding.ItemWebsiteRowBinding
+import ooo.akito.webmon.utils.ExceptionCompanion.msgGlideLoadIconFailure
+import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.currentDateTime
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
+import ooo.akito.webmon.utils.Utils.removeUrlProto
 import java.util.*
 
 
@@ -47,13 +54,43 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         binding.txtWebSite.text = webSiteEntry.name
         binding.txtUrl.text = webSiteEntry.url
 
-        /** https://gitlab.com/fdroid/fdroiddata/-/merge_requests/10001#note_720175502 */
-//                val iconUrl = "https://icons.duckduckgo.com/ip3/${webSiteEntry.url.removeUrlProto()}.ico"
-//                try {
-//                    Glide.with(binding.imgLogo.context).load(iconUrl).apply(RequestOptions.circleCropTransform()).into(binding.imgLogo)
-//                } catch (e: Exception) {
-//                    Print.log(e.message ?: "Exception occurred when using Glide to load Website Logo.")
-//                }
+        if (webSiteEntry.isOnionAddress) {
+          try {
+            /** https://github.com/FortAwesome/Font-Awesome/issues/5101#issuecomment-298361743 */
+            Glide
+              .with(binding.imgLogo.context)
+              .load(ResourcesCompat.getDrawable(resources, R.drawable.ic_tor_onion, context.theme))
+              .apply(RequestOptions.circleCropTransform())
+              .into(binding.imgLogo)
+          } catch (e: Exception) {
+            Log.warn(e.message ?: msgGlideLoadIconFailure)
+          }
+        } else {
+          /**
+            https://gitlab.com/fdroid/fdroiddata/-/merge_requests/10001#note_720175502
+            https://github.com/mat/besticon
+            https://www.zemarch.com/cropped-favicon-png/
+            https://github.com/FortAwesome/Font-Awesome/issues/5101#issuecomment-298361743
+          */
+          /** Allowed icon formats. Currently, all formats are accepted. */
+          val iconFormats = "gif,ico,jpg,png,svg"
+          /** Minimum icon size .. Perfect icon size .. Maximum icon size */
+          val iconSizeMinPerfectMax = "16..64..128"
+          /** Just a placeholder styled star. */
+          val iconUrlFallback = "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png"
+          /** FOSS server fetching website icons. */
+          val iconUrlFetcher = "https://besticon-demo.herokuapp.com"
+          val iconUrlFull = "${iconUrlFetcher}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
+          try {
+            Glide
+              .with(binding.imgLogo.context)
+              .load(iconUrlFull)
+              .apply(RequestOptions.circleCropTransform())
+              .into(binding.imgLogo)
+          } catch (e: Exception) {
+            Log.warn(e.message ?: msgGlideLoadIconFailure)
+          }
+        }
 
 
         binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
