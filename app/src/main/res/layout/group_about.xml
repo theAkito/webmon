@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_group_about"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_gravity="bottom"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:layout_below="@+id/main_drawer_nav">
+
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/group_about_nav"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:visibility="visible"
+        android:theme="@style/AppTheme"
+        app:itemIconTint="@color/colorPrimary"
+        app:menu="@menu/menu_drawer_about" />
+
+</RelativeLayout>

@@ -29,5 +29,7 @@ data class WebSiteEntry(
   @ColumnInfo(name = "dns_records_a_aaaa", defaultValue = false.toString())
   var dnsRecordsAAAAA: Boolean = false,
   @ColumnInfo(name = "is_onion_address", defaultValue = false.toString())
-  var isOnionAddress: Boolean = false
+  var isOnionAddress: Boolean = false,
+  @ColumnInfo(name = "customTags", defaultValue = "")
+  var customTags: List<String> = listOf()
 ) : Parcelable

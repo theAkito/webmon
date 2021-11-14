@@ -28,6 +28,9 @@ object ExceptionCompanion {
     "Unknown"
   }
 
+  val msgNullNotNull: String by lazy {
+    """This variable is null, even though it cannot be null."""
+  }
   val msgWebsitesNotReachable: String by lazy {
     "Several Websites are not reachable!"
   }
@@ -84,6 +87,9 @@ object ExceptionCompanion {
   }
   val msgWebsiteEntriesUnavailable: String by lazy {
     "WebsiteEntries must be available!"
+  }
+  val msgNotImplemented: String by lazy {
+    """Oops! This feature is not implemented, yet."""
   }
 
   val msgDnsRootDomain: String by lazy {

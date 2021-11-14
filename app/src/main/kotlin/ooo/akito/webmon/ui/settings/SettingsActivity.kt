@@ -32,7 +32,6 @@ import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVer
 import ooo.akito.webmon.data.model.BackupSettings
 import ooo.akito.webmon.data.model.BackupWebsites
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
-import ooo.akito.webmon.ui.home.MainActivity
 import ooo.akito.webmon.ui.home.MainActivity.Companion.fileTypeFilter
 import ooo.akito.webmon.ui.home.MainViewModel
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
@@ -47,6 +46,7 @@ import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
+import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
@@ -57,7 +57,9 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgSpecificToRebirth
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.set
+import ooo.akito.webmon.utils.Utils.cleanCustomTags
 import ooo.akito.webmon.utils.Utils.getMonitorTime
+import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.mapper
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
@@ -65,6 +67,7 @@ import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.triggerRebirth
 import ooo.akito.webmon.utils.defaultBackupShareType
 import ooo.akito.webmon.utils.jString
+import ooo.akito.webmon.utils.msgGenericDefault
 import ooo.akito.webmon.utils.msgGenericRestarting
 import ooo.akito.webmon.utils.nameBackupDataCaseLower
 import ooo.akito.webmon.utils.nameBackupDataCasePascal
@@ -124,6 +127,7 @@ class SettingsActivity : AppCompatActivity() {
       setTitle("""Failed to restore ${backupType} Backup from File!""")
       setMessage("""When trying to load the ${backupType} Backup from File, an error was encountered. Are you sure you selected the correct file?""")
       setNeutralButton(R.string.text_backup_import_failure_confirmation, null)
+      setCancelable(false)
     }.create().show()
   }
 
@@ -306,6 +310,26 @@ class SettingsActivity : AppCompatActivity() {
 
     //endregion Advanced Setting: Delete All Website Entries
 
+    //region Advanced Setting: Delete All Website Entry Tags
+
+    activitySettingsBinding.btnWebsiteEntryTagCloudDeleteAll.setOnClickListener {
+      AlertDialog.Builder(this).apply {
+        setMessage(R.string.text_delete_all_website_entry_tag_cloud_are_you_sure)
+        setTitle(R.string.text_delete_all_website_entry_tag_cloud)
+        setPositiveButton(
+          R.string.text_delete_all_website_entries_are_you_sure_yes
+        ) { _, _ ->
+          globalEntryTagsNames = listOf(msgGenericDefault)
+          websites
+            .cleanCustomTags()
+            .forEach { viewModel.saveWebSiteEntry(it) }
+        }
+        setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ -> }
+      }.create().show()
+    }
+
+    //endregion Advanced Setting: Delete All Website Entry Tags
+
     //region Advanced Setting: Toggle SwipeRefresh
 
     activitySettingsBinding.toggleSwipeRefresh.isChecked = swipeRefreshIsEnabled
@@ -430,6 +454,8 @@ class SettingsActivity : AppCompatActivity() {
       }
       Log.info("Restoring Settings from Backup...")
       with(SharedPrefsManager.customPrefs) {
+        this[WEBSITE_ENTRY_TAG_CLOUD_DATA] = providedSettings.website_entry_tag_cloud_data
+        this[BACKUP_LAST_SAVED_LOCATION] = providedSettings.backup_last_saved_location
         this[HIDE_IS_ONION_ADDRESS] = providedSettings.hide_is_onion_address
         this[SETTINGS_TOR_ENABLE] = providedSettings.settings_tor_enable
         this[SETTINGS_TOGGLE_SWIPE_REFRESH] = providedSettings.settings_toggle_swipe_refresh

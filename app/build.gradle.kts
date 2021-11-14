@@ -92,6 +92,7 @@ dependencies {
   implementation("androidx.appcompat:appcompat:1.3.1")
   implementation("com.google.android.material:material:1.4.0")
   implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+  implementation("com.android.support:drawerlayout:28.0.0")
 
   // Retrofit and Relevant Converters
   val retrofit_version = "2.9.0"

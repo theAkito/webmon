@@ -5,6 +5,8 @@ object Constants {
     If you add further global settings, you need to add them to `BackupSettingsManager`, as well!
   */
 
+  const val defaultJArrayAsString = """["${msgGenericDefault}"]"""
+
   const val permissionReadExternalStorage = android.Manifest.permission.READ_EXTERNAL_STORAGE
   const val requestCodeReadExternalStorage = 1 /* Request Code is chosen arbitrarily. */
   const val orbotFQID = "org.torproject.android"
@@ -34,5 +36,6 @@ object Constants {
   const val HIDE_CHECK_DNS_RECORD_A_AAAA: String = "hide_check_dns_record_a_aaaa"
 
   const val BACKUP_LAST_SAVED_LOCATION: String = "backup_last_saved_location"
+  const val WEBSITE_ENTRY_TAG_CLOUD_DATA: String = "website_entry_tag_cloud_data"
 
 }

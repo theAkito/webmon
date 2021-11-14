@@ -108,20 +108,24 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
    * */
   override fun getFilter(): Filter {
     return object : Filter() {
-      override fun performFiltering(p0: CharSequence?): FilterResults {
-        val charString = p0.toString()
-        filteredList = if (charString.isEmpty()) {
+      override fun performFiltering(searchCharSequence: CharSequence?): FilterResults {
+        val searchString = searchCharSequence.toString()
+        filteredList = if (searchString.isEmpty()) {
           mList
         } else {
           val filteredList = arrayListOf<WebSiteEntry>()
-          for (row in mList) {
-            if (
-              row.name
+          mList.forEach { webSiteEntry ->
+            when {
+              webSiteEntry.name
                 .lowercase(Locale.getDefault())
-                .contains(charString.lowercase(Locale.getDefault()))
-              || row.url.contains(charString.lowercase(Locale.getDefault()))
-            ) {
-              filteredList.add(row)
+                .contains(searchString.lowercase(Locale.getDefault())) ||
+              webSiteEntry.url
+                .contains(searchString
+                .lowercase(Locale.getDefault())) ||
+              webSiteEntry.customTags.any { it.startsWith(searchString) }
+              -> {
+                filteredList.add(webSiteEntry)
+              }
             }
           }
           filteredList

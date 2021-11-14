@@ -68,9 +68,15 @@
     <string name="text_advanced_settings_show">Show Advanced Settings</string>
     <string name="text_advanced_settings_hide">Hide Advanced Settings</string>
     <string name="text_delete_all_website_entries">Delete all Website Entries</string>
+    <string name="text_delete_all_website_entry_tag_cloud">Delete all Website Entry Tags</string>
     <string name="text_delete_all_website_entries_are_you_sure">Are you sure you want to delete ALL Website Entries?!</string>
+    <string name="text_delete_all_website_entry_tag_cloud_are_you_sure">Are you sure you want to delete ALL Website Entry Tags?!</string>
     <string name="text_delete_all_website_entries_are_you_sure_yes">Yes</string>
     <string name="text_delete_all_website_entries_are_you_sure_no">No</string>
+    <string name="text_create_entry_tag_cloud_accept">Accept</string>
+    <string name="text_create_entry_tag_cloud_cancel">Cancel</string>
+    <string name="text_create_entry_tag_cloud_add">Add Tag</string>
+    <string name="text_create_entry_tag_cloud_create">Create</string>
     <string name="text_backup_import_failure_confirmation">Okay</string>
     <string name="enable_refresh_on_swipe_down">Enable Refresh on Swipe Down</string>
     <string name="backup_import">Import Backup</string>
@@ -81,5 +87,8 @@
     <string name="backup_settings_import">Import Backup of Settings</string>
     <string name="backup_data_export">Export Backup of Data</string>
     <string name="backup_data_import">Import Backup of Data</string>
-    <string name="send_to">Share Backup with...</string>
+    <string name="send_to">Share Backup with…</string>
+    <string name="create_entry_tag_cloud_edit">+</string>
+    <string name="title_about">About</string>
+    <string name="greetings_pascal">Greetings</string>
 </resources>

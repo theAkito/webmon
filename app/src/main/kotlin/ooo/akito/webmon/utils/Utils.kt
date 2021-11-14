@@ -4,12 +4,16 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
@@ -31,6 +35,7 @@ import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
+import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Environment.manufacturer
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
@@ -39,7 +44,9 @@ import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorFail
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericTorFailure
 import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
+import ooo.akito.webmon.utils.ExceptionCompanion.msgNotImplemented
 import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.worker.WorkManagerScheduler
@@ -58,8 +65,17 @@ object Utils {
   var swipeRefreshIsEnabled = true
   var isEntryCreated = false /** Do not observe "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
 
+  var globalEntryTagsNames: List<String> = listOf(msgGenericDefault)
+    set(value) {
+      val readyValue = value.distinct().sorted()
+      field = readyValue
+      customPrefs[WEBSITE_ENTRY_TAG_CLOUD_DATA] = mapperUgly.writeValueAsString(readyValue)
+    }
+
   val mapper: ObjectMapper = jacksonObjectMapper()
     .enable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
+  val mapperUgly: ObjectMapper = jacksonObjectMapper()
+    .disable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
 
   fun triggerRebirth(context: Context) {
     /** https://stackoverflow.com/a/46848226/7061105 */
@@ -73,6 +89,12 @@ object Utils {
     val mainIntent = Intent.makeRestartActivityTask(componentName)
     context.startActivity(mainIntent)
     Runtime.getRuntime().exit(0)
+  }
+
+  fun Context.showKeyboard(view: View) {
+    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).apply {
+      showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
   }
 
   fun currentDateTime(): String {
@@ -97,7 +119,12 @@ object Utils {
 
     val intent = Intent(context, MainActivity::class.java)
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    val pi = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    /** https://stackoverflow.com/a/67046334/7061105 */
+    val pi = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
+    } else {
+      PendingIntent.getActivity(context, 0, intent, FLAG_UPDATE_CURRENT)
+    }
     mBuilder.setContentIntent(pi)
     mNotificationManager.notify(Random().nextInt(), mBuilder.build())
   }
@@ -197,6 +224,14 @@ object Utils {
 
   fun showSnackBar(view: View, message: String) {
     Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+  }
+
+  fun Context.showToastNotImplemented() {
+    showToast(this, msgNotImplemented)
+  }
+
+  fun View.showSnackbarNotImplemented() {
+    showSnackBar(this, msgNotImplemented)
   }
 
   fun Int?.isStatusAcceptable(): Boolean {
@@ -324,6 +359,8 @@ object Utils {
   fun List<WebSiteEntry>.associateByUrl(): Map<String, WebSiteEntry> {
     return this.associateBy { it.url }
   }
+
+  fun List<WebSiteEntry>.cleanCustomTags(): List<WebSiteEntry> = this.map { it.customTags = listOf(); it }
 
   fun appIsVisible(): Boolean = ooo.akito.webmon.Webmon.ActivityVisibility.appIsVisible
 

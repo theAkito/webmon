@@ -22,7 +22,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="4dp"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_success" />
+            card:srcCompat="@drawable/ic_success" />
 
         <ImageView
             android:id="@+id/btnPause"
@@ -31,7 +31,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginStart="4dp"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_pause" />
+            card:srcCompat="@drawable/ic_pause" />
 
         <ImageView
             android:id="@+id/btnMore"
@@ -41,7 +41,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="50dp"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_more" />
+            card:srcCompat="@drawable/ic_more" />
 
         <LinearLayout
             android:id="@+id/layoutContent"

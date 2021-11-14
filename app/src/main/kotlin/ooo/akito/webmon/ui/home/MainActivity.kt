@@ -6,19 +6,23 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
 import android.view.*
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.res.ResourcesCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.model.CustomMonitorData
@@ -28,6 +32,8 @@ import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
+import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
+import ooo.akito.webmon.utils.Constants.defaultJArrayAsString
 import ooo.akito.webmon.utils.Constants.orbotFQID
 import ooo.akito.webmon.utils.Environment.defaultTimeFormat
 import ooo.akito.webmon.utils.Environment.getCurrentLocale
@@ -39,12 +45,16 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
+import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
+import ooo.akito.webmon.utils.Utils.mapperUgly
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
 import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.utils.Utils.showNotification
+import ooo.akito.webmon.utils.Utils.showSnackBar
+import ooo.akito.webmon.utils.Utils.showSnackbarNotImplemented
 import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
@@ -79,6 +89,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private var customMonitorData: CustomMonitorData = CustomMonitorData()
 
   private lateinit var itemTouchHelper: ItemTouchHelper
+  private lateinit var drawerToggle: ActionBarDrawerToggle
 
   private val runnableTask: Runnable = Runnable {
     if (runningCount == 0) {
@@ -109,19 +120,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     binding.layout.layoutForceRefreshInfo.visibility = View.GONE
   }
 
-  private fun handleInternetUnavailable(): Boolean {
-    return if (isConnected(applicationContext).not()) {
-      if (binding.layout.swipeRefresh.isRefreshing) {
-        binding.layout.swipeRefresh.isRefreshing = false
-      }
-      showToast(applicationContext, getString(R.string.check_internet))
-      Log.error(msgInternetUnavailable)
-      true
-    } else {
-      false
-    }
-  }
-
   private fun String?.openInBrowser() {
     val uri = this.asUri()
     if (uri == null) {
@@ -131,6 +129,43 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     this@MainActivity.openInBrowser(uri)
   }
 
+  private fun disableSwipeRefreshIsRefreshing() {
+    if (binding.layout.swipeRefresh.isRefreshing || swipeRefreshIsEnabled.not()) {
+      binding.layout.swipeRefresh.isRefreshing = false
+    }
+  }
+
+  private fun handleInternetUnavailable(): Boolean {
+    return if (isConnected(applicationContext).not()) {
+      disableSwipeRefreshIsRefreshing()
+      showToast(applicationContext, getString(R.string.check_internet))
+      Log.error(msgInternetUnavailable)
+      true
+    } else {
+      false
+    }
+  }
+
+  private fun SwipeRefreshLayout.setOnRefreshListener() {
+    this.setOnRefreshListener LISTENER@{
+      disableSwipeRefreshIsRefreshing()
+      if (isConnected(applicationContext).not()) {
+        showToast(applicationContext, getString(R.string.check_internet))
+        return@LISTENER
+      }
+      viewModel.checkWebSiteStatus()
+    }
+  }
+
+  private fun packageIsInstalled(packageName: String, pacman: PackageManager): Boolean {
+    return try {
+      pacman.getPackageInfo(packageName, 0)
+      true
+    } catch (e: Exception) {
+      false
+    }
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     locale = getCurrentLocale()
@@ -138,9 +173,65 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
     binding = ActivityMainBinding.inflate(layoutInflater)
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater, binding.root, false)
+    globalEntryTagsNames = mapperUgly.readTree(SharedPrefsManager.customPrefs.getString(WEBSITE_ENTRY_TAG_CLOUD_DATA, defaultJArrayAsString)).asIterable().mapNotNull { it.asText() }
 
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
+
+    //region Main Drawer
+
+    /** Set up Drawer */
+    /* https://stackoverflow.com/a/32614629/7061105 */
+    /* https://stackoverflow.com/a/36677279/7061105 */
+    /* https://stackoverflow.com/a/27352273/7061105 */
+    binding.toolbar.apply {
+      navigationIcon = ResourcesCompat.getDrawable(resources, R.drawable.ic_icon, null)
+    }
+    with(supportActionBar) {
+      this?.let {
+        val enable = true
+        val disable = false
+        val drawer = binding.layoutMainDrawer
+        drawerToggle = ActionBarDrawerToggle(
+          this@MainActivity,
+          drawer,
+          binding.toolbar,
+          R.string.text_delete_all_website_entries_are_you_sure_yes, // TODO: 2021/11/13 Fix randomly chosen text.
+          R.string.text_delete_all_website_entries_are_you_sure_no // TODO: 2021/11/13 Fix randomly chosen text.
+        ).apply {
+          isDrawerIndicatorEnabled = enable
+        }
+        drawer.apply {
+          addDrawerListener(drawerToggle)
+          /**
+            TODO: Drawer
+              Drawer is temporarily locked, as long as it is useless.
+              As soon as a feature in the Drawer gets fully implemented,
+              we can unlock it by setting its mode to `DrawerLayout.LOCK_MODE_UNLOCKED`.
+          */
+          setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        }
+        drawerToggle.apply {
+          syncState()
+        }
+        setDisplayHomeAsUpEnabled(disable)
+        setHomeButtonEnabled(enable)
+        /* https://stackoverflow.com/a/29055845/7061105 */
+        /** See "TODO: Drawer". */
+        setHomeAsUpIndicator(null)
+      }
+    }
+
+    /** What happens when the "About" item in the Drawer was clicked. */
+    binding.inclGroupAbout.groupAboutNav.menu.apply {
+      getItem(0).setOnMenuItemClickListener { about ->
+        val viewAbout: View = findViewById(about.itemId)
+        viewAbout.showSnackbarNotImplemented()
+        true
+      }
+    }
+
+    //endregion Main Drawer
 
     /** Edit Website Entry Result Launcher */
     onEditClickedResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -178,6 +269,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
           if (dy > 0) {
+            //TODO: Fix https://github.com/theAkito/webmon/issues/17
             binding.fabAdd.hide()
           } else if (dy < 0)
             binding.fabAdd.show()
@@ -194,7 +286,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     viewModel.getWebSiteEntryList().observe(this, {
       webSiteEntryAdapter.setAllTodoItems(it)
-      if (it.isEmpty()) { viewModel.addDefaultData() }
+      if (it.isEmpty()) { viewModel.addDefaultData() } // TODO: 2021/11/12 Does this need to be called on every observation? No.
     })
 
     // Setting up Website Status Refresh on Swipe & Custom Monitoring
@@ -204,9 +296,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         plus when pressing the Refresh option, manually.
       */
 
-      if (binding.layout.swipeRefresh.isRefreshing) {
-        binding.layout.swipeRefresh.isRefreshing = false
-      }
+      disableSwipeRefreshIsRefreshing()
       if (isEntryCreated) {
         isEntryCreated = false
         return@observe
@@ -221,6 +311,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
       val customMonitorEnabled = runningCount >= 1
       val runningCountText = if (customMonitorEnabled) { "#${runningCount - 1} " } else { "" }
+      val viewMain: View = findViewById(R.id.layout_main_drawer)
       if (entriesWithFailedConnection.size == 1) {
         val entryWithFailedConnection = entriesWithFailedConnection.first()
         if (customMonitorEnabled) {
@@ -230,11 +321,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             getStringNotWorking(entryWithFailedConnection.url)
           )
         } else {
-          Toast.makeText(
-            applicationContext,
-            getStringNotWorking(entryWithFailedConnection.url),
-            Toast.LENGTH_LONG
-          ).show()
+          showSnackBar(viewMain, getStringNotWorking(entryWithFailedConnection.url))
         }
       } else if (entriesWithFailedConnection.size > 1) {
         if (customMonitorEnabled) {
@@ -244,17 +331,13 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             entriesWithFailedConnection.joinToStringDescription()
           )
         } else {
-          Toast.makeText(
-            applicationContext,
-            msgWebsitesNotReachable,
-            Toast.LENGTH_LONG
-          ).show()
+          showSnackBar(viewMain, msgWebsitesNotReachable)
         }
       }
     })
 
     /* Make sure SyncWorker is not run more than once, simultaneously. */
-    this.safelyStartSyncWorker()
+    safelyStartSyncWorker()
 
     //region TOR
 
@@ -271,29 +354,23 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     //region Toggle SwipeRefresh
 
     swipeRefreshIsEnabled = SharedPrefsManager.customPrefs.getBoolean(Constants.SETTINGS_TOGGLE_SWIPE_REFRESH, true)
-    binding.layout.swipeRefresh.isEnabled = swipeRefreshIsEnabled
-    if (swipeRefreshIsEnabled) {
-      binding.layout.swipeRefresh.setOnRefreshListener {
-        if (binding.layout.swipeRefresh.isRefreshing) {
-          binding.layout.swipeRefresh.isRefreshing = false
-        }
-        if (isConnected(applicationContext).not()) {
-          showToast(applicationContext, getString(R.string.check_internet))
-          return@setOnRefreshListener
-        }
-        viewModel.checkWebSiteStatus()
-      }
-    }
+    binding.layout.swipeRefresh.isEnabled = true
+    binding.layout.swipeRefresh.setOnRefreshListener()
 
     //endregion Toggle SwipeRefresh
+  } /* END: onCreate */
+
+  override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+    super.onPostCreate(savedInstanceState, persistentState)
+    drawerToggle.apply {
+      syncState()
+    }
   }
 
-  private fun packageIsInstalled(packageName: String, pacman: PackageManager): Boolean {
-    return try {
-      pacman.getPackageInfo(packageName, 0)
-      true
-    } catch (e: Exception) {
-      false
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    drawerToggle.apply {
+      onConfigurationChanged(newConfig)
     }
   }
 
@@ -333,12 +410,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
       R.id.action_refresh -> {
         viewModel.checkWebSiteStatus()
-        true
-      }
-      R.id.action_backup -> {
-        true
-      }
-      R.id.action_restore -> {
         true
       }
       else -> super.onOptionsItemSelected(item)
@@ -498,11 +569,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       super.onSelectedChanged(viewHolder, actionState)
       // Handle action state changes
       val swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG
-      binding.layout.swipeRefresh.isEnabled = if (swipeRefreshIsEnabled) {
-        swiping.not()
-      } else {
-        false
-      }
+      binding.layout.swipeRefresh.isEnabled = swiping.not()
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {

@@ -1,39 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_main_drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    android:layout_gravity="start"
+    android:clickable="false"
+    android:fitsSystemWindows="false"
+    android:layoutDirection="ltr"
+
+    >
+
+    <!--
+        Everything with (layout_)gravity "start"/"left" will be inside the DrawerLayout.
+        foregroundGravity must be set to "end"/"right".
+        Content must be inside a layout.
+        This layout and its contents must all have the above mentioned gravity attributes set.
+    -->
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent"
+        tools:context=".ui.home.MainActivity">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            tools:ignore="SpeakableTextPresentCheck" />
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_anchor="@+id/appBarLayout"
+                app:layout_anchorGravity="center"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                tools:ignore="SpeakableTextPresentCheck" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorPrimary"
-        app:elevation="10dp"
-        android:contentDescription="@string/create_entry"
-        app:srcCompat="@drawable/ic_add" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-    <include
-        android:id="@+id/layout"
-        layout="@layout/content_main" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:backgroundTint="@color/colorPrimary"
+            app:elevation="10dp"
+            android:contentDescription="@string/create_entry"
+            app:srcCompat="@drawable/ic_add" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <include
+            android:id="@+id/layout"
+            layout="@layout/content_main" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- https://stackoverflow.com/a/65475374/7061105 -->
+    <!-- This layout with NavigationView MUST be at the end of this XML! -->
+
+    <LinearLayout
+        android:id="@+id/layout_main_drawer_content"
+        android:layout_width="match_parent"
+
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_gravity="start"
+        android:layout_marginEnd="90dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="start"
+        android:foregroundGravity="right"
+        android:orientation="vertical">
+
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/main_drawer_nav"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            android:fitsSystemWindows="true"
+            android:clickable="false"
+            android:focusable="false"
+            app:elevation="0dp"
+            android:foregroundGravity="right"
+            app:menu="@menu/menu_main_drawer"
+            app:itemIconTint="@color/colorPrimary"
+            app:itemShapeAppearance="@color/colorPrimary" />
+
+        <include
+            android:id="@+id/incl_group_about"
+            layout="@layout/group_about"
+            android:layout_height="30dp"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="bottom" />
+
+    </LinearLayout>
+
+
+</androidx.drawerlayout.widget.DrawerLayout>
