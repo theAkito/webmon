@@ -191,7 +191,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       this?.let {
         val enable = true
         val disable = false
-//        val drawer = DrawerLayout(this@MainActivity)
         val drawer = binding.layoutMainDrawer
         drawerToggle = ActionBarDrawerToggle(
           this@MainActivity,
@@ -204,13 +203,22 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         }
         drawer.apply {
           addDrawerListener(drawerToggle)
-          setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+          /**
+            TODO: Drawer
+              Drawer is temporarily locked, as long as it is useless.
+              As soon as a feature in the Drawer gets fully implemented,
+              we can unlock it by setting its mode to `DrawerLayout.LOCK_MODE_UNLOCKED`.
+          */
+          setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         }
         drawerToggle.apply {
           syncState()
         }
         setDisplayHomeAsUpEnabled(disable)
         setHomeButtonEnabled(enable)
+        /* https://stackoverflow.com/a/29055845/7061105 */
+        /** See "TODO: Drawer". */
+        setHomeAsUpIndicator(null)
       }
     }
 
