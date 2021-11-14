@@ -1,0 +1,14 @@
+- Fix: Creating new Website Entry dispatches a "Website Unavailable" message.
+- Fix: isOnionAddress Switch sometimes appearing when TOR is disabled.
+- Improve: Pre-Fill URL field with "https://" Prefix when creating new Website Entry.
+- Improve: Replace Toast with Snackbar for unavailable Website Messages.
+- Improve: Remove redundant Backup & Restore Buttons in Menu.
+- Improve: Do not inform about auto start on App startup.
+- Improve: Pretty-Print Backup JSON.
+- Add: Tag Cloud to Website Entry Editor.
+- Add: Make Website Entries searchable by Tag.
+- Add: Advanced Settings: Import & Export Data Backup.
+- Add: Advanced Settings: Import & Export Settings Backup.
+- Add: Advanced Settings: Share Data & Settings Backup.
+- Add: Advanced Setting: Toggle Refresh on Swipe.
+- Add: Advanced Setting: Delete All Website Entry Tags.
