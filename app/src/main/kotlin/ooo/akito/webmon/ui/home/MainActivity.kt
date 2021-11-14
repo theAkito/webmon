@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private fun handleInternetUnavailable(): Boolean {
     return if (isConnected(applicationContext).not()) {
       disableSwipeRefreshIsRefreshing()
-      showToast(applicationContext, getString(R.string.check_internet))
+      applicationContext.showToast(getString(R.string.check_internet))
       Log.error(msgInternetUnavailable)
       true
     } else {
@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     this.setOnRefreshListener LISTENER@{
       disableSwipeRefreshIsRefreshing()
       if (isConnected(applicationContext).not()) {
-        showToast(applicationContext, getString(R.string.check_internet))
+        applicationContext.showToast(getString(R.string.check_internet))
         return@LISTENER
       }
       viewModel.checkWebSiteStatus()
@@ -321,7 +321,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             getStringNotWorking(entryWithFailedConnection.url)
           )
         } else {
-          showSnackBar(viewMain, getStringNotWorking(entryWithFailedConnection.url))
+          viewMain.showSnackBar(getStringNotWorking(entryWithFailedConnection.url))
         }
       } else if (entriesWithFailedConnection.size > 1) {
         if (customMonitorEnabled) {
@@ -331,7 +331,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             entriesWithFailedConnection.joinToStringDescription()
           )
         } else {
-          showSnackBar(viewMain, msgWebsitesNotReachable)
+          viewMain.showSnackBar(msgWebsitesNotReachable)
         }
       }
     })
@@ -431,7 +431,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     dialog.run {
       customRefreshInputBinding.btnSave.setOnClickListener {
         if (isConnected(applicationContext).not()) {
-          showToast(applicationContext, getString(R.string.check_internet))
+          applicationContext.showToast(getString(R.string.check_internet))
           return@setOnClickListener
         }
         if (!TextUtils.isEmpty(customRefreshInputBinding.editDuration.text)) {
@@ -457,9 +457,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             startUpdateTask(isUpdate = false)
             dialog.dismiss()
           } else
-            showToast(applicationContext, getString(R.string.error_read_and_agree_checkbox))
+            applicationContext.showToast(getString(R.string.error_read_and_agree_checkbox))
         } else
-          showToast(applicationContext, getString(R.string.enter_valid_input))
+          applicationContext.showToast(getString(R.string.enter_valid_input))
       }
     }
     dialog.show()
@@ -487,8 +487,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   override fun onRefreshClicked(webSiteEntry: WebSiteEntry) {
     if (handleInternetUnavailable()) { return }
     viewModel.getWebSiteStatus(webSiteEntry)
-    Utils.showSnackBar(
-      binding.layout.swipeRefresh, String.format(
+    binding.layout.swipeRefresh.showSnackBar(
+      String.format(
         getString(R.string.site_refreshing),
         webSiteEntry.url
       )
@@ -500,7 +500,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     if (webSiteEntry.isOnionAddress.not()) {
       webSiteEntry.url.openInBrowser()
     } else {
-      showToast(this, msgCannotOpenOnionInBrowser)
+      showToast(msgCannotOpenOnionInBrowser)
     }
 
   }
@@ -511,8 +511,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     viewModel.updateWebSiteEntry(webSiteEntry.apply {
       isPaused = this.isPaused.not()
     })
-    Utils.showSnackBar(
-      binding.layout.swipeRefresh, String.format(
+    binding.layout.swipeRefresh.showSnackBar(
+      String.format(
         getString(if (webSiteEntry.isPaused) R.string.monitor_paused else R.string.monitor_resumed),
         webSiteEntry.url
       )

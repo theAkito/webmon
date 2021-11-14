@@ -337,7 +337,7 @@ class CreateEntryActivity : AppCompatActivity() {
               val newTagName = editText.text.toString()
               val defSize = 16 /* TODO: Fix dangling Int. */
               if (newTagName.length >= defSize) {
-                showToast(this@CreateEntryActivity, "${defSize} characters maximum!")
+                this@CreateEntryActivity.showToast("${defSize} characters maximum!")
               } else {
                 globalEntryTagsNames = globalEntryTagsNames + newTagName
                 checkedTagNameToIsChecked[newTagName] = false

@@ -1,5 +1,6 @@
 package ooo.akito.webmon.utils
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -101,9 +102,10 @@ object Utils {
     return SimpleDateFormat("dd-MMM-yyyy hh:mm:ss:a", Locale.ENGLISH).format(Date())
   }
 
+  @SuppressLint("UnspecifiedImmutableFlag")
   fun showNotification(context: Context, title: String, message: String) {
     val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID,
         NOTIFICATION_CHANNEL_NAME,
         NotificationManager.IMPORTANCE_HIGH)
@@ -140,17 +142,17 @@ object Utils {
   }
 
   fun startWorkManager(context: Context, isForce : Boolean = false) {
-    val isScheduled: Boolean? = SharedPrefsManager.customPrefs[IS_SCHEDULED, false]
+    val isScheduled: Boolean? = customPrefs[IS_SCHEDULED, false]
     isScheduled?.let { scheduled ->
       if (!scheduled || isForce) {
-        SharedPrefsManager.customPrefs[IS_SCHEDULED] = true
+        customPrefs[IS_SCHEDULED] = true
         WorkManagerScheduler.refreshPeriodicWork(context)
       }
     }
   }
 
   fun getMonitorInterval() : Long {
-    return (SharedPrefsManager.customPrefs[MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN] ?: DEFAULT_INTERVAL_MIN).toLong()
+    return (customPrefs[MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN] ?: DEFAULT_INTERVAL_MIN).toLong()
   }
 
   fun getMonitorTime() : String {
@@ -181,12 +183,12 @@ object Utils {
 
   fun showAutoStartEnableDialog(context: Context) {
     /* Currently not in use. */
-    if (isCustomRom() && !SharedPrefsManager.customPrefs.getBoolean(Constants.IS_AUTO_START_SHOWN, false)) {
+    if (isCustomRom() && !customPrefs.getBoolean(Constants.IS_AUTO_START_SHOWN, false)) {
       AlertDialog.Builder(context).apply {
         setTitle(context.getString(R.string.enable_auto_start))
         setMessage(context.getString(R.string.message_auto_start_reason))
         setPositiveButton(context.getString(R.string.ok)) { dialog, _ ->
-          SharedPrefsManager.customPrefs[Constants.IS_AUTO_START_SHOWN] = true
+          customPrefs[Constants.IS_AUTO_START_SHOWN] = true
           openAutoStartScreen(context)
           dialog.dismiss()
         }
@@ -218,20 +220,26 @@ object Utils {
     startWorkManager(this, force)
   }
 
-  fun showToast(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+  fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
   }
 
-  fun showSnackBar(view: View, message: String) {
-    Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+  fun View.showSnackBar(message: String) {
+    Snackbar.make(this, message, Snackbar.LENGTH_LONG).show()
+  }
+
+  fun View.showSnackBarWithAction(message: String, actionMessage: String, action: View.OnClickListener) {
+    Snackbar.make(this, message, Snackbar.LENGTH_LONG).apply {
+      setAction(msgGenericDismiss, action)
+    }.show()
   }
 
   fun Context.showToastNotImplemented() {
-    showToast(this, msgNotImplemented)
+    showToast(msgNotImplemented)
   }
 
   fun View.showSnackbarNotImplemented() {
-    showSnackBar(this, msgNotImplemented)
+    showSnackBar(msgNotImplemented)
   }
 
   fun Int?.isStatusAcceptable(): Boolean {
@@ -322,8 +330,7 @@ object Utils {
 
   fun mayNotifyStatusFailure(website: WebSiteEntry): Boolean {
     val status = website.status
-    val isEnabledServerFailOnly = SharedPrefsManager
-      .customPrefs.getBoolean(Constants.NOTIFY_ONLY_SERVER_ISSUES, false)
+    val isEnabledServerFailOnly = customPrefs.getBoolean(Constants.NOTIFY_ONLY_SERVER_ISSUES, false)
     val statusIsNotAcceptable = website.isStatusAcceptable().not()
     return if (isEnabledServerFailOnly) {
       statusIsNotAcceptable && isServerRelatedFail(status ?: 0)

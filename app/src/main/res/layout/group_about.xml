@@ -6,8 +6,7 @@
     android:layout_height="0dp"
     android:layout_gravity="bottom"
     android:layout_weight="1"
-    android:orientation="vertical"
-    android:layout_below="@+id/main_drawer_nav">
+    android:orientation="vertical">
 
 
     <com.google.android.material.navigation.NavigationView
