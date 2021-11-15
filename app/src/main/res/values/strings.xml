@@ -16,7 +16,7 @@
     <string name="monitoring_interval">Monitoring Interval</string>
     <string name="checking_every_15_mins">Checking every 15 mins</string>
     <string name="message_auto_start_reason">Your device may kill the app process, when it is in the background. Therefore, it is recommended to enable the auto start option in the settings.</string>
-    <string name="enable_auto_start">Enable Auto start</string>
+    <string name="enable_auto_start">Enable Auto Start</string>
     <string name="ok">OK</string>
     <string name="icon_credits">Logo Icon generated at\nhttps://www.freelogodesign.org</string>
     <string name="source_code_link" translatable="false">https://github.com/theAkito/webmon</string>
@@ -40,7 +40,7 @@
     <string name="contributors_main_title">Developer</string>
     <string name="contributors_main_akito" translatable="false">Akito\nhttps://github.com/theAkito</string>
     <string name="contributors_main_manimaran" translatable="false">Manimaran\nhttps://gitlab.com/manimaran</string>
-    <string name="notify_only_server_issues">Notify only Server issues</string>
+    <string name="notify_only_server_issues">Notify only on Server Issues</string>
     <string name="notify_only_server_side_issues_info">Notify only server side issues (Error Codes 5xx). Do not notify on client side errors, like internet and 4xx issues.</string>
     <string name="stop">Stop</string>
     <string name="provide_custom_monitor_values">Provide Custom Monitoring values</string>

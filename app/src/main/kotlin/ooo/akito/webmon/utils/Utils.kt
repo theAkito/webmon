@@ -77,7 +77,7 @@ object Utils {
   val mapper: ObjectMapper = jacksonObjectMapper()
     .enable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
   val mapperUgly: ObjectMapper = jacksonObjectMapper()
-    .disable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
+    .disable(SerializationFeature.INDENT_OUTPUT) /* Never pretty-print. */
 
   fun triggerRebirth(context: Context) {
     /** https://stackoverflow.com/a/46848226/7061105 */

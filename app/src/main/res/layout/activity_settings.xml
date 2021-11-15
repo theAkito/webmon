@@ -276,29 +276,6 @@
             android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:text="@string/credits"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_normal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="web"
-                android:padding="10dp"
-                android:text="@string/icon_credits"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.AppCompatTextView
                 android:text="@string/source_code"
                 android:textStyle="bold"
                 android:textSize="@dimen/text_normal"
