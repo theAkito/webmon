@@ -15,6 +15,7 @@
 
 # ---> Temp & Test Files
 test.md
+local-generate-README.sh
 app/src/main/kotlin/ooo/akito/webmon/net/http/HttpConfig.kt
 release/
 

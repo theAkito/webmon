@@ -125,6 +125,235 @@ path.two {
         fill: white;
     }
 }
+
+
+
+/** Image Slideshow */
+
+#cc-slider {
+  text-align: center;
+  margin: 0 auto;
+  max-width: 850px;
+  position:relative;
+}
+
+#cc-slider input {
+  display: none;
+}
+
+#cc-slider label, a {
+  /* color: #ef023f; */
+  cursor: pointer;
+  text-decoration: none;
+}
+#cc-slider label:hover {
+  color: #ff0042 !important;
+}
+
+#slide1:checked ~ #cc-slides .inner { margin-left:0; }
+#slide2:checked ~ #cc-slides .inner { margin-left:-100%; }
+#slide3:checked ~ #cc-slides .inner { margin-left:-200%; }
+#slide4:checked ~ #cc-slides .inner { margin-left:-300%; }
+#slide5:checked ~ #cc-slides .inner { margin-left:-400%; }
+#slide6:checked ~ #cc-slides .inner { margin-left:-500%; }
+#slide7:checked ~ #cc-slides .inner { margin-left:-600%; }
+#slide8:checked ~ #cc-slides .inner { margin-left:-700%; }
+#slide9:checked ~ #cc-slides .inner { margin-left:-800%; }
+#slide10:checked ~ #cc-slides .inner { margin-left:-900%; }
+
+
+#overflow {
+  width: 100%;
+  overflow: hidden;
+}
+
+#cc-slides article img {
+  /** https://www.w3docs.com/snippets/css/how-to-resize-images-proportionally-scaled-using-css-for-responsive-web-design.html */
+  width: 30%; /* Customise */
+  /* max-width: 30%; */
+}
+
+#cc-slides .inner {
+  width: 1000%;
+  line-height: 0;
+}
+
+#cc-slides article {
+  width: 10%;
+  float: left;
+}
+
+#controls {
+  margin: -8% 0 0 84%;
+  width: 15%;
+  height: 50px;
+}
+
+#controls label { 
+  display: none;
+  width: 50px;
+  height: 50px;
+}
+
+#active {
+  margin: 23% 0 0;
+  text-align: center;
+}
+
+#active label {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #f89e67;
+}
+
+#active label:hover {
+  background: #ccc;
+  border-color: #777 !important;
+}
+
+#controls label:hover {
+  opacity: 0.8;
+}
+
+#slide1:checked ~ #controls label:nth-child(2),
+#slide2:checked ~ #controls label:nth-child(3),
+#slide3:checked ~ #controls label:nth-child(4),
+#slide4:checked ~ #controls label:nth-child(5),
+#slide5:checked ~ #controls label:nth-child(6),
+#slide6:checked ~ #controls label:nth-child(7),
+#slide7:checked ~ #controls label:nth-child(8),
+#slide8:checked ~ #controls label:nth-child(9),
+#slide9:checked ~ #controls label:nth-child(10),
+#slide10:checked ~ #controls label:nth-child(1) {
+  background: url('images/next.png') no-repeat;
+  float: right;
+  margin: 0 10px 0 0;
+  display: block;
+  background-color:#ef023f;
+}
+
+
+#slide1:checked ~ #controls label:nth-child(10),
+#slide2:checked ~ #controls label:nth-child(1),
+#slide3:checked ~ #controls label:nth-child(2),
+#slide4:checked ~ #controls label:nth-child(3),
+#slide5:checked ~ #controls label:nth-child(4),
+#slide6:checked ~ #controls label:nth-child(5),
+#slide7:checked ~ #controls label:nth-child(6),
+#slide8:checked ~ #controls label:nth-child(7),
+#slide9:checked ~ #controls label:nth-child(8),
+#slide10:checked ~ #controls label:nth-child(9) {
+  background: url('images/prev.png') no-repeat;
+  float: left;
+  margin: 0 0 0 17px;
+  display: block;
+  background-color:#ef023f;
+}
+
+
+
+/* cctooltip Box */
+
+.cctooltip {
+  color: #FFFFFF;
+  font-style: italic;
+  line-height: 20px;
+  margin-top: 250px;
+  opacity: 0;
+  position: absolute;
+  text-align: left;
+  -webkit-transform: translateZ(0);
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+}
+
+.cctooltip h3 {
+  color: #FFFFFF;
+  margin: 0 0 5px;
+  font-weight: normal;
+  font-size: 16px;
+  font-style: normal;
+  background: none repeat scroll 0 0 #222222;
+  padding: 5px;
+}
+.cctooltip h4 {
+  color: #FFFFFF;
+  margin: 0 0 5px;
+  font-weight: normal;
+  font-size: 14px;
+  font-style: normal;
+  background: none repeat scroll 0 0 #222222;
+  padding: 5px;
+  text-align:right;
+  width:150px;
+}
+
+
+
+/* cc-slider Styling */
+
+#cc-slides {
+  margin: 0;
+  padding: 1%;
+  background: #fff;
+}
+
+
+/* Animation */
+
+#cc-slides .inner {
+  -webkit-transform: translateZ(0);
+  -webkit-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+  -moz-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+    -ms-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+    -o-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+        transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
+
+  -webkit-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+  -moz-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+    -ms-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+    -o-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000); 
+        transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+}
+
+#cc-slider {
+  -webkit-transform: translateZ(0);
+  -webkit-transition: all 0.5s ease-out;
+  -moz-transition: all 0.5s ease-out;
+  -o-transition: all 0.5s ease-out;
+  transition: all 0.5s ease-out;
+}
+
+#controls label{
+  -webkit-transform: translateZ(0);
+  -webkit-transition: opacity 0.2s ease-out;
+  -moz-transition: opacity 0.2s ease-out;
+  -o-transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease-out;
+}
+
+#slide1:checked ~ #cc-slides article:nth-child(1) .cctooltip,
+#slide2:checked ~ #cc-slides article:nth-child(2) .cctooltip,
+#slide3:checked ~ #cc-slides article:nth-child(3) .cctooltip,
+#slide4:checked ~ #cc-slides article:nth-child(4) .cctooltip,
+#slide5:checked ~ #cc-slides article:nth-child(5) .cctooltip,
+#slide6:checked ~ #cc-slides article:nth-child(6) .cctooltip,
+#slide7:checked ~ #cc-slides article:nth-child(7) .cctooltip,
+#slide8:checked ~ #cc-slides article:nth-child(8) .cctooltip,
+#slide9:checked ~ #cc-slides article:nth-child(9) .cctooltip,
+#slide10:checked ~ #cc-slides article:nth-child(10) .cctooltip {
+  opacity: 1;
+  -webkit-transition: all 1s ease-out 0.6s;
+  -moz-transition: all 1s ease-out 0.6s;
+  -o-transition: all 1s ease-out 0.6s;
+  transition: all 1s ease-out 0.6s;
+}
 </style>
 </head>
 <body class="article">
@@ -170,6 +399,108 @@ path.two {
     </span>
   </a>
 </div>
+<div class="paragraph">
+<p> <br>
+ </p>
+</div>
+<hr>
+<section>
+    <div class="rt-container">
+    <div class="sect1">
+          <div class="col-rt-12">
+              <article id="cc-slider">
+      <input checked="checked" name="cc-slider" id="slide1" type="radio">
+      <input name="cc-slider" id="slide2" type="radio">
+      <input name="cc-slider" id="slide3" type="radio">
+      <input name="cc-slider" id="slide4" type="radio">
+      <input name="cc-slider" id="slide5" type="radio">
+      <input name="cc-slider" id="slide6" type="radio">
+      <input name="cc-slider" id="slide7" type="radio">
+      <input name="cc-slider" id="slide8" type="radio">
+      <input name="cc-slider" id="slide9" type="radio">
+      <input name="cc-slider" id="slide10" type="radio">
+      <div id="cc-slides">
+        <div id="overflow">
+          <div class="inner">
+            <article>
+              <div class="cctooltip">
+                <h3>Home</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Quick Options</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Custom Monitoring Option</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Search by Tag</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Standard Website Entry</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>TOR Onion Website Entry</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Settings</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Availability Check Interval</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Advanced Settings</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/9.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Display of Unavailable Website</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/10.png?raw=true">
+            </article>
+          </div>
+        </div>
+      </div>
+      <div id="controls">
+        <label for="slide1"></label>
+        <label for="slide2"></label>
+        <label for="slide3"></label>
+        <label for="slide4"></label>
+        <label for="slide5"></label>
+        <label for="slide6"></label>
+        <label for="slide7"></label>
+        <label for="slide8"></label>
+        <label for="slide9"></label>
+        <label for="slide10"></label>
+      </div>
+    </article>
+		</div>
+    </div>
+</section>
 </div>
 </div>
 <div class="sect1">
@@ -184,10 +515,10 @@ path.two {
 <p>No login required.</p>
 </li>
 <li>
-<p>Get notified when site becomes unavailable.</p>
+<p>Get notified when a website becomes unavailable.</p>
 </li>
 <li>
-<p>Check website status according to chosen interval.</p>
+<p>Check website status according to chosen interval. (15 mins, 30 mins, hourly, daily, etc.)</p>
 </li>
 <li>
 <p>Pause/Resume Monitoring for a particular site.</p>
@@ -201,16 +532,13 @@ manually assigned.</p>
 <p>Tap a website entry to quickly refresh that particular one.</p>
 </li>
 <li>
-<p>Ability to notify only on Server issue. If enabled, does not notify,
-if the app has no internet connection.</p>
+<p>Ability to notify only on Server issues. If enabled, does not notify,
+if the app has no internet connection. (Anything below HTTP Code 500 is ignored and does not count as an error.)</p>
 </li>
 <li>
 <p>Ability to notify only on serious issues. If enabled, does not notify,
 if the website responds with one of the following codes: 201, 202, 204,
 401, 403.</p>
-</li>
-<li>
-<p>Import &amp; Export of Website entry list backups.</p>
 </li>
 <li>
 <p>Check connectivity of common address records (A, AAAA) from a domain.</p>
@@ -219,97 +547,17 @@ if the website responds with one of the following codes: 201, 202, 204,
 <p>Check Onion Domains, when
 <a href="https://github.com/guardianproject/orbot">Orbot</a> is running.</p>
 </li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect1 text-center">
-<h2 id="_screenshots">Screenshots</h2>
-<div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-center valign-top">Main</th>
-<th class="tableblock halign-center valign-top">Settings</th>
-<th class="tableblock halign-center valign-top">Monitor Intervals</th>
-<th class="tableblock halign-center valign-top">Custom Monitoring Setup</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" alt="First"></span></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" alt="Second"></span></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" alt="Third"></span></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" alt="Fourth"></span></p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-center valign-top">Backup &amp; Restore</th>
-<th class="tableblock halign-center valign-top">Monitor A/AAAA DNS Records</th>
-<th class="tableblock halign-center valign-top">Monitor Onion Sites</th>
-<th class="tableblock halign-center valign-top">Search</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" alt="Fifth"></span></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" alt="Sixth"></span></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true" alt="Seventh"></span></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><span class="image"><img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true" alt="Eighth"></span></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_todo">TODO</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
 <li>
-<p><a href="https://gitlab.com/manimaran/website-monitor/-/issues/3">Add Dark
-Mode</a></p>
+<p>Attach custom Tags to Website Entries.</p>
 </li>
 <li>
-<p><a href="https://gitlab.com/manimaran/website-monitor/-/issues/14">Use
-Notification workaround to ensure App never gets killed, when in
-background</a></p>
+<p>Search Website Entries by Tag.</p>
 </li>
 <li>
-<p><span class="line-through"><a href="https://gitlab.com/manimaran/website-monitor/-/issues/2">Support
-Tor Proxy</a></span></p>
+<p>Import &amp; Export of Website Entry backup.</p>
 </li>
 <li>
-<p><span class="line-through"><a href="https://gitlab.com/manimaran/website-monitor/-/issues/11">Check
-common address records (A, AAAA)</a></span></p>
-</li>
-<li>
-<p><span class="line-through">Export Website Entries to JSON as Backup</span></p>
-</li>
-<li>
-<p><span class="line-through">Enable Import of Backups</span></p>
-</li>
-<li>
-<p><span class="line-through">Publish to F-Droid</span></p>
-</li>
-<li>
-<p><span class="line-through">Merge Notifications into single one, if more than one
-Website is down</span></p>
+<p>Import &amp; Export of App Settings backup.</p>
 </li>
 </ul>
 </div>

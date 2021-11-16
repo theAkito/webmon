@@ -1,4 +1,4 @@
-:imagesdir: https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/
+:imagesdir: images/
 :stylesdir: .asciidoc/
 :stylesheet: styler.css
 :last-update-label!:
@@ -6,7 +6,7 @@
 [.text-center]
 == Webmon
 
-image::icon.png?raw=true[]
+image::https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/icon.png?raw=true[]
 
 [.text-center]
 _Monitor web services and get notified, if a service becomes unavailable._
@@ -22,14 +22,14 @@ image:https://img.shields.io/github/license/theAkito/webmon?style=plastic[GitHub
 image:https://img.shields.io/liberapay/patrons/Akito?style=plastic[Liberapay
 patrons]
 
+// GET IT ON...
 ++++
 <p align="center">
 <a href="https://f-droid.org/packages/ooo.akito.webmon/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width="200px"></a><a href="https://play.google.com/store/apps/details?id=ooo.akito.webmon"><img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/google_play.png" width="200px"></a>
 </p>
 ++++
 
-// https://github.com/theAkito/webmon/releases[*Early Bird Releases*]
-
+// EARLY BIRD RELEASES
 ++++
 <div class="wrapper">
   <a class="cta" href="https://github.com/theAkito/webmon/releases">
@@ -47,65 +47,134 @@ patrons]
 </div>
 ++++
 
+{sp} +
+{sp}
+
+''''
+// SCREENSHOTS
+++++
+<section>
+    <div class="rt-container">
+    <div class="sect1">
+          <div class="col-rt-12">
+              <article id="cc-slider">
+      <input checked="checked" name="cc-slider" id="slide1" type="radio">
+      <input name="cc-slider" id="slide2" type="radio">
+      <input name="cc-slider" id="slide3" type="radio">
+      <input name="cc-slider" id="slide4" type="radio">
+      <input name="cc-slider" id="slide5" type="radio">
+      <input name="cc-slider" id="slide6" type="radio">
+      <input name="cc-slider" id="slide7" type="radio">
+      <input name="cc-slider" id="slide8" type="radio">
+      <input name="cc-slider" id="slide9" type="radio">
+      <input name="cc-slider" id="slide10" type="radio">
+      <div id="cc-slides">
+        <div id="overflow">
+          <div class="inner">
+            <article>
+              <div class="cctooltip">
+                <h3>Home</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Quick Options</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true">
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Custom Monitoring Option</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Search by Tag</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Standard Website Entry</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>TOR Onion Website Entry</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Settings</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Availability Check Interval</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Advanced Settings</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/9.png?raw=true"> 
+            </article>
+            <article>
+              <div class="cctooltip">
+                <h3>Display of Unavailable Website</h3>
+              </div>
+              <img src="https://github.com/theAkito/webmon/blob/HEAD/fastlane/metadata/android/en-US/images/phoneScreenshots/10.png?raw=true"> 
+            </article>
+          </div>
+        </div>
+      </div>
+      <div id="controls">
+        <label for="slide1"></label>
+        <label for="slide2"></label>
+        <label for="slide3"></label>
+        <label for="slide4"></label>
+        <label for="slide5"></label>
+        <label for="slide6"></label>
+        <label for="slide7"></label>
+        <label for="slide8"></label>
+        <label for="slide9"></label>
+        <label for="slide10"></label>
+      </div>
+    </article>
+		</div>
+    </div>
+</section>
+++++
+
 == App Features
 
 * Simple UI.
 * No login required.
-* Get notified when site becomes unavailable.
-* Check website status according to chosen interval.
+* Get notified when a website becomes unavailable.
+* Check website status according to chosen interval. (15 mins, 30 mins, hourly, daily, etc.)
 * Pause/Resume Monitoring for a particular site.
 * Custom Monitoring option. Useful for continually checking website
 status every 1 second or 5 minutes. The Second/Minute interval can be
 manually assigned.
 * Tap a website entry to quickly refresh that particular one.
-* Ability to notify only on Server issue. If enabled, does not notify,
-if the app has no internet connection.
+* Ability to notify only on Server issues. If enabled, does not notify,
+if the app has no internet connection. (Anything below HTTP Code 500 is ignored and does not count as an error.)
 * Ability to notify only on serious issues. If enabled, does not notify,
 if the website responds with one of the following codes: 201, 202, 204,
 401, 403.
-* Import & Export of Website entry list backups.
 * Check connectivity of common address records (A, AAAA) from a domain.
 * Check Onion Domains, when
 https://github.com/guardianproject/orbot[Orbot] is running.
-
-[.text-center]
-== Screenshots
-
-[cols="^,^,^,^",options="header",]
-|===
-|Main |Settings |Monitor Intervals |Custom Monitoring Setup
-|image:phoneScreenshots/1.png?raw=true[First]
-|image:phoneScreenshots/2.png?raw=true[Second]
-|image:phoneScreenshots/3.png?raw=true[Third]
-|image:phoneScreenshots/4.png?raw=true[Fourth]
-|===
-
-[cols="^,^,^,^",options="header",]
-|===
-|Backup & Restore |Monitor A/AAAA DNS Records |Monitor Onion Sites
-|Search
-|image:phoneScreenshots/5.png?raw=true[Fifth]
-|image:phoneScreenshots/6.png?raw=true[Sixth]
-|image:phoneScreenshots/7.png?raw=true[Seventh]
-|image:phoneScreenshots/8.png?raw=true[Eighth]
-|===
-
-== TODO
-
-* https://gitlab.com/manimaran/website-monitor/-/issues/3[Add Dark
-Mode]
-* https://gitlab.com/manimaran/website-monitor/-/issues/14[Use
-Notification workaround to ensure App never gets killed, when in
-background]
-* [line-through]#https://gitlab.com/manimaran/website-monitor/-/issues/2[Support
-Tor Proxy]#
-* [line-through]#https://gitlab.com/manimaran/website-monitor/-/issues/11[Check
-common address records (A, AAAA)]#
-* [line-through]#Export Website Entries to JSON as Backup#
-* [line-through]#Enable Import of Backups#
-* [line-through]#Publish to F-Droid#
-* [line-through]#Merge Notifications into single one, if more than one
-Website is down#
+* Attach custom Tags to Website Entries.
+* Search Website Entries by Tag.
+* Import & Export of Website Entry backup.
+* Import & Export of App Settings backup.
 
 == Note
 
