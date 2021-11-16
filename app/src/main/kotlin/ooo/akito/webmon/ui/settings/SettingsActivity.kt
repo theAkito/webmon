@@ -484,7 +484,7 @@ class SettingsActivity : AppCompatActivity() {
     //region Advanced Setting: Share Backup of Settings
 
     /** Share Backup Settings */
-    activitySettingsBinding.btnBackupDataShare.shareButtonSetOnClickListener(
+    activitySettingsBinding.btnBackupSettingsShare.shareButtonSetOnClickListener(
       nameBackupSettingsCaseLower,
       backupSettingsManager.generateBackupFileContent(nameNoneCaseLower)
     )
