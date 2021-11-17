@@ -11,6 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
@@ -60,6 +61,8 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
             Glide
               .with(binding.imgLogo.context)
               .load(ResourcesCompat.getDrawable(resources, R.drawable.ic_tor_onion, context.theme))
+              .diskCacheStrategy(DiskCacheStrategy.NONE)
+              .skipMemoryCache( true )
               .apply(RequestOptions.circleCropTransform())
               .into(binding.imgLogo)
           } catch (e: Exception) {
@@ -82,9 +85,15 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
           val iconUrlFetcher = "https://besticon-demo.herokuapp.com"
           val iconUrlFull = "${iconUrlFetcher}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
           try {
+            /**
+              https://stackoverflow.com/a/48152076/7061105
+              https://futurestud.io/tutorials/glide-caching-basics
+            */
             Glide
               .with(binding.imgLogo.context)
               .load(iconUrlFull)
+              .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+              .skipMemoryCache( true )
               .apply(RequestOptions.circleCropTransform())
               .into(binding.imgLogo)
           } catch (e: Exception) {
