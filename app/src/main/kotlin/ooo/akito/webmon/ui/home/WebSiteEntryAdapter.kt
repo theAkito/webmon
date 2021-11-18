@@ -1,7 +1,6 @@
 package ooo.akito.webmon.ui.home
 
 import android.annotation.SuppressLint
-import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Filter
@@ -187,7 +186,6 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         filteredList = (p1?.values as List<*>).filterIsInstance<WebSiteEntry>()
         notifyDataSetChanged()
       }
-
     }
   }
 
@@ -196,8 +194,8 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
    * */
   @SuppressLint("NotifyDataSetChanged")
   fun setAllTodoItems(todoItems: List<WebSiteEntry>) {
-    this.mList = todoItems
-    this.filteredList = todoItems.sortedBy { it.itemPosition }
+    mList = todoItems
+    filteredList = todoItems.sortedBy { it.itemPosition }
     notifyDataSetChanged()
   }
 

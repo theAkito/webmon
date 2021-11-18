@@ -59,6 +59,7 @@ import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import ooo.akito.webmon.utils.Utils.torIsEnabled
+import ooo.akito.webmon.utils.Utils.totalAmountEntry
 import java.util.*
 
 
@@ -253,7 +254,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     binding.fabAdd.setOnClickListener {
       resetSearchView()
-      Utils.totalAmountEntry = webSiteEntryAdapter.itemCount
+      totalAmountEntry = webSiteEntryAdapter.itemCount
       val intent = Intent(this, CreateEntryActivity::class.java)
       resultLauncher.launch(intent)
     }
@@ -285,7 +286,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     // Setting up ViewModel and LiveData
     viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     viewModel.getWebSiteEntryList().observe(this, {
-      webSiteEntryAdapter.setAllTodoItems(it)
+      Log.info("Observed Website Entry List Change.")
+      if (searchView.isIconified) {
+        Log.info("Observed Website Entry List Change and set all TODO Items.")
+        webSiteEntryAdapter.setAllTodoItems(it)
+      }
       if (it.isEmpty()) { viewModel.addDefaultData() } // TODO: 2021/11/12 Does this need to be called on every observation? No.
     })
 
