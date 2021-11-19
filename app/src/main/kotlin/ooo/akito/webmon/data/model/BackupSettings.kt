@@ -12,5 +12,7 @@ data class BackupSettings(
   var is_added_default_data: Boolean,
   var monitoring_interval: Int,
   var is_scheduled: Boolean,
-  var notify_only_server_issues: Boolean
+  var notify_only_server_issues: Boolean,
+  var settings_toggle_log: Boolean,
+  var settings_toggle_forced_background_service: Boolean
 )

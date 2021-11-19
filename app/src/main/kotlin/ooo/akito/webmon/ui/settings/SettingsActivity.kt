@@ -501,7 +501,7 @@ class SettingsActivity : AppCompatActivity() {
         return@registerForActivityResult
       }
       Log.info("Restoring Settings from Backup...")
-      with(SharedPrefsManager.customPrefs) {
+      with(customPrefs) {
         this[WEBSITE_ENTRY_TAG_CLOUD_DATA] = providedSettings.website_entry_tag_cloud_data
         this[BACKUP_LAST_SAVED_LOCATION] = providedSettings.backup_last_saved_location
         this[HIDE_IS_ONION_ADDRESS] = providedSettings.hide_is_onion_address
@@ -511,6 +511,8 @@ class SettingsActivity : AppCompatActivity() {
         this[MONITORING_INTERVAL] = providedSettings.monitoring_interval
         this[IS_SCHEDULED] = providedSettings.is_scheduled
         this[NOTIFY_ONLY_SERVER_ISSUES] = providedSettings.notify_only_server_issues
+        this[SETTINGS_TOGGLE_LOG] = providedSettings.settings_toggle_log
+        this[SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE] = providedSettings.settings_toggle_forced_background_service
       }
       Log.info("Finished restoring Settings from Backup!")
     }

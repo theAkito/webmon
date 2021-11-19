@@ -9,6 +9,8 @@ import ooo.akito.webmon.utils.Constants.IS_ADDED_DEFAULT_DATA
 import ooo.akito.webmon.utils.Constants.IS_SCHEDULED
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
@@ -32,6 +34,8 @@ class BackupSettingsManager {
         monitoring_interval = getInt(MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN),
         is_scheduled = getBoolean(IS_SCHEDULED, false),
         notify_only_server_issues = getBoolean(NOTIFY_ONLY_SERVER_ISSUES, false),
+        settings_toggle_log = getBoolean(SETTINGS_TOGGLE_LOG, false),
+        settings_toggle_forced_background_service = getBoolean(SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE, false)
       )
     }
 
