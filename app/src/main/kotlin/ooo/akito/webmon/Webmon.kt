@@ -21,6 +21,19 @@ class Webmon : Application(), LifecycleObserver {
     super.onCreate()
     SharedPrefsManager.init(this)
     ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
+//    object : Thread() {
+//      override fun run() {
+//        try {
+//          while (true) {
+//            Log.error("********************************************LOG_TEST**************************************************" + Utils.lineEnd)
+//            sleep(10_000)
+//          }
+//        } catch (e: InterruptedException) {
+//          e.printStackTrace()
+//        }
+//      }
+//    }.start()
   }
 
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

@@ -91,4 +91,11 @@
     <string name="create_entry_tag_cloud_edit">+</string>
     <string name="title_about">About</string>
     <string name="greetings_pascal">Greetings</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_log">Log</string>
+    <string name="log_show">Show Log</string>
+    <string name="log_share">Share Log</string>
+    <string name="text_toggle_service_force">Enable Forced Background Service</string>
+    <string name="text_toggle_log">Enable Debug Log</string>
 </resources>
