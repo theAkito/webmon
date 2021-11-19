@@ -25,15 +25,9 @@ class ActivityDebug : AppCompatActivity() {
      supportFragmentManager
       .beginTransaction()
       .replace(binding.fragmentContainerViewLogFull.id, fragmentLog)
-//      .addToBackStack(null)
       .commit()
     supportActionBar.apply {
       title = getString(R.string.title_log)
     }
-
-
-
-//    val logText = binding.fragmentContainerViewLogFull.
-//      setContentView(findViewById(R.id.root_log))
   }
 }

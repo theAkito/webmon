@@ -31,6 +31,8 @@ object Constants {
   const val SETTINGS_TOR_ENABLE : String = "settings_tor_enable"
   const val SETTINGS_AVAILABILITY_LAISSEZFAIRE: String = "settings_availability_laissezfaire"
   const val SETTINGS_TOGGLE_SWIPE_REFRESH: String = "settings_toggle_swipe_refresh"
+  const val SETTINGS_TOGGLE_LOG: String = "settings_toggle_log"
+  const val SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE: String = "settings_toggle_forced_background_service"
 
   const val HIDE_IS_ONION_ADDRESS: String = "hide_is_onion_address"
   const val HIDE_CHECK_DNS_RECORD_A_AAAA: String = "hide_check_dns_record_a_aaaa"

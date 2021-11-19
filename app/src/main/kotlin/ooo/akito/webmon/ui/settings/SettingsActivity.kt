@@ -32,6 +32,7 @@ import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVer
 import ooo.akito.webmon.data.model.BackupSettings
 import ooo.akito.webmon.data.model.BackupWebsites
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
+import ooo.akito.webmon.ui.debug.ActivityDebug
 import ooo.akito.webmon.ui.home.MainActivity.Companion.fileTypeFilter
 import ooo.akito.webmon.ui.home.MainViewModel
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
@@ -44,6 +45,8 @@ import ooo.akito.webmon.utils.Constants.IS_ADDED_DEFAULT_DATA
 import ooo.akito.webmon.utils.Constants.IS_SCHEDULED
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
@@ -51,16 +54,22 @@ import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.ExceptionCompanion
+import ooo.akito.webmon.utils.ExceptionCompanion.msgBackupUriPathInvalid
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupSettings
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupWebsiteEntries
+import ooo.akito.webmon.utils.ExceptionCompanion.msgFileContent
+import ooo.akito.webmon.utils.ExceptionCompanion.msgInputStreamNullBackupInterrupted
 import ooo.akito.webmon.utils.ExceptionCompanion.msgSpecificToRebirth
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.cleanCustomTags
+import ooo.akito.webmon.utils.Utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.Utils.getMonitorTime
 import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.Utils.isCustomRom
+import ooo.akito.webmon.utils.Utils.logEnabled
 import ooo.akito.webmon.utils.Utils.mapper
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
@@ -173,7 +182,11 @@ class SettingsActivity : AppCompatActivity() {
 
   private fun generateBackupDataExportLauncher(backupType: String, illegalAccessErrorMsg: String): ActivityResultLauncher<String> {
     return registerForActivityResult(ActivityResultContracts.CreateDocument()) { uri ->
-      fun logErr() = Log.error(ExceptionCompanion.msgBackupUriPathInvalid)
+      fun logErr() = Log.error(msgBackupUriPathInvalid)
+      if (uri == null) {
+        logErr()
+        return@registerForActivityResult
+      }
       val backupFilePathRelative = try {
         uri.path
       } catch (e: Exception) {
@@ -192,6 +205,7 @@ class SettingsActivity : AppCompatActivity() {
         else -> throw IllegalArgumentException("[SettingsActivity.generateBackupDataExportLauncher()] Cannot generate BackupFileContent!")
       }
       val resolver = this@SettingsActivity.contentResolver
+
       /** https://stackoverflow.com/a/64733499/7061105 */
       val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError(illegalAccessErrorMsg)
       out.use { stream ->
@@ -238,15 +252,15 @@ class SettingsActivity : AppCompatActivity() {
 
     updateIntervalTimeOnUi()
 
-    switchNotifyOnlyServerIssues.isChecked = SharedPrefsManager.customPrefs.getBoolean(NOTIFY_ONLY_SERVER_ISSUES, false)
+    switchNotifyOnlyServerIssues.isChecked = customPrefs.getBoolean(NOTIFY_ONLY_SERVER_ISSUES, false)
     switchNotifyOnlyServerIssues.setOnCheckedChangeListener { _, isChecked ->
-      SharedPrefsManager.customPrefs[NOTIFY_ONLY_SERVER_ISSUES] = isChecked
+      customPrefs[NOTIFY_ONLY_SERVER_ISSUES] = isChecked
     }
 
-    switchSettingsTorEnable.isChecked = SharedPrefsManager.customPrefs.getBoolean(SETTINGS_TOR_ENABLE, false)
+    switchSettingsTorEnable.isChecked = customPrefs.getBoolean(SETTINGS_TOR_ENABLE, false)
     switchSettingsTorEnable.setOnCheckedChangeListener { _, isChecked ->
-      SharedPrefsManager.customPrefs[SETTINGS_TOR_ENABLE] = isChecked
-      SharedPrefsManager.customPrefs[HIDE_IS_ONION_ADDRESS] = false
+      customPrefs[SETTINGS_TOR_ENABLE] = isChecked
+      customPrefs[HIDE_IS_ONION_ADDRESS] = false
       Log.warn("TOR switched to ${isChecked}!")
       restartApp()
     }
@@ -335,12 +349,41 @@ class SettingsActivity : AppCompatActivity() {
     activitySettingsBinding.toggleSwipeRefresh.isChecked = swipeRefreshIsEnabled
     activitySettingsBinding.toggleSwipeRefresh.setOnCheckedChangeListener { _, isActivated ->
       isActivated.let {
-        SharedPrefsManager.customPrefs[SETTINGS_TOGGLE_SWIPE_REFRESH] = it
+        Log.warn("SwipeRefresh switched to ${it}!")
+        customPrefs[SETTINGS_TOGGLE_SWIPE_REFRESH] = it
         activitySettingsBinding.toggleSwipeRefresh.isChecked = it
       }
     }
 
     //endregion Advanced Setting: Toggle SwipeRefresh
+
+    //region Advanced Setting: Toggle Forced Background Service
+
+    activitySettingsBinding.toggleServiceForce.isChecked = forcedBackgroundServiceEnabled
+    activitySettingsBinding.toggleServiceForce.setOnCheckedChangeListener { _, isActivated ->
+      isActivated.let {
+        Log.warn("Forced Background Service switched to ${it}!")
+        customPrefs[SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE] = it
+        activitySettingsBinding.toggleServiceForce.isChecked = it
+      }
+      restartApp()
+    }
+
+    //endregion Advanced Setting: Toggle Forced Background Service
+
+    //region Advanced Setting: Toggle Log
+
+    activitySettingsBinding.toggleLog.isChecked = logEnabled
+    activitySettingsBinding.toggleLog.setOnCheckedChangeListener { _, isActivated ->
+      isActivated.let {
+        Log.warn("Log switched to ${it}!")
+        customPrefs[SETTINGS_TOGGLE_LOG] = it
+        activitySettingsBinding.toggleLog.isChecked = it
+      }
+      restartApp()
+    }
+
+    //endregion Advanced Setting: Toggle Log
 
     //region Advanced Setting: Export Backup of Data
 
@@ -362,8 +405,9 @@ class SettingsActivity : AppCompatActivity() {
 
     //region Advanced Setting: Import Backup of Data
 
-    onRestoreWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-      fun logErr() = Log.error(ExceptionCompanion.msgInputStreamNullBackupInterrupted)
+    onRestoreWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { rawUri ->
+      fun logErr() = Log.error(msgInputStreamNullBackupInterrupted)
+      val uri = rawUri ?: return@registerForActivityResult
       val resolver = this@SettingsActivity.contentResolver
       val input = try {
         resolver.openInputStream(uri)
@@ -379,7 +423,7 @@ class SettingsActivity : AppCompatActivity() {
       val backupWebsites = try {
         mapper.readValue<BackupWebsites>(rawContent)
       } catch (e: Exception) {
-        Log.error(ExceptionCompanion.msgFileContent + rawContent)
+        Log.error(msgFileContent + rawContent)
         warnOfBackupImportParsingFailure("Data")
         return@registerForActivityResult
       }
@@ -434,6 +478,10 @@ class SettingsActivity : AppCompatActivity() {
     onRestoreSettingsResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
       fun logErr() = Log.error(ExceptionCompanion.msgInputStreamNullBackupInterrupted)
       val resolver = this@SettingsActivity.contentResolver
+      if (uri == null) {
+        logErr()
+        return@registerForActivityResult
+      }
       val input = try {
         resolver.openInputStream(uri)
       } catch (e: Exception) {
@@ -490,6 +538,47 @@ class SettingsActivity : AppCompatActivity() {
     )
 
     //endregion Advanced Setting: Share Backup of Settings
+
+    //region Advanced Setting: Show Log
+
+    /** UI Divider (Cosmetic) */
+    activitySettingsBinding.dividerZoneEndBackupSettingsShare.apply {
+      visibility = if (logEnabled) {
+        View.VISIBLE
+      } else {
+        View.GONE
+      }
+    }
+
+    /** Show Log*/
+    activitySettingsBinding.btnLogShow.apply {
+      visibility = if (logEnabled) {
+        setOnClickListener {
+          startActivity(Intent(applicationContext, ActivityDebug::class.java))
+        }
+        View.VISIBLE
+      } else {
+        View.GONE
+      }
+    }
+
+    //endregion Advanced Setting: Show Log
+
+    //region Advanced Setting: Share Log
+
+    /** Share Log */
+    activitySettingsBinding.btnLogShare.apply {
+      visibility = if (logEnabled) {
+        setOnClickListener {
+          startActivity(Intent(applicationContext, ActivityDebug::class.java))
+        }
+        View.VISIBLE
+      } else {
+        View.GONE
+      }
+    }
+
+    //endregion Advanced Setting: Show Log
 
     //endregion Advanced Settings
   }
