@@ -119,7 +119,7 @@
                 android:id="@+id/settings_tor_enable"
                 android:layout_width="match_parent"
                 android:layout_height="49dp"
-                android:text="@string/enable_tor_msg" />
+                android:text="@string/title_toggle_tor" />
         </LinearLayout>
 
         <Space
@@ -160,19 +160,19 @@
                     android:id="@+id/toggle_swipe_refresh"
                     android:layout_width="match_parent"
                     android:layout_height="49dp"
-                    android:text="@string/enable_refresh_on_swipe_down" />
+                    android:text="@string/title_toggle_refresh_on_swipe_down" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/toggle_service_force"
                     android:layout_width="match_parent"
                     android:layout_height="49dp"
-                    android:text="@string/text_toggle_service_force" />
+                    android:text="@string/title_toggle_service_force" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/toggle_log"
                     android:layout_width="match_parent"
                     android:layout_height="49dp"
-                    android:text="@string/text_toggle_log" />
+                    android:text="@string/title_toggle_log" />
 
                 <Space
                     android:layout_width="match_parent"

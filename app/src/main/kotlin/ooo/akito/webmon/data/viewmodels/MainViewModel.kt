@@ -1,4 +1,4 @@
-package ooo.akito.webmon.ui.home
+package ooo.akito.webmon.data.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -10,14 +10,13 @@ import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.model.WebSiteStatus
 import ooo.akito.webmon.data.repository.WebSiteEntryRepository
 import ooo.akito.webmon.utils.Constants
-import ooo.akito.webmon.utils.SharedPrefsManager
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
   private val repository: WebSiteEntryRepository = WebSiteEntryRepository(application)
-  private val allWebSiteEntryList: LiveData<List<WebSiteEntry>> =
-    repository.getAllWebSiteEntryList()
+  private val allWebSiteEntryList: LiveData<List<WebSiteEntry>> = repository.getAllWebSiteEntryList()
   private val webSiteStatusList: MutableLiveData<List<WebSiteStatus>> = MutableLiveData()
   private val webSiteStatus: MutableLiveData<WebSiteStatus> = MutableLiveData()
 
@@ -56,7 +55,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
   }
 
   fun addDefaultData() {
-    if (SharedPrefsManager.customPrefs.getBoolean(Constants.IS_ADDED_DEFAULT_DATA, true))
+    if (customPrefs.getBoolean(Constants.IS_ADDED_DEFAULT_DATA, true))
       repository.addDefaultData()
   }
 

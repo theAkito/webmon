@@ -61,9 +61,9 @@
     <string name="restore">Restore</string>
     <string name="check_a_aaaa_dns_records">Check A/AAAA DNS Records</string>
     <string name="settings_tor">Tor Settings</string>
-    <string name="enable_tor_msg">Enable Tor (Requires running Orbot and App Restart!)</string>
+    <string name="title_toggle_tor">TOR / Onion Support (Requires running Orbot!)</string>
     <string name="is_onion_address">Is TOR .onion Address</string>
-    <string name="is_laissez_faire">Is fine with HTTP Codes 20x, 401, 403</string>
+    <string name="is_laissez_faire">Is fine with HTTP Codes 201, 202, 204, 401, 403</string>
     <string name="settings_advanced">Advanced Settings</string>
     <string name="text_advanced_settings_show">Show Advanced Settings</string>
     <string name="text_advanced_settings_hide">Hide Advanced Settings</string>
@@ -78,7 +78,7 @@
     <string name="text_create_entry_tag_cloud_add">Add Tag</string>
     <string name="text_create_entry_tag_cloud_create">Create</string>
     <string name="text_backup_import_failure_confirmation">Okay</string>
-    <string name="enable_refresh_on_swipe_down">Enable Refresh on Swipe Down</string>
+    <string name="title_toggle_refresh_on_swipe_down">Refresh on Swipe Down</string>
     <string name="backup_import">Import Backup</string>
     <string name="backup_export">Export Backup</string>
     <string name="backup_settings_share">Share Backup of Settings</string>
@@ -94,6 +94,6 @@
     <string name="title_log">Log</string>
     <string name="log_show">Show Log</string>
     <string name="log_share">Share Log</string>
-    <string name="text_toggle_service_force">Enable Forced Background Service</string>
-    <string name="text_toggle_log">Enable Debug Log</string>
+    <string name="title_toggle_service_force">Forced Background Service</string>
+    <string name="title_toggle_log">Debug Log</string>
 </resources>

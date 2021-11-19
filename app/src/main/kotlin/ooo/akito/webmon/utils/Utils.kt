@@ -20,9 +20,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.WorkManager
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.android.material.snackbar.Snackbar
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
@@ -37,7 +34,6 @@ import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
-import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Environment.manufacturer
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
@@ -59,28 +55,6 @@ import java.util.*
 
 
 object Utils {
-
-  val lineEnd: String = System.lineSeparator()
-  var totalAmountEntry = 0
-  var torIsEnabled = false
-  var torAppIsAvailable = false
-  var swipeRefreshIsEnabled = true
-  var logEnabled = false
-  var forcedBackgroundServiceEnabled = false
-  var isEntryCreated = false /** Do not observe "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
-  var logContent = ""
-
-  var globalEntryTagsNames: List<String> = listOf(msgGenericDefault)
-    set(value) {
-      val readyValue = value.distinct().sorted()
-      field = readyValue
-      customPrefs[WEBSITE_ENTRY_TAG_CLOUD_DATA] = mapperUgly.writeValueAsString(readyValue)
-    }
-
-  val mapper: ObjectMapper = jacksonObjectMapper()
-    .enable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
-  val mapperUgly: ObjectMapper = jacksonObjectMapper()
-    .disable(SerializationFeature.INDENT_OUTPUT) /* Never pretty-print. */
 
   fun triggerRebirth(context: Context) {
     /** https://stackoverflow.com/a/46848226/7061105 */
@@ -352,6 +326,17 @@ object Utils {
     }
   }
 
+  fun PackageManager.packageIsInstalled(packageName: String): Boolean {
+    return try {
+      getPackageInfo(packageName, 0)
+      Log.info("""Package "${packageName}" is installed.""")
+      true
+    } catch (e: Exception) {
+      Log.warn("""Package "${packageName}" is NOT installed.""")
+      false
+    }
+  }
+
   fun Context.getStringNotWorking(url: String): String {
     return String.format(
       this.getString(
@@ -373,7 +358,7 @@ object Utils {
 
   fun List<WebSiteEntry>.cleanCustomTags(): List<WebSiteEntry> = this.map { it.customTags = listOf(); it }
 
-  fun appIsVisible(): Boolean = ooo.akito.webmon.Webmon.ActivityVisibility.appIsVisible
+  private fun appIsVisible(): Boolean = ooo.akito.webmon.Webmon.AppVisibility.appIsVisible
 
   fun String.removeTrailingSlashes(): String = this.replace(Regex("""[/]*$"""), "")
   fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")

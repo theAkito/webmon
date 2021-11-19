@@ -15,12 +15,12 @@ import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.defaultJArrayAsString
-import ooo.akito.webmon.utils.Utils.mapper
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 
 class BackupSettingsManager {
 
   private fun generateBackupSettings(locationSave: String): BackupSettings =
-    with(SharedPrefsManager.customPrefs) {
+    with(customPrefs) {
       BackupSettings(
         BackupEnvironment.defaultBackupSettingsVersion,
         Environment.getDefaultDateTimeString(),

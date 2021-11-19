@@ -1,6 +1,6 @@
 @file:Suppress("BlockingMethodInNonBlockingContext")
 
-package ooo.akito.webmon.ui.debug
+package ooo.akito.webmon.data.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData

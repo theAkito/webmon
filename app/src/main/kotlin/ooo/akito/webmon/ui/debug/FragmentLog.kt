@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import ooo.akito.webmon.databinding.FragmentDebugLogBinding
-import ooo.akito.webmon.utils.Utils.lineEnd
-import ooo.akito.webmon.utils.Utils.logContent
+import ooo.akito.webmon.utils.lineEnd
+import ooo.akito.webmon.utils.logContent
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.

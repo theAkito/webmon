@@ -24,13 +24,13 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericFailure
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericUnknown
 import ooo.akito.webmon.utils.ExceptionCompanion.msgMiniNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsEnabledButNotAvailable
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.addProtoHttp
 import ooo.akito.webmon.utils.Utils.currentDateTime
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import ooo.akito.webmon.utils.Utils.removeTrailingSlashes
 import ooo.akito.webmon.utils.Utils.removeUrlProto
-import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.DefaultRedirectStrategy
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse
@@ -85,7 +85,7 @@ class WebSiteEntryRepository(context: Context) {
           isOnionAddress = false
         )
       )
-      SharedPrefsManager.customPrefs[Constants.IS_ADDED_DEFAULT_DATA] = false
+      customPrefs[Constants.IS_ADDED_DEFAULT_DATA] = false
     }
   }
 

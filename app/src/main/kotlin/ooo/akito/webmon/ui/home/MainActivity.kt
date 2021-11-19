@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
@@ -28,12 +27,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.model.CustomMonitorData
+import ooo.akito.webmon.data.viewmodels.MainViewModel
+import ooo.akito.webmon.data.viewmodels.ViewModelLogCat
 import ooo.akito.webmon.databinding.ActivityMainBinding
 import ooo.akito.webmon.databinding.CustomRefreshInputBinding
 import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.debug.ActivityDebug
-import ooo.akito.webmon.ui.debug.ViewModelLogCat
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
 import ooo.akito.webmon.utils.AppService
@@ -54,26 +54,16 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.Utils.asUri
-import ooo.akito.webmon.utils.Utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
-import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
-import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
-import ooo.akito.webmon.utils.Utils.lineEnd
-import ooo.akito.webmon.utils.Utils.logContent
-import ooo.akito.webmon.utils.Utils.logEnabled
-import ooo.akito.webmon.utils.Utils.mapperUgly
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
+import ooo.akito.webmon.utils.Utils.packageIsInstalled
 import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.showSnackBar
 import ooo.akito.webmon.utils.Utils.showSnackbarNotImplemented
 import ooo.akito.webmon.utils.Utils.showToast
-import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
-import ooo.akito.webmon.utils.Utils.torAppIsAvailable
-import ooo.akito.webmon.utils.Utils.torIsEnabled
-import ooo.akito.webmon.utils.Utils.totalAmountEntry
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -94,6 +84,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
   }
 
+  //region Metadata
+
   private lateinit var viewModel: MainViewModel
   private lateinit var searchView: SearchView
 
@@ -112,12 +104,72 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private lateinit var itemTouchHelper: ItemTouchHelper
   private lateinit var drawerToggle: ActionBarDrawerToggle
 
+  //endregion Metadata
+
+  //region Custom Methods
+
   private val runnableTask: Runnable = Runnable {
     if (runningCount == 0) {
       stopTask()
     } else {
       startUpdateTask(isUpdate = true)
     }
+  }
+
+  private fun resetSearchView() {
+    if (!searchView.isIconified) {
+      searchView.isIconified = true
+      return
+    }
+  }
+
+  private fun showForceRefreshUI() {
+    val dialog = Dialog(this)
+    dialog.setCancelable(true)
+    if (customRefreshInputBinding.root.parent != null) {
+      /*
+        Make sure child does not already have parent.
+        https://stackoverflow.com/a/52988517/7061105
+      */
+      (customRefreshInputBinding.root.parent as ViewGroup).removeView(customRefreshInputBinding.root)
+    }
+    dialog.setContentView(customRefreshInputBinding.root)
+
+    dialog.run {
+      customRefreshInputBinding.btnSave.setOnClickListener {
+        if (isConnected(applicationContext).not()) {
+          applicationContext.showToast(getString(R.string.check_internet))
+          return@setOnClickListener
+        }
+        if (TextUtils.isEmpty(customRefreshInputBinding.editDuration.text).not()) {
+          if (customRefreshInputBinding.checkboxAgree.isChecked) {
+            val duration = customRefreshInputBinding.editDuration.text.toString().toLong()
+            val durationBy = if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) {
+              60 * 1000
+            } else {
+              1000
+            }
+            customMonitorData.apply {
+              val durationType =
+                if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == customRefreshInputBinding.rbDurationMin.id) {
+                  customRefreshInputBinding.rbDurationMin.text
+                } else {
+                  customRefreshInputBinding.rbDurationSec.text
+                }
+              runningDelay = duration * durationBy
+              runningDelayValue = "$duration " + durationType
+              showNotification = customRefreshInputBinding.switchShowNotification.isChecked
+            }
+
+            startUpdateTask(isUpdate = false)
+            dialog.dismiss()
+          } else
+            applicationContext.showToast(getString(R.string.error_read_and_agree_checkbox))
+        } else
+          applicationContext.showToast(getString(R.string.enter_valid_input))
+      }
+    }
+    dialog.show()
   }
 
   private fun startUpdateTask(isUpdate: Boolean = true) {
@@ -178,14 +230,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
   }
 
-  private fun packageIsInstalled(packageName: String, pacman: PackageManager): Boolean {
-    return try {
-      pacman.getPackageInfo(packageName, 0)
-      true
-    } catch (e: Exception) {
-      false
-    }
-  }
+  //endregion Custom Methods
+
+  //region Overriden Methods
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -195,7 +242,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
     binding = ActivityMainBinding.inflate(layoutInflater)
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater, binding.root, false)
-    globalEntryTagsNames = mapperUgly.readTree(SharedPrefsManager.customPrefs.getString(WEBSITE_ENTRY_TAG_CLOUD_DATA, defaultJArrayAsString)).asIterable().mapNotNull { it.asText() }
+    globalEntryTagsNames = mapperUgly.readTree(customPrefs.getString(WEBSITE_ENTRY_TAG_CLOUD_DATA, defaultJArrayAsString)).asIterable().mapNotNull { it.asText() }
 
     setContentView(binding.root)
     setSupportActionBar(binding.toolbar)
@@ -241,12 +288,14 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         /* https://stackoverflow.com/a/29055845/7061105 */
         /** See "TODO: Drawer". */
         setHomeAsUpIndicator(null)
+        Log.info("""Main Drawer is locked and inaccessible.""")
       }
     }
 
     /** What happens when the "About" item in the Drawer was clicked. */
     binding.inclGroupAbout.groupAboutNav.menu.apply {
       getItem(0).setOnMenuItemClickListener { about ->
+        Log.info("""Main Drawer: "About" was clicked.""")
         val viewAbout: View = findViewById(about.itemId)
         viewAbout.showSnackbarNotImplemented()
         true
@@ -293,8 +342,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
           if (dy > 0) {
             //TODO: Fix https://github.com/theAkito/webmon/issues/17
             binding.fabAdd.hide()
-          } else if (dy < 0)
+            Log.info("Main FAB hidden.")
+          } else if (dy < 0) {
             binding.fabAdd.show()
+            Log.info("Main FAB shown.")
+          }
         }
       })
 
@@ -366,13 +418,13 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     //region TOR
 
     torIsEnabled = customPrefs.getBoolean(SETTINGS_TOR_ENABLE, false)
-    torAppIsAvailable = packageIsInstalled(orbotFQID, packageManager)
+    torAppIsAvailable = packageManager.packageIsInstalled(orbotFQID)
     if (torIsEnabled && torAppIsAvailable) {
-      Log.info("Tor enabled.")
+      Log.info("TOR enabled.")
       val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
       StrictMode.setThreadPolicy(policy)
     } else {
-      Log.info("Tor disabled.")
+      Log.info("TOR disabled.")
     }
 
     //endregion TOR
@@ -382,6 +434,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     swipeRefreshIsEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_SWIPE_REFRESH, true)
     binding.layout.swipeRefresh.isEnabled = true
     binding.layout.swipeRefresh.setOnRefreshListener()
+
+    if (swipeRefreshIsEnabled) {
+      Log.info("SwipeRefresh enabled.")
+    } else {
+      Log.info("SwipeRefresh disabled.")
+    }
 
     //endregion Toggle SwipeRefresh
 
@@ -494,55 +552,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
   }
 
-  private fun showForceRefreshUI() {
-    val dialog = Dialog(this)
-    dialog.setCancelable(true)
-    if (customRefreshInputBinding.root.parent != null) {
-      /*
-        Make sure child does not already have parent.
-        https://stackoverflow.com/a/52988517/7061105
-      */
-      (customRefreshInputBinding.root.parent as ViewGroup).removeView(customRefreshInputBinding.root)
-    }
-    dialog.setContentView(customRefreshInputBinding.root)
-
-    dialog.run {
-      customRefreshInputBinding.btnSave.setOnClickListener {
-        if (isConnected(applicationContext).not()) {
-          applicationContext.showToast(getString(R.string.check_internet))
-          return@setOnClickListener
-        }
-        if (!TextUtils.isEmpty(customRefreshInputBinding.editDuration.text)) {
-          if (customRefreshInputBinding.checkboxAgree.isChecked) {
-            val duration = customRefreshInputBinding.editDuration.text.toString().toLong()
-            val durationBy = if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == R.id.rbDurationMin) {
-              60 * 1000
-            } else {
-              1000
-            }
-            customMonitorData.apply {
-              val durationType =
-                if (customRefreshInputBinding.rgDurationType.checkedRadioButtonId == customRefreshInputBinding.rbDurationMin.id) {
-                  customRefreshInputBinding.rbDurationMin.text
-                } else {
-                  customRefreshInputBinding.rbDurationSec.text
-                }
-              runningDelay = duration * durationBy
-              runningDelayValue = "$duration " + durationType
-              showNotification = customRefreshInputBinding.switchShowNotification.isChecked
-            }
-
-            startUpdateTask(isUpdate = false)
-            dialog.dismiss()
-          } else
-            applicationContext.showToast(getString(R.string.error_read_and_agree_checkbox))
-        } else
-          applicationContext.showToast(getString(R.string.enter_valid_input))
-      }
-    }
-    dialog.show()
-  }
-
   override fun onDeleteClicked(webSiteEntry: WebSiteEntry) {
     val builder = AlertDialog.Builder(this)
     with(builder)
@@ -600,13 +609,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   override fun onBackPressed() {
     resetSearchView()
     super.onBackPressed()
-  }
-
-  private fun resetSearchView() {
-    if (!searchView.isIconified) {
-      searchView.isIconified = true
-      return
-    }
   }
 
   override fun onResume() {
@@ -676,7 +678,5 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
   }
 
-  override fun onDestroy() {
-    super.onDestroy()
-  }
+  //endregion Overriden Methods
 }

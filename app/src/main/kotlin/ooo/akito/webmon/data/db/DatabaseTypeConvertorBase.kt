@@ -2,8 +2,8 @@ package ooo.akito.webmon.data.db
 
 import androidx.room.TypeConverter
 import com.fasterxml.jackson.module.kotlin.readValue
-import ooo.akito.webmon.utils.Utils.mapper
 import ooo.akito.webmon.utils.jString
+import ooo.akito.webmon.utils.mapper
 
 abstract class DatabaseTypeConvertorBase<T> {
   /** https://stackoverflow.com/a/67921091/7061105 */

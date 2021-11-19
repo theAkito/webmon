@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
@@ -19,12 +18,12 @@ import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.ExceptionCompanion.msgNullNotNull
 import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
-import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.showKeyboard
 import ooo.akito.webmon.utils.Utils.showToast
-import ooo.akito.webmon.utils.Utils.torIsEnabled
-import ooo.akito.webmon.utils.Utils.totalAmountEntry
+import ooo.akito.webmon.utils.globalEntryTagsNames
+import ooo.akito.webmon.utils.isEntryCreated
+import ooo.akito.webmon.utils.torIsEnabled
+import ooo.akito.webmon.utils.totalAmountEntry
 import java.util.*
 
 

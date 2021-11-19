@@ -31,10 +31,10 @@ import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVersion
 import ooo.akito.webmon.data.model.BackupSettings
 import ooo.akito.webmon.data.model.BackupWebsites
+import ooo.akito.webmon.data.viewmodels.MainViewModel
 import ooo.akito.webmon.databinding.ActivitySettingsBinding
 import ooo.akito.webmon.ui.debug.ActivityDebug
 import ooo.akito.webmon.ui.home.MainActivity.Companion.fileTypeFilter
-import ooo.akito.webmon.ui.home.MainViewModel
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
 import ooo.akito.webmon.utils.BackgroundCheckInterval.valueList
 import ooo.akito.webmon.utils.BackupSettingsManager
@@ -61,21 +61,19 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgFileContent
 import ooo.akito.webmon.utils.ExceptionCompanion.msgInputStreamNullBackupInterrupted
 import ooo.akito.webmon.utils.ExceptionCompanion.msgSpecificToRebirth
 import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.SharedPrefsManager
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.cleanCustomTags
-import ooo.akito.webmon.utils.Utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.Utils.getMonitorTime
-import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.Utils.isCustomRom
-import ooo.akito.webmon.utils.Utils.logEnabled
-import ooo.akito.webmon.utils.Utils.mapper
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
-import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.triggerRebirth
 import ooo.akito.webmon.utils.defaultBackupShareType
+import ooo.akito.webmon.utils.forcedBackgroundServiceEnabled
+import ooo.akito.webmon.utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.jString
+import ooo.akito.webmon.utils.logEnabled
+import ooo.akito.webmon.utils.mapper
 import ooo.akito.webmon.utils.msgGenericDefault
 import ooo.akito.webmon.utils.msgGenericRestarting
 import ooo.akito.webmon.utils.nameBackupDataCaseLower
@@ -83,6 +81,7 @@ import ooo.akito.webmon.utils.nameBackupDataCasePascal
 import ooo.akito.webmon.utils.nameBackupSettingsCaseLower
 import ooo.akito.webmon.utils.nameBackupSettingsCasePascal
 import ooo.akito.webmon.utils.nameNoneCaseLower
+import ooo.akito.webmon.utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.workaroundRebirthMillis
 
 
@@ -198,7 +197,7 @@ class SettingsActivity : AppCompatActivity() {
         return@registerForActivityResult
       }
       /* On next backup, the same destination folder will be opened. */
-      SharedPrefsManager.customPrefs[BACKUP_LAST_SAVED_LOCATION] = uri.toString()
+      customPrefs[BACKUP_LAST_SAVED_LOCATION] = uri.toString()
       val backupFileContent = when (backupType.lowercase()) {
         nameBackupDataCaseLower -> generateBackupWebsitesJString(backupFilePathRelative)
         nameBackupSettingsCaseLower -> backupSettingsManager.generateBackupFileContent(backupFilePathRelative)
@@ -598,13 +597,13 @@ class SettingsActivity : AppCompatActivity() {
 
   private fun showIntervalChooseDialog() {
     AlertDialog.Builder(this).apply {
-      val checkedItem = valueList.indexOf(SharedPrefsManager.customPrefs.getInt(MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN))
+      val checkedItem = valueList.indexOf(customPrefs.getInt(MONITORING_INTERVAL, DEFAULT_INTERVAL_MIN))
       setTitle(getString(R.string.choose_interval))
       setSingleChoiceItems(
         nameList,
         checkedItem
       ) { dialog: DialogInterface, chosenIntervalPosition: Int ->
-        SharedPrefsManager.customPrefs[MONITORING_INTERVAL] = valueList[chosenIntervalPosition]
+        customPrefs[MONITORING_INTERVAL] = valueList[chosenIntervalPosition]
         updateIntervalTimeOnUi()
         dialog.dismiss()
         /*
