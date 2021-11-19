@@ -113,7 +113,7 @@ dependencies {
 
   // Lifecycle
   val lifecycle_version = "2.4.0"
-  implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+  implementation("androidx.lifecycle:lifecycle-process:$lifecycle_version")
   implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
   /** https://developer.android.com/kotlin/ktx#livedata */
   implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")

@@ -2,14 +2,27 @@ package ooo.akito.webmon
 
 import android.app.Application
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ProcessLifecycleOwner
+import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
 
-class Webmon : Application(), LifecycleObserver {
+class Webmon : Application(), LifecycleEventObserver, LifecycleOwner {
+  /**
+    https://developer.android.com/reference/kotlin/androidx/lifecycle/Lifecycle
+    https://developer.android.com/reference/kotlin/androidx/lifecycle/LifecycleOwner
+    https://developer.android.com/reference/kotlin/androidx/lifecycle/LifecycleEventObserver
+    https://developer.android.com/reference/kotlin/androidx/lifecycle/Lifecycle.Event
+    https://developer.android.com/reference/kotlin/androidx/lifecycle/Lifecycle.State
+    https://developer.android.com/reference/androidx/lifecycle/ProcessLifecycleOwner
+    https://developer.android.com/topic/libraries/architecture/lifecycle
+  */
 
-  object ActivityVisibility {
+  private lateinit var lifecycleRegistry: LifecycleRegistry
+
+  object AppVisibility {
     var appIsVisible: Boolean = false
     @JvmStatic
     fun resumeApp() { appIsVisible = true }
@@ -21,28 +34,25 @@ class Webmon : Application(), LifecycleObserver {
     super.onCreate()
     SharedPrefsManager.init(this)
     ProcessLifecycleOwner.get().lifecycle.addObserver(this)
-
-//    object : Thread() {
-//      override fun run() {
-//        try {
-//          while (true) {
-//            Log.error("********************************************LOG_TEST**************************************************" + Utils.lineEnd)
-//            sleep(10_000)
-//          }
-//        } catch (e: InterruptedException) {
-//          e.printStackTrace()
-//        }
-//      }
-//    }.start()
+    lifecycleRegistry = LifecycleRegistry(this)
   }
 
-  @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-  fun onAppBackgrounded() {
-    ActivityVisibility.pauseApp()
+  override fun getLifecycle(): Lifecycle {
+    return lifecycleRegistry
   }
 
-  @OnLifecycleEvent(Lifecycle.Event.ON_START)
-  fun onAppForegrounded() {
-    ActivityVisibility.resumeApp()
+  override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+    when (event) {
+      Lifecycle.Event.ON_START -> {
+        Log.info("""App started.""")
+        AppVisibility.resumeApp()
+      }
+      Lifecycle.Event.ON_STOP -> {
+        Log.info("""App stopped.""")
+        AppVisibility.pauseApp()
+      }
+      else -> {}
+    }
   }
+
 }
