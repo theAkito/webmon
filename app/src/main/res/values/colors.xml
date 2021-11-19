@@ -6,4 +6,9 @@
     <color name="divider">#C5C5C5</color>
     <color name="action_icon">#5A5A5A</color>
     <color name="white">#ffffff</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
 </resources>

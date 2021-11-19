@@ -65,7 +65,10 @@ object Utils {
   var torIsEnabled = false
   var torAppIsAvailable = false
   var swipeRefreshIsEnabled = true
+  var logEnabled = false
+  var forcedBackgroundServiceEnabled = false
   var isEntryCreated = false /** Do not observe "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
+  var logContent = ""
 
   var globalEntryTagsNames: List<String> = listOf(msgGenericDefault)
     set(value) {

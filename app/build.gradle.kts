@@ -7,6 +7,7 @@ plugins {
   kotlin("android")
   kotlin("kapt")
   id("kotlin-parcelize")
+  id("kotlin-android")
 }
 
 object Metadata {
@@ -88,6 +89,12 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
   implementation("androidx.core:core-ktx:${ktx_version}")
 
+  // Main
+  /** https://stackoverflow.com/a/69970914/7061105 */
+  val main_version = "1.4.0"
+  implementation("androidx.activity:activity-ktx:$main_version")
+  implementation("androidx.fragment:fragment-ktx:$main_version")
+
   // Support Libraries & UI Components
   implementation("androidx.appcompat:appcompat:1.3.1")
   implementation("com.google.android.material:material:1.4.0")
@@ -105,8 +112,15 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version")
 
   // Lifecycle
+  val lifecycle_version = "2.4.0"
   implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
-  implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+  implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+  /** https://developer.android.com/kotlin/ktx#livedata */
+  implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+  /** https://stackoverflow.com/a/61498180/7061105 */
+  /** https://github.com/googlecodelabs/android-room-with-a-view/issues/114#issuecomment-944479270 */
+  implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+  implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycle_version")
 
   // Room
   val room_version = "2.4.0-beta01"

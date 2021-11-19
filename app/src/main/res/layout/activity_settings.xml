@@ -162,6 +162,18 @@
                     android:layout_height="49dp"
                     android:text="@string/enable_refresh_on_swipe_down" />
 
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/toggle_service_force"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp"
+                    android:text="@string/text_toggle_service_force" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/toggle_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp"
+                    android:text="@string/text_toggle_log" />
+
                 <Space
                     android:layout_width="match_parent"
                     android:layout_height="20dp" />
@@ -234,6 +246,38 @@
                     android:layout_gravity="center"
                     android:layout_marginVertical="5dp"
                     android:text="@string/backup_settings_share"
+                    android:textColor="#FFFF" />
+
+                <View
+                    android:id="@+id/divider_zone_end_backup_settings_share"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:layout_marginHorizontal="115dp"
+                    android:layout_marginVertical="15dp"
+                    android:background="@color/colorAccent" />
+
+                <Button
+                    android:id="@+id/btn_log_show"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="5dp"
+                    android:text="@string/log_show"
+                    android:textColor="#FFFF" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fragmentContainerView"
+                    android:name="com.bumptech.glide.manager.SupportRequestManagerFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/btn_log_share"
+                    android:layout_width="300dp"
+                    android:layout_height="49dp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="5dp"
+                    android:text="@string/log_share"
                     android:textColor="#FFFF" />
 
 

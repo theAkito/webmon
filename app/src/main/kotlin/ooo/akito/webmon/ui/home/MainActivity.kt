@@ -10,8 +10,10 @@ import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
 import android.view.*
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -30,8 +32,15 @@ import ooo.akito.webmon.databinding.ActivityMainBinding
 import ooo.akito.webmon.databinding.CustomRefreshInputBinding
 import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
+import ooo.akito.webmon.ui.debug.ActivityDebug
+import ooo.akito.webmon.ui.debug.ViewModelLogCat
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
+import ooo.akito.webmon.utils.AppService
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.defaultJArrayAsString
 import ooo.akito.webmon.utils.Constants.orbotFQID
@@ -43,11 +52,16 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOnionInBrowser
 import ooo.akito.webmon.utils.ExceptionCompanion.msgInternetUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.Utils.asUri
+import ooo.akito.webmon.utils.Utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.Utils.isEntryCreated
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
+import ooo.akito.webmon.utils.Utils.lineEnd
+import ooo.akito.webmon.utils.Utils.logContent
+import ooo.akito.webmon.utils.Utils.logEnabled
 import ooo.akito.webmon.utils.Utils.mapperUgly
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
 import ooo.akito.webmon.utils.Utils.openInBrowser
@@ -60,6 +74,7 @@ import ooo.akito.webmon.utils.Utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.Utils.torAppIsAvailable
 import ooo.akito.webmon.utils.Utils.torIsEnabled
 import ooo.akito.webmon.utils.Utils.totalAmountEntry
+import java.lang.ref.WeakReference
 import java.util.*
 
 
@@ -71,6 +86,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       """*/*"""
     } else {
       """application/json"""
+    }
+    /** https://stackoverflow.com/a/29145872/7061105 */
+    private var refActivityDebug: WeakReference<ActivityDebug>? = null
+    fun updateRefActivityDebug(activityDebug: ActivityDebug) {
+      refActivityDebug = WeakReference<ActivityDebug>(activityDebug)
     }
   }
 
@@ -169,6 +189,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
     locale = getCurrentLocale()
     defaultTimeFormat = locale.getDefaultDateTimeFormat()
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
@@ -287,7 +308,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     viewModel.getWebSiteEntryList().observe(this, {
       Log.info("Observed Website Entry List Change.")
-      if (searchView.isIconified) {
+      /** https://stackoverflow.com/a/31486382/7061105 */
+      if (this::searchView.isInitialized.not() || searchView.isIconified) {
         Log.info("Observed Website Entry List Change and set all TODO Items.")
         webSiteEntryAdapter.setAllTodoItems(it)
       }
@@ -341,28 +363,79 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     })
 
-    /* Make sure SyncWorker is not run more than once, simultaneously. */
-    safelyStartSyncWorker()
-
     //region TOR
 
-    torIsEnabled = SharedPrefsManager.customPrefs.getBoolean(Constants.SETTINGS_TOR_ENABLE, false)
+    torIsEnabled = customPrefs.getBoolean(SETTINGS_TOR_ENABLE, false)
     torAppIsAvailable = packageIsInstalled(orbotFQID, packageManager)
     if (torIsEnabled && torAppIsAvailable) {
-      Log.info("Tor is enabled!")
+      Log.info("Tor enabled.")
       val policy: StrictMode.ThreadPolicy = StrictMode.ThreadPolicy.Builder().permitAll().build()
       StrictMode.setThreadPolicy(policy)
+    } else {
+      Log.info("Tor disabled.")
     }
 
     //endregion TOR
 
     //region Toggle SwipeRefresh
 
-    swipeRefreshIsEnabled = SharedPrefsManager.customPrefs.getBoolean(Constants.SETTINGS_TOGGLE_SWIPE_REFRESH, true)
+    swipeRefreshIsEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_SWIPE_REFRESH, true)
     binding.layout.swipeRefresh.isEnabled = true
     binding.layout.swipeRefresh.setOnRefreshListener()
 
     //endregion Toggle SwipeRefresh
+
+    //region Debug Log
+
+    logEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_LOG, false)
+
+    if (logEnabled) {
+      Log.info("Log enabled.")
+      val viewModelLogCat by viewModels<ViewModelLogCat>()
+      viewModelLogCat.logCatOutput().observeForever { rawMsg ->
+        if (rawMsg.contains(nameAppCaseLower, true).not()) { return@observeForever }
+        try {
+          refActivityDebug
+            ?.get()
+            ?.fragmentLog
+            ?.view
+            ?.findViewById<TextView>(R.id.log_full)
+            ?.append(rawMsg + lineEnd)
+        } catch (e: Exception) {}
+        val updatedLogContent =
+          logContent +
+              rawMsg +
+              lineEnd +
+              logDivider +
+              lineEnd
+        logContent = updatedLogContent.takeLast(20_000)
+      }
+    } else {
+      Log.info("Log disabled.")
+    }
+
+    //endregion Debug Log
+
+    //region Forced Persistent Background Service
+
+    forcedBackgroundServiceEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE, false)
+
+    if (forcedBackgroundServiceEnabled) {
+      Log.info("Foreground Service enabled.")
+      val serviceIntent = Intent(applicationContext, AppService::class.java)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        startForegroundService(serviceIntent)
+      } else {
+        startService(serviceIntent)
+      }
+    } else if (forcedBackgroundServiceEnabled.not()) {
+      Log.info("Foreground Service disabled.")
+      /* Make sure SyncWorker is not run more than once, simultaneously. */
+      safelyStartSyncWorker()
+    }
+
+    //endregion Forced Persistent Background Service
+
   } /* END: onCreate */
 
   override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
@@ -601,5 +674,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         viewModel.updateWebSiteEntry(entry)
       }
     }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
   }
 }

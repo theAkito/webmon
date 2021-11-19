@@ -16,8 +16,13 @@
 
     <style name="AppTheme.PopupOverlay" parent="Theme.MaterialComponents.Light" />
 
-    <style name="SplashScreenTheme" parent = "AppTheme.NoActionBar">
+    <style name="SplashScreenTheme" parent="AppTheme.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
+    </style>
+
+    <style name="Widget.AppTheme.ButtonBar.Fullscreen" parent="">
+        <item name="android:background">@color/black_overlay</item>
+        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
 
 </resources>

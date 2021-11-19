@@ -2,6 +2,8 @@ package ooo.akito.webmon.utils
 
 typealias jString = String
 
+const val nameAppCasePascal = "Webmon"
+const val nameAppCaseLower = "webmon"
 const val nameTorApp = "Orbot"
 const val msgGenericSuccess = "Success"
 const val msgGenericAvailable = "Available"
@@ -20,3 +22,4 @@ val nameBackupDataCaseLower: String by lazy { "data" }
 val nameBackupSettingsCaseLower: String by lazy { "settings" }
 val nameBackupDataCasePascal: String by lazy { "Data" }
 val nameBackupSettingsCasePascal: String by lazy { "Settings" }
+val logDivider: String by lazy { "************************************************************" }
