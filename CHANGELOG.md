@@ -1,3 +1,12 @@
+# 2.6.0 [Code 11] (2021/11/20)
+- Fix: Sharing Backups.
+- Fix: Search Filter not working reliably all the time.
+- Add: Fetching Website icons is back! This time with 100% FOSS tools.
+- Add: Force Background Service (optional). This way, the app never gets killed in the background.
+- Add: Show App Log for Debug purposes.
+- Add: Share App Log Dump.
+- Improve: Upgrade Project Icon.
+
 # 2.5.0 [Code 10] (2021/11/13)
 - Fix: Creating new Website Entry dispatches a "Website Unavailable" message.
 - Fix: isOnionAddress Switch sometimes appearing when TOR is disabled.
