@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.core.os.HandlerCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.Slide
@@ -28,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
+import ooo.akito.webmon.data.environment.LogOS
 import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupWebsitesVersion
 import ooo.akito.webmon.data.model.BackupSettings
 import ooo.akito.webmon.data.model.BackupWebsites
@@ -53,6 +55,10 @@ import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
 import ooo.akito.webmon.utils.Constants.requestCodeReadExternalStorage
 import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
+import ooo.akito.webmon.utils.Environment.getDefaultPathCacheBackup
+import ooo.akito.webmon.utils.Environment.getDefaultPathCacheLog
+import ooo.akito.webmon.utils.Environment.getNameFileBackup
+import ooo.akito.webmon.utils.Environment.getNameFileLog
 import ooo.akito.webmon.utils.ExceptionCompanion
 import ooo.akito.webmon.utils.ExceptionCompanion.msgBackupUriPathInvalid
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupSettings
@@ -68,7 +74,7 @@ import ooo.akito.webmon.utils.Utils.getMonitorTime
 import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.triggerRebirth
-import ooo.akito.webmon.utils.defaultBackupShareType
+import ooo.akito.webmon.utils.defaultShareType
 import ooo.akito.webmon.utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.jString
@@ -83,6 +89,8 @@ import ooo.akito.webmon.utils.nameBackupSettingsCasePascal
 import ooo.akito.webmon.utils.nameNoneCaseLower
 import ooo.akito.webmon.utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.workaroundRebirthMillis
+import java.io.File
+import java.nio.charset.Charset
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -104,6 +112,8 @@ class SettingsActivity : AppCompatActivity() {
   private var websites: List<WebSiteEntry> = listOf()
 
   private val backupSettingsManager: BackupSettingsManager by lazy { BackupSettingsManager() }
+
+  private val logOS: LogOS by lazy { LogOS() }
 
 
   private fun restartApp() {
@@ -143,20 +153,51 @@ class SettingsActivity : AppCompatActivity() {
   private fun permissionIsGranted(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_GRANTED
   private fun permissionIsDenied(permission: String = permissionReadExternalStorage): Boolean = ActivityCompat.checkSelfPermission(this@SettingsActivity, permission) == PackageManager.PERMISSION_DENIED
 
-  private fun Button.shareButtonSetOnClickListener(backupType: String, backupFileContent: String) {
-    this.setOnClickListener {
-      val shareIntent = Intent().apply {
-        action = Intent.ACTION_SEND
-        putExtra(Intent.EXTRA_STREAM, backupFileContent.toByteArray())
-        putExtra(Intent.EXTRA_TITLE, "backup-webmon-${backupType}_${getDefaultDateTimeString()}.json")
-        type = defaultBackupShareType
-      }
-      startActivity(Intent.createChooser(shareIntent, resources.getText(R.string.send_to)))
+  private fun shareButtonAction(
+    resStringTitleShare: Int,
+    fileName: String,
+    fileDir: File,
+    fileContent: String
+  ) {
+    val activity = this@SettingsActivity
+    val file = File(fileDir.absolutePath, fileName)
+    file.writeText(fileContent)
+    val uri = FileProvider.getUriForFile(activity, packageName, file)
+    val shareIntent = Intent().apply {
+      type = defaultShareType
+      action = Intent.ACTION_SEND
+      putExtra(Intent.EXTRA_STREAM, uri)
+      putExtra(Intent.EXTRA_TITLE, fileName)
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
+    val destinations = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+    destinations.forEach { info ->
+      val packageName = info.packageName
+      activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    startActivity(Intent.createChooser(shareIntent, resources.getText(resStringTitleShare)))
   }
 
-  private fun Button.backupImportButtongSetOnClickListener(backupType: String) {
-    this.setOnClickListener {
+  private fun logcatShareButtonSetOnClickListener() {
+    shareButtonAction(
+      R.string.title_share_logcat,
+      getNameFileLog(),
+      getDefaultPathCacheLog(),
+      logOS.readLogcat().toString(Charset.defaultCharset())
+    )
+  }
+
+  private fun backupShareButtonAction(backupType: String, backupFileContent: String) {
+    shareButtonAction(
+      R.string.title_share_backup,
+      getNameFileBackup(backupType),
+      getDefaultPathCacheBackup(),
+      backupFileContent
+    )
+  }
+
+  private fun Button.backupImportButtonAction(backupType: String) {
+    setOnClickListener {
       /*
         At some point, this will open a new activity instead,
         where the user can read more information about the backup and customise it.
@@ -450,7 +491,7 @@ class SettingsActivity : AppCompatActivity() {
       Log.info("Finished restoring WebsiteEntry List from Backup!")
     }
 
-    activitySettingsBinding.btnBackupDataImport.backupImportButtongSetOnClickListener(nameBackupDataCaseLower)
+    activitySettingsBinding.btnBackupDataImport.backupImportButtonAction(nameBackupDataCaseLower)
 
     //endregion Advanced Setting: Import Backup of Data
 
@@ -516,27 +557,31 @@ class SettingsActivity : AppCompatActivity() {
       Log.info("Finished restoring Settings from Backup!")
     }
 
-    activitySettingsBinding.btnBackupSettingsImport.backupImportButtongSetOnClickListener(nameBackupSettingsCaseLower)
+    activitySettingsBinding.btnBackupSettingsImport.backupImportButtonAction(nameBackupSettingsCaseLower)
 
     //endregion Advanced Setting: Import Backup of Settings
 
     //region Advanced Setting: Share Backup of Data
 
     /** Share Backup Website Entries */
-    activitySettingsBinding.btnBackupDataShare.shareButtonSetOnClickListener(
-      nameBackupDataCaseLower,
-      generateBackupWebsitesJString(nameNoneCaseLower)
-    )
+    activitySettingsBinding.btnBackupDataShare.setOnClickListener {
+      backupShareButtonAction(
+        nameBackupDataCaseLower,
+        generateBackupWebsitesJString(nameNoneCaseLower)
+      )
+    }
 
     //endregion Advanced Setting: Share Backup of Data
 
     //region Advanced Setting: Share Backup of Settings
 
     /** Share Backup Settings */
-    activitySettingsBinding.btnBackupSettingsShare.shareButtonSetOnClickListener(
-      nameBackupSettingsCaseLower,
-      backupSettingsManager.generateBackupFileContent(nameNoneCaseLower)
-    )
+    activitySettingsBinding.btnBackupSettingsShare.setOnClickListener {
+      backupShareButtonAction(
+        nameBackupSettingsCaseLower,
+        backupSettingsManager.generateBackupFileContent(nameNoneCaseLower)
+      )
+    }
 
     //endregion Advanced Setting: Share Backup of Settings
 
@@ -570,16 +615,14 @@ class SettingsActivity : AppCompatActivity() {
     /** Share Log */
     activitySettingsBinding.btnLogShare.apply {
       visibility = if (logEnabled) {
-        setOnClickListener {
-          startActivity(Intent(applicationContext, ActivityDebug::class.java))
-        }
+        setOnClickListener { logcatShareButtonSetOnClickListener() }
         View.VISIBLE
       } else {
         View.GONE
       }
     }
 
-    //endregion Advanced Setting: Show Log
+    //endregion Advanced Setting: Share Log
 
     //endregion Advanced Settings
   }
