@@ -48,8 +48,10 @@ import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.worker.WorkManagerScheduler
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -364,12 +366,21 @@ object Utils {
   fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")
   fun String.addProtoHttp(): String = if (this.startsWith("http").not()) { "http://" + this } else { this }
 
-  fun String?.asUri(): Uri? {
+  inline fun <T> tryOrNull(action: () -> T): T? {
     return try {
-      Uri.parse(this)
-    } catch (e: Exception) {
+      action()
+    } catch (ex: Exception) {
       null
     }
+  }
+
+  fun String?.asUri(): Uri? = tryOrNull { Uri.parse(this) }
+
+  fun InputStream.readAllAsString(): String {
+    /**
+      Read the whole inputStream and return its proper String representation.
+    */
+    return readBytes().toString(Charset.defaultCharset())
   }
 
   fun Context.openInBrowser(uri: Uri) = ContextCompat.startActivity(this, Intent(Intent.ACTION_VIEW, uri), null)
