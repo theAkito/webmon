@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
-import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 
 typealias jString = String

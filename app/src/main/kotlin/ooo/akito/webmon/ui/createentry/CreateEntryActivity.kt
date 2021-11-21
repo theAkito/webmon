@@ -106,10 +106,9 @@ class CreateEntryActivity : AppCompatActivity() {
         }
       } /* END: newTagName */ else if (oldTagName != null) {
         /* Removing Chip, because its tag was removed. */
-        val chip = chips.firstOrNull { chip -> chip.text.toString() == oldTagName }
-        if (chip != null) {
-          this.removeView(chip)
-        }
+        chips
+          .firstOrNull { it.text.toString() == oldTagName }
+          ?.let { removeView(it) }
         fillTagCloud()
       }
       /* Chips were added, so we need to load them. */

@@ -1,6 +1,6 @@
 package ooo.akito.webmon.utils
 
-import ooo.akito.webmon.data.metadata.BackupEnvironment
+import ooo.akito.webmon.data.metadata.BackupEnvironment.defaultBackupSettingsVersion
 import ooo.akito.webmon.data.model.BackupSettings
 import ooo.akito.webmon.utils.Constants.BACKUP_LAST_SAVED_LOCATION
 import ooo.akito.webmon.utils.Constants.DEFAULT_INTERVAL_MIN
@@ -15,6 +15,7 @@ import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.defaultJArrayAsString
+import ooo.akito.webmon.utils.Environment.getDefaultDateTimeString
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 
 class BackupSettingsManager {
@@ -22,8 +23,8 @@ class BackupSettingsManager {
   private fun generateBackupSettings(locationSave: String): BackupSettings =
     with(customPrefs) {
       BackupSettings(
-        BackupEnvironment.defaultBackupSettingsVersion,
-        Environment.getDefaultDateTimeString(),
+        defaultBackupSettingsVersion,
+        getDefaultDateTimeString(),
         locationSaved = locationSave,
         backup_last_saved_location = getString(BACKUP_LAST_SAVED_LOCATION, "") ?: "",
         website_entry_tag_cloud_data = getString(WEBSITE_ENTRY_TAG_CLOUD_DATA, defaultJArrayAsString) ?: defaultJArrayAsString,
