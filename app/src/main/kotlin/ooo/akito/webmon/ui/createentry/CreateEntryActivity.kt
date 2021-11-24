@@ -21,6 +21,7 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgNullNotNull
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils.showKeyboard
 import ooo.akito.webmon.utils.Utils.showToast
+import ooo.akito.webmon.utils.amountMaxCharsInNameTag
 import ooo.akito.webmon.utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.isEntryCreated
 import ooo.akito.webmon.utils.torIsEnabled
@@ -44,11 +45,7 @@ class CreateEntryActivity : AppCompatActivity() {
   private fun showCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE }
   private fun showIsOnionAddress() { if (torIsEnabled) { activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE } }
   private fun showIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.VISIBLE }
-  private fun updateWebsiteEntryCustomTags(/*doRemove: Boolean = false*/) { // TODO: 2021/11/12 remove crap
-/*    webSiteEntry?.customTags = when (doRemove) {
-      true -> webSiteEntry?.customTags?.plus(thisWebsiteEntryCustomTags) ?: throw IllegalStateException("TODO")
-      false -> webSiteEntry?.customTags?.minus(thisWebsiteEntryCustomTags) ?: throw IllegalStateException("TODO")
-    }*/
+  private fun updateWebsiteEntryCustomTags() {
     webSiteEntry?.customTags = thisWebsiteEntryCustomTags.distinct().sorted()
   }
 
@@ -247,7 +244,7 @@ class CreateEntryActivity : AppCompatActivity() {
       /** AlertDialog: Manage Tags */
       /** https://stackoverflow.com/a/68973459/7061105 */
       AlertDialog.Builder(this).apply {
-        setTitle("Edit Tags") //TODO: Fix dangling String.
+        setTitle(R.string.text_create_entry_tag_cloud_edit)
         val checkedTagNamesBefore = thisWebsiteEntryCustomTags.sorted()
         val sortedGlobalEntryTagsNames = globalEntryTagsNames.sorted()
         val checkedItemsBefore = sortedGlobalEntryTagsNames.map { globalTagName ->
@@ -314,7 +311,7 @@ class CreateEntryActivity : AppCompatActivity() {
           } /* END: EDIT_TEXT */
           /** AlertDialog: Add New Tag */
           val dialogBuilderTagAdd = AlertDialog.Builder(this@CreateEntryActivity).apply DIALOG_BUILDER_TAG_ADD@{
-            setTitle("Add Tag") //TODO: Fix dangling String.
+            setTitle(R.string.text_create_entry_tag_cloud_add)
             setView(editText)
             setPositiveButton(
               R.string.text_create_entry_tag_cloud_create
@@ -334,8 +331,8 @@ class CreateEntryActivity : AppCompatActivity() {
             /** https://stackoverflow.com/a/46742001/7061105 */
             getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
               val newTagName = editText.text.toString()
-              val defSize = 16 /* TODO: Fix dangling Int. */
-              if (newTagName.length >= defSize) {
+              val defSize = amountMaxCharsInNameTag
+              if (newTagName.length > defSize) {
                 this@CreateEntryActivity.showToast("${defSize} characters maximum!")
               } else {
                 globalEntryTagsNames = globalEntryTagsNames + newTagName

@@ -17,6 +17,7 @@ const val msgGenericAvailable = "Available"
 const val msgGenericDismiss = "Dismiss"
 const val msgGenericDefault = "default"
 const val workaroundRebirthMillis = 2000L
+const val amountMaxCharsInNameTag = 16
 
 val defaultTitleNimHomepage: String by lazy { "Nim Homepage" }
 val defaultUrlNimHomepage: String by lazy { "https://nim-lang.org/" }
