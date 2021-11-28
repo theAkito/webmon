@@ -564,7 +564,61 @@ if the website responds with one of the following codes: 201, 202, 204,
 </div>
 </div>
 <div class="sect1">
-<h2 id="_note">Note</h2>
+<h2 id="_permission_explanations">Permission Explanations</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_note">Note</h3>
+<div class="paragraph">
+<p>Most permissions are <strong>only</strong> used, when you actively decide to use the feature, that needs that permission.<br>
+If you do not use that particular feature, the permission may be active, but will never be effectively used.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>have full network access</strong><br>
+The app needs to connect to the internet, to be able to fetch information about web services and websites.</p>
+</li>
+<li>
+<p><strong>view network connections</strong><br>
+The app needs to know, if it is connected to the internet.<br>
+It will not attempt to connect to a web service or website, if it is not connected to the internet.</p>
+</li>
+<li>
+<p><strong>control vibration</strong><br>
+The app needs to be able to emphasize notification through vibration.<br>
+As of now, this permission is claimed but not actively in use, yet.</p>
+</li>
+<li>
+<p><strong>read the contents of your shared storage</strong><br>
+You may let the app put backups into your shared storage.</p>
+</li>
+<li>
+<p><strong>android.permission.QUERY_ALL_PACKAGES</strong><br>
+You may let the app share backups to other apps.<br>
+To be able to do that, the app needs to know, which 3rd party app it may share the backup with, which implies the need to know which packages (apps) are installed.<br>
+This is a requirement introduced in the currently most recent Android versions.</p>
+</li>
+<li>
+<p><strong>run foreground service</strong><br>
+You can let the app run with a permanent notification, so it is never frozen or killed by the Android OS.</p>
+</li>
+<li>
+<p><strong>prevent phone from sleeping</strong><br>
+You may let the app use the Custom Monitoring option.<br>
+For that, the app is continually sending a notification every X seconds or minutes.<br>
+To be able to do that reliably, the screen needs to be kept on.</p>
+</li>
+<li>
+<p><strong>run at startup</strong><br>
+You may let the app start automatically, when Android is booted up.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_note_2">Note</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This is a fork of the project

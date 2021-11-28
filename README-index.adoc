@@ -175,6 +175,35 @@ https://github.com/guardianproject/orbot[Orbot] is running.
 * Import & Export of Website Entry backup.
 * Import & Export of App Settings backup.
 
+== Permission Explanations
+
+=== Note
+Most permissions are *only* used, when you actively decide to use the feature, that needs that permission. +
+If you do not use that particular feature, the permission may be active, but will never be effectively used.
+
+1. **have full network access** +
+  The app needs to connect to the internet, to be able to fetch information about web services and websites.
+2. **view network connections** +
+  The app needs to know, if it is connected to the internet. +
+  It will not attempt to connect to a web service or website, if it is not connected to the internet.
+3. **control vibration** +
+  The app needs to be able to emphasize notification through vibration. +
+  As of now, this permission is claimed but not actively in use, yet.
+4. **read the contents of your shared storage** +
+  You may let the app put backups into your shared storage.
+5. **android.permission.QUERY_ALL_PACKAGES** +
+  You may let the app share backups to other apps. +
+  To be able to do that, the app needs to know, which 3rd party app it may share the backup with, which implies the need to know which packages (apps) are installed. +
+  This is a requirement introduced in the currently most recent Android versions.
+6. **run foreground service** +
+  You can let the app run with a permanent notification, so it is never frozen or killed by the Android OS.
+7. **prevent phone from sleeping** +
+  You may let the app use the Custom Monitoring option. +
+  For that, the app is continually sending a notification every X seconds or minutes. +
+  To be able to do that reliably, the screen needs to be kept on.
+8. **run at startup** +
+  You may let the app start automatically, when Android is booted up.
+
 == Note
 
 This is a fork of the project
