@@ -17,9 +17,8 @@ https://github.com/theAkito/webmon[image:https://img.shields.io/badge/project-so
 https://kotlinlang.org/[image:https://img.shields.io/badge/project-language-blue?style=plastic[Language]]
 https://gitlab.com/manimaran/website-monitor[image:https://img.shields.io/badge/project-upstream-yellow?style=plastic[Upstream]]
 
-image:https://img.shields.io/github/license/theAkito/webmon?style=plastic[GitHub]
-image:https://img.shields.io/liberapay/patrons/Akito?style=plastic[Liberapay
-patrons]
+https://github.com/theAkito/webmon/blob/master/LICENSE[image:https://img.shields.io/github/license/theAkito/webmon?style=plastic[GitHub]]
+https://liberapay.com/Akito/donate[image:https://img.shields.io/liberapay/patrons/Akito?style=plastic[Liberapaypatrons]]
 
 // GET IT ON...
 ++++
