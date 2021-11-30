@@ -76,6 +76,7 @@
     <string name="text_create_entry_tag_cloud_accept">Accept</string>
     <string name="text_create_entry_tag_cloud_cancel">Cancel</string>
     <string name="text_create_entry_tag_cloud_add">Add Tag</string>
+    <string name="text_create_entry_tag_cloud_edit">Edit Tag</string>
     <string name="text_create_entry_tag_cloud_create">Create</string>
     <string name="text_backup_import_failure_confirmation">Okay</string>
     <string name="title_toggle_refresh_on_swipe_down">Refresh on Swipe Down</string>
