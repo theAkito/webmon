@@ -581,7 +581,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     {
       setTitle(getString(R.string.confirmation))
       setMessage(getString(R.string.remove_confirmation_message))
-      setPositiveButton(getString(R.string.yes)) { _, _ -> viewModel.deleteWebSiteEntry(webSiteEntry) }
+      setPositiveButton(getString(R.string.yes)) { _, _ ->
+        viewModel.deleteWebSiteEntry(webSiteEntry)
+        binding.fabAdd.show()
+      }
       setNegativeButton(getString(R.string.no)) { _, _ -> }
       show()
     }

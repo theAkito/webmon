@@ -32,7 +32,8 @@
     <string name="monitor_paused">Monitoring paused - %s</string>
     <string name="monitor_resumed">Monitoring resumed - %s</string>
     <string name="confirmation">Confirmation</string>
-    <string name="remove_confirmation_message">Do you want to remove?</string>
+    <string name="title_remove_entry">Remove Entry</string>
+    <string name="remove_confirmation_message">Do you want to permanently remove this entry?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="support_development">Support development</string>
