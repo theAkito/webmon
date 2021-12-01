@@ -6,9 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ui.debug.ActivityDebug">
 
-    <LinearLayout
-        android:id="@+id/fragmentContainerView_logFull"
+    <ScrollView
+        android:id="@+id/debug_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" />
+        tools:ignore="SpeakableTextPresentCheck">
+
+        <LinearLayout
+            android:id="@+id/fragmentContainerView_logFull"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

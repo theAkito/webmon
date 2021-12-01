@@ -448,7 +448,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     logEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_LOG, false)
 
     if (logEnabled) {
-      Log.info("Log enabled.")
+      val logIsReversed = true
+      val logMaxChars = 20_000
+      Log.info("Debug Log enabled.")
       val viewModelLogCat by viewModels<ViewModelLogCat>()
       viewModelLogCat.logCatOutput().observeForever { rawMsg ->
         if (rawMsg.contains(nameAppCaseLower, true).not()) { return@observeForever }
@@ -458,18 +460,39 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             ?.fragmentLog
             ?.view
             ?.findViewById<TextView>(R.id.log_full)
-            ?.append(rawMsg + lineEnd)
+            ?.apply {
+              editableText.insert(
+                0,
+                rawMsg +
+                  lineEnd +
+                  logDivider +
+                  lineEnd
+              )
+            }
         } catch (e: Exception) {}
-        val updatedLogContent =
+        val updatedLogContent = if (logIsReversed) {
+          rawMsg +
+          lineEnd +
+          logDivider +
+          lineEnd +
+          logContent
+        } else {
           logContent +
-              rawMsg +
-              lineEnd +
-              logDivider +
-              lineEnd
-        logContent = updatedLogContent.takeLast(20_000)
+          lineEnd +
+          logDivider +
+          lineEnd +
+          rawMsg
+        }
+        logContent = with (updatedLogContent) {
+          if (logIsReversed) {
+            take(logMaxChars)
+          } else {
+            takeLast(logMaxChars)
+          }
+        }
       }
     } else {
-      Log.info("Log disabled.")
+      Log.info("Debug Log disabled.")
     }
 
     //endregion Debug Log

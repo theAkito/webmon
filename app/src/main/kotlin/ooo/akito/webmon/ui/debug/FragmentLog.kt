@@ -2,14 +2,16 @@ package ooo.akito.webmon.ui.debug
 
 import android.os.Bundle
 import android.os.Handler
-import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import ooo.akito.webmon.R
 import ooo.akito.webmon.databinding.FragmentDebugLogBinding
 import ooo.akito.webmon.utils.lineEnd
 import ooo.akito.webmon.utils.logContent
@@ -58,7 +60,7 @@ class FragmentLog : Fragment() {
   }
 
 //  private var logFull: TextView? = null
-  private var fullscreenContent: TextView? = null
+  private var viewLog: TextView? = null
   private var fullscreenContentControls: View? = null
 
   private var _binding: FragmentDebugLogBinding? = null
@@ -67,15 +69,25 @@ class FragmentLog : Fragment() {
   // onDestroyView.
   private val binding get() = _binding!!
 
+  private fun scrollUpFullScreenContent() {
+    activity
+      ?.findViewById<ScrollView>(R.id.debug_scrollview)
+      ?.fullScroll(View.FOCUS_UP)
+  }
+
+  private fun scrollDownFullScreenContent() {
+    activity
+      ?.findViewById<ScrollView>(R.id.debug_scrollview)
+      ?.fullScroll(View.FOCUS_DOWN)
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
-
+  ): View {
     _binding = FragmentDebugLogBinding.inflate(inflater, container, false)
     return binding.root
-
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,21 +95,17 @@ class FragmentLog : Fragment() {
 
     visible = true
 
-//    logFull = binding.logFull
-    fullscreenContent = binding.logFull
+    viewLog = binding.logFull
     fullscreenContentControls = binding.fullscreenContentControls
     // Set up the user interaction to manually show or hide the system UI.
 //    fullscreenContent?.setOnClickListener { toggle() }
 
-    fullscreenContent?.apply {
-      movementMethod = ScrollingMovementMethod()
+    viewLog?.apply {
       append(logContent)
+      doAfterTextChanged {
+        scrollUpFullScreenContent()
+      }
     }
-
-    // Upon interacting with UI controls, delay any scheduled hide()
-    // operations to prevent the jarring behavior of controls going away
-    // while interacting with the UI.
-//    dummyButton?.setOnTouchListener(delayHideTouchListener)
   }
 
   override fun onResume() {
@@ -121,8 +129,7 @@ class FragmentLog : Fragment() {
 
   override fun onDestroy() {
     super.onDestroy()
-//    logFull = null
-    fullscreenContent = null
+    viewLog = null
     fullscreenContentControls = null
   }
 
@@ -147,7 +154,7 @@ class FragmentLog : Fragment() {
   @Suppress("InlinedApi")
   private fun show() {
     // Show the system bar
-    fullscreenContent?.systemUiVisibility =
+    viewLog?.systemUiVisibility =
       View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
           View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
     visible = true
@@ -168,7 +175,7 @@ class FragmentLog : Fragment() {
   }
 
   fun logUpdate(msg: String) {
-    fullscreenContent?.append(msg + lineEnd)
+    viewLog?.append(msg + lineEnd)
   }
 
   companion object {

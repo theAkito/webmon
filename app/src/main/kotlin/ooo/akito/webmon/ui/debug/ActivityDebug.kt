@@ -21,8 +21,8 @@ class ActivityDebug : AppCompatActivity() {
 
     setContentView(R.layout.activity_debug)
 
-    fragmentLog = FragmentLog() // TODO: 2021/11/18
-     supportFragmentManager
+    fragmentLog = FragmentLog()
+    supportFragmentManager
       .beginTransaction()
       .replace(binding.fragmentContainerViewLogFull.id, fragmentLog)
       .commit()

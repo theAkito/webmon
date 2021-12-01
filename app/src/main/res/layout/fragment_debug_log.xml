@@ -32,7 +32,7 @@
         android:textColor="#80D8FF"
         android:background="#3b444b"
         android:scrollbars = "vertical"
-        android:gravity="bottom"/>
+        android:gravity="top"/>
 
     <FrameLayout
         android:layout_width="match_parent"
