@@ -163,6 +163,12 @@
                     android:text="@string/title_toggle_refresh_on_swipe_down" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/toggle_swipe_refresh_trigger_distance_long"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp"
+                    android:text="@string/title_toggle_swipe_refresh_trigger_distance_long" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/toggle_service_force"
                     android:layout_width="match_parent"
                     android:layout_height="49dp"

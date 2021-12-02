@@ -101,4 +101,5 @@
     <string name="log_share">Share Log</string>
     <string name="title_toggle_service_force">Forced Background Service</string>
     <string name="title_toggle_log">Debug Log</string>
+    <string name="title_toggle_swipe_refresh_trigger_distance_long">Refresh on Swipe Down with Longer Swipe Distance</string>
 </resources>

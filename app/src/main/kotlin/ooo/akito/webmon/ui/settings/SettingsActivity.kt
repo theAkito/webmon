@@ -51,6 +51,7 @@ import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVIC
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH_TRIGGER_DISTANCE_LONG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.permissionReadExternalStorage
@@ -90,6 +91,7 @@ import ooo.akito.webmon.utils.nameBackupSettingsCasePascal
 import ooo.akito.webmon.utils.nameNoneCaseLower
 import ooo.akito.webmon.utils.replaceFabWithMenuEntryEnabled
 import ooo.akito.webmon.utils.swipeRefreshIsEnabled
+import ooo.akito.webmon.utils.swipeRefreshTriggerDistanceLongIsEnabled
 import ooo.akito.webmon.utils.workaroundRebirthMillis
 import java.io.File
 import java.nio.charset.Charset
@@ -395,9 +397,24 @@ class SettingsActivity : AppCompatActivity() {
         customPrefs[SETTINGS_TOGGLE_SWIPE_REFRESH] = it
         activitySettingsBinding.toggleSwipeRefresh.isChecked = it
       }
+      restartApp()
     }
 
     //endregion Advanced Setting: Toggle SwipeRefresh
+
+    //region Advanced Setting: Toggle SwipeRefresh Trigger Distance Long
+
+    activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.isChecked = swipeRefreshTriggerDistanceLongIsEnabled
+    activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.setOnCheckedChangeListener { _, isActivated ->
+      isActivated.let {
+        Log.warn("SwipeRefresh Trigger Distance Long switched to ${it}!")
+        customPrefs[SETTINGS_TOGGLE_SWIPE_REFRESH_TRIGGER_DISTANCE_LONG] = it
+        activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.isChecked = it
+      }
+      restartApp()
+    }
+
+    //endregion Advanced Setting: Toggle SwipeRefresh Trigger Distance Long
 
     //region Advanced Setting: Toggle Forced Background Service
 

@@ -34,6 +34,7 @@ object Constants {
   const val SETTINGS_TOR_ENABLE : String = "settings_tor_enable"
   const val SETTINGS_AVAILABILITY_LAISSEZFAIRE: String = "settings_availability_laissezfaire"
   const val SETTINGS_TOGGLE_SWIPE_REFRESH: String = "settings_toggle_swipe_refresh"
+  const val SETTINGS_TOGGLE_SWIPE_REFRESH_TRIGGER_DISTANCE_LONG: String = "settings_toggle_swipe_refresh_trigger_distance_long"
   const val SETTINGS_TOGGLE_LOG: String = "settings_toggle_log"
   const val SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE: String = "settings_toggle_forced_background_service"
   const val SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY: String = "settings_toggle_replace_fab_with_menu_entry"

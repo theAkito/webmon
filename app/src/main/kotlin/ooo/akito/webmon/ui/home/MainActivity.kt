@@ -49,6 +49,7 @@ import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVIC
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH_TRIGGER_DISTANCE_LONG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
 import ooo.akito.webmon.utils.Constants.defaultJArrayAsString
@@ -320,8 +321,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
       viewModel.checkWebSiteStatus()
     }
-    // TODO: 2021/12/02 Make this an Advanced Setting.
-//    setDistanceToTriggerSync(600)
+    if (swipeRefreshTriggerDistanceLongIsEnabled) {
+      setDistanceToTriggerSync(swipeRefreshTriggerDistanceLong)
+    }
   }
 
   //endregion Custom Methods
@@ -537,6 +539,18 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     //endregion TOR
 
+    //region Toggle SwipeRefresh Trigger Distance Long
+
+    swipeRefreshTriggerDistanceLongIsEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_SWIPE_REFRESH_TRIGGER_DISTANCE_LONG, false)
+
+    if (swipeRefreshTriggerDistanceLongIsEnabled) {
+      Log.info("SwipeRefresh Trigger Distance Long enabled.")
+    } else {
+      Log.info("SwipeRefresh Trigger Distance Long disabled.")
+    }
+
+    //endregion Toggle SwipeRefresh Trigger Distance Long
+
     //region Toggle SwipeRefresh
 
     swipeRefreshIsEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_SWIPE_REFRESH, true)
@@ -556,9 +570,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     logEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_LOG, false)
 
     if (logEnabled) {
+      Log.info("Debug Log enabled.")
       val logIsReversed = true
       val logMaxChars = 20_000
-      Log.info("Debug Log enabled.")
       val viewModelLogCat by viewModels<ViewModelLogCat>()
       viewModelLogCat.logCatOutput().observeForever { rawMsg ->
         if (rawMsg.contains(nameAppCaseLower, true).not()) { return@observeForever }

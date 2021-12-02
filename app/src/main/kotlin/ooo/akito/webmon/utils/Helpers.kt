@@ -18,6 +18,7 @@ const val msgGenericDismiss = "Dismiss"
 const val msgGenericDefault = "default"
 const val workaroundRebirthMillis = 2000L
 const val amountMaxCharsInNameTag = 16
+const val swipeRefreshTriggerDistanceLong = 600
 
 val defaultTitleNimHomepage: String by lazy { "Nim Homepage" }
 val defaultUrlNimHomepage: String by lazy { "https://nim-lang.org/" }
@@ -37,6 +38,7 @@ var totalAmountEntry = 0
 var torIsEnabled = false
 var torAppIsAvailable = false
 var swipeRefreshIsEnabled = true
+var swipeRefreshTriggerDistanceLongIsEnabled = false
 var forcedBackgroundServiceEnabled = false
 var logEnabled = false
 var replaceFabWithMenuEntryEnabled = false
