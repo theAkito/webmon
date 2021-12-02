@@ -554,7 +554,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     //region Toggle SwipeRefresh
 
     swipeRefreshIsEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_SWIPE_REFRESH, true)
-    binding.layout.swipeRefresh.isEnabled = true
+    binding.layout.swipeRefresh.isEnabled = swipeRefreshIsEnabled
     binding.layout.swipeRefresh.setOnRefreshListener()
 
     if (swipeRefreshIsEnabled) {
@@ -811,7 +811,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       super.onSelectedChanged(viewHolder, actionState)
       // Handle action state changes
       val swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG
-      binding.layout.swipeRefresh.isEnabled = swiping.not()
+      if (swipeRefreshIsEnabled) {
+        binding.layout.swipeRefresh.isEnabled = swiping.not()
+      }
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {

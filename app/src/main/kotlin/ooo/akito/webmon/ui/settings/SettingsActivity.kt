@@ -395,7 +395,10 @@ class SettingsActivity : AppCompatActivity() {
       isActivated.let {
         Log.warn("SwipeRefresh switched to ${it}!")
         customPrefs[SETTINGS_TOGGLE_SWIPE_REFRESH] = it
+        swipeRefreshIsEnabled = it
         activitySettingsBinding.toggleSwipeRefresh.isChecked = it
+        activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.visibility =
+          if (it) { View.VISIBLE } else { View.GONE }
       }
       restartApp()
     }
@@ -403,6 +406,12 @@ class SettingsActivity : AppCompatActivity() {
     //endregion Advanced Setting: Toggle SwipeRefresh
 
     //region Advanced Setting: Toggle SwipeRefresh Trigger Distance Long
+
+    activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.visibility = if (swipeRefreshIsEnabled) {
+      View.VISIBLE
+    } else {
+      View.GONE
+    }
 
     activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.isChecked = swipeRefreshTriggerDistanceLongIsEnabled
     activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.setOnCheckedChangeListener { _, isActivated ->
