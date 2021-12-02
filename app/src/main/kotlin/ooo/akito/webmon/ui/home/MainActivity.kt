@@ -448,8 +448,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       addOnScrollListener(
         object : RecyclerView.OnScrollListener() {
           override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            if (replaceFabWithMenuEntryEnabled) { return }
             if (dy > 0) {
-              //TODO: Fix https://github.com/theAkito/webmon/issues/17
               binding.fabAdd.hide()
               Log.info("Main FAB hidden.")
             } else if (dy < 0) {
@@ -719,7 +719,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       setMessage(getString(R.string.remove_confirmation_message))
       setPositiveButton(getString(R.string.yes)) { _, _ ->
         viewModel.deleteWebSiteEntry(webSiteEntry)
-        binding.fabAdd.show()
+        if (replaceFabWithMenuEntryEnabled.not()) {
+          binding.fabAdd.show()
+        }
       }
       setNegativeButton(getString(R.string.no)) { _, _ -> }
       show()
