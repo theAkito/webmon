@@ -8,7 +8,10 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
+import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.view.*
+import android.view.DragEvent.*
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +21,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.marginRight
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -37,8 +42,12 @@ import ooo.akito.webmon.ui.debug.ActivityDebug
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
 import ooo.akito.webmon.utils.AppService
+import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED
+import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_X
+import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_Y
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
@@ -53,6 +62,8 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgInternetUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
+import ooo.akito.webmon.utils.SharedPrefsManager.get
+import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.asUri
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
@@ -66,6 +77,7 @@ import ooo.akito.webmon.utils.Utils.showSnackbarNotImplemented
 import ooo.akito.webmon.utils.Utils.showToast
 import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents {
@@ -95,6 +107,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private lateinit var customRefreshInputBinding: CustomRefreshInputBinding
 
   private lateinit var onEditClickedResultLauncher: ActivityResultLauncher<Intent>
+  private lateinit var onFabAddClickedResultLauncher: ActivityResultLauncher<Intent>
 
   private var handler = Handler(Looper.getMainLooper())
 
@@ -103,6 +116,16 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
   private lateinit var itemTouchHelper: ItemTouchHelper
   private lateinit var drawerToggle: ActionBarDrawerToggle
+
+  //region Not in Use
+
+  private var fabIsDraggedForFirstTime = true
+  private var originalFabLocDX by Delegates.notNull<Float>()
+  private var originalFabLocDY by Delegates.notNull<Float>()
+  private var fabLocDX by Delegates.notNull<Float>()
+  private var fabLocDY by Delegates.notNull<Float>()
+
+  //endregion Not in Use
 
   //endregion Metadata
 
@@ -172,6 +195,75 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     dialog.show()
   }
 
+  private fun onFabAddClicked() {
+    resetSearchView()
+    totalAmountEntry = webSiteEntryAdapter.itemCount
+    val intent = Intent(this, CreateEntryActivity::class.java)
+    onFabAddClickedResultLauncher.launch(intent)
+  }
+
+  private fun setFabDefaultPosition() {
+    /** Currently, not in use. */
+    with (binding.fabAdd) {
+      originalFabLocDX = x - width / 2
+      originalFabLocDY = y - height / 2
+    }
+  }
+
+  private fun makeFabRelocatable() {
+    /** Currently, not in use. */
+    val root = binding.root
+    val fab = binding.fabAdd
+    val fabDefaultPositionIsSaved = customPrefs.getBoolean(ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED, false)
+    root.setOnDragListener { view, event ->
+      return@setOnDragListener when (event?.action) {
+        ACTION_DRAG_STARTED -> {
+          customPrefs[ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED] = false
+          with (event) {
+            if (fabDefaultPositionIsSaved.not()) {
+              customPrefs[ONESHOT_FAB_POSITION_X] = x - fab.width / 2
+              customPrefs[ONESHOT_FAB_POSITION_Y] = y - fab.height / 2
+              customPrefs[ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED] = true
+            }
+          }
+          true
+        }
+        ACTION_DRAG_LOCATION -> {
+          with (event) {
+            fabLocDX = x
+            fabLocDY = y
+          }
+          true
+        }
+        ACTION_DRAG_ENDED -> {
+          fab.apply {
+//            x = fabLocDX - fab.width / 2
+//            y = fabLocDY - fab.height / 2
+            x = customPrefs[ONESHOT_FAB_POSITION_X, 1.0F] ?: 1.0F
+            y = customPrefs[ONESHOT_FAB_POSITION_Y, 1.0F] ?: 1.0F
+//            layoutParams.apply {
+//              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                foregroundGravity = Gravity.CENTER
+//              }
+//            }
+          }
+          true
+        }
+        else -> true
+      }
+    }
+    fab.apply {
+      setOnLongClickListener {
+        val shadow: View.DragShadowBuilder = View.DragShadowBuilder(fab)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          it.startDragAndDrop(null, shadow, null, View.DRAG_FLAG_GLOBAL)
+        } else {
+          TODO("VERSION.SDK_INT < N")
+        }
+      }
+    }
+  }
+
   private fun startUpdateTask(isUpdate: Boolean = true) {
     Log.info("Called on main thread $runningCount")
     binding.layout.layoutForceRefreshInfo.visibility = View.VISIBLE
@@ -220,7 +312,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   }
 
   private fun SwipeRefreshLayout.setOnRefreshListener() {
-    this.setOnRefreshListener LISTENER@{
+    setOnRefreshListener LISTENER@{
       disableSwipeRefreshIsRefreshing()
       if (isConnected(applicationContext).not()) {
         applicationContext.showToast(getString(R.string.check_internet))
@@ -228,6 +320,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
       viewModel.checkWebSiteStatus()
     }
+    // TODO: 2021/12/02 Make this an Advanced Setting.
+//    setDistanceToTriggerSync(600)
   }
 
   //endregion Custom Methods
@@ -313,8 +407,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     }
 
+    //region Floating Action Button: Add WebsiteEntry
+
     /** Floating Action Button (Add WebsiteEntry) Result Launcher */
-    val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    onFabAddClickedResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       if (result.resultCode == Activity.RESULT_OK) {
         val data: Intent? = result.data
         val webSiteEntry = data?.getParcelableExtra<WebSiteEntry>(Constants.INTENT_OBJECT)!!
@@ -322,12 +418,22 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     }
 
-    binding.fabAdd.setOnClickListener {
-      resetSearchView()
-      totalAmountEntry = webSiteEntryAdapter.itemCount
-      val intent = Intent(this, CreateEntryActivity::class.java)
-      resultLauncher.launch(intent)
+    replaceFabWithMenuEntryEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY, false)
+
+    if (replaceFabWithMenuEntryEnabled) {
+      binding.fabAdd.apply {
+        visibility = View.GONE
+      }
+    } else {
+      binding.fabAdd.apply {
+        visibility = View.VISIBLE
+        setOnClickListener {
+          onFabAddClicked()
+        }
+      }
     }
+
+    //endregion Floating Action Button: Add WebsiteEntry
 
     binding.layout.btnStop.setOnClickListener { stopTask() }
 
@@ -337,18 +443,20 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     binding.layout.recyclerView.apply {
       layoutManager = LinearLayoutManager(thisContext)
       adapter = webSiteEntryAdapter
-      addOnScrollListener(object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-          if (dy > 0) {
-            //TODO: Fix https://github.com/theAkito/webmon/issues/17
-            binding.fabAdd.hide()
-            Log.info("Main FAB hidden.")
-          } else if (dy < 0) {
-            binding.fabAdd.show()
-            Log.info("Main FAB shown.")
+      addOnScrollListener(
+        object : RecyclerView.OnScrollListener() {
+          override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            if (dy > 0) {
+              //TODO: Fix https://github.com/theAkito/webmon/issues/17
+              binding.fabAdd.hide()
+              Log.info("Main FAB hidden.")
+            } else if (dy < 0) {
+              binding.fabAdd.show()
+              Log.info("Main FAB shown.")
+            }
           }
         }
-      })
+      )
 
       // Setting up Drag & Drop Re-Order WebsiteEntry List
       itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
@@ -535,7 +643,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
     menuInflater.inflate(R.menu.menu_main, menu)
-    val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+    val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
     searchView = menu.findItem(R.id.action_search)?.actionView as SearchView
     searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
     searchView.maxWidth = Integer.MAX_VALUE
@@ -551,6 +659,16 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
 
     })
+    val fabAddAsMenuItem = menu.findItem(R.id.action_add_entry)
+    if (replaceFabWithMenuEntryEnabled) {
+      fabAddAsMenuItem?.apply {
+        isVisible = true
+      }
+    } else {
+      fabAddAsMenuItem?.apply {
+        isVisible = false
+      }
+    }
     return true
   }
 
@@ -569,6 +687,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
       R.id.action_refresh -> {
         viewModel.checkWebSiteStatus()
+        true
+      }
+      R.id.action_add_entry -> {
+        onFabAddClicked()
         true
       }
       else -> super.onOptionsItemSelected(item)

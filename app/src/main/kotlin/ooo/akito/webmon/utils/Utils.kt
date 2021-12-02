@@ -28,6 +28,7 @@ import ooo.akito.webmon.ui.home.MainActivity
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
 import ooo.akito.webmon.utils.BackgroundCheckInterval.valueList
 import ooo.akito.webmon.utils.Constants.DEFAULT_INTERVAL_MIN
+import ooo.akito.webmon.utils.Constants.IS_AUTO_START_SHOWN
 import ooo.akito.webmon.utils.Constants.IS_SCHEDULED
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
@@ -163,12 +164,12 @@ object Utils {
 
   fun showAutoStartEnableDialog(context: Context) {
     /* Currently not in use. */
-    if (isCustomRom() && !customPrefs.getBoolean(Constants.IS_AUTO_START_SHOWN, false)) {
+    if (isCustomRom() && !customPrefs.getBoolean(IS_AUTO_START_SHOWN, false)) {
       AlertDialog.Builder(context).apply {
         setTitle(context.getString(R.string.enable_auto_start))
         setMessage(context.getString(R.string.message_auto_start_reason))
         setPositiveButton(context.getString(R.string.ok)) { dialog, _ ->
-          customPrefs[Constants.IS_AUTO_START_SHOWN] = true
+          customPrefs[IS_AUTO_START_SHOWN] = true
           openAutoStartScreen(context)
           dialog.dismiss()
         }

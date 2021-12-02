@@ -58,6 +58,7 @@
     <string name="enter_valid_input">Enter valid input</string>
     <string name="check_internet">Please check your internet connection!</string>
     <string name="action_refresh_title">Refresh</string>
+    <string name="title_action_add_website_entry">Add Entry</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
     <string name="check_a_aaaa_dns_records">Check A/AAAA DNS Records</string>
@@ -91,6 +92,7 @@
     <string name="backup_data_import">Import Backup of Data</string>
     <string name="title_share_backup">Share Backup with…</string>
     <string name="title_share_logcat">Share App Log with…</string>
+    <string name="title_toggle_replace_fab_with_menu_entry">Replace Add Button with Menu Entry</string>
     <string name="create_entry_tag_cloud_edit">+</string>
     <string name="title_about">About</string>
     <string name="greetings_pascal">Greetings</string>

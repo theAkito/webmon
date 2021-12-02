@@ -24,6 +24,13 @@
         android:title="@string/action_refresh_title"
         app:showAsAction="withText" />
     <item
+        android:id="@+id/action_add_entry"
+        android:icon="@drawable/ic_add"
+        android:orderInCategory="2"
+        android:visible="false"
+        android:title="@string/title_action_add_website_entry"
+        app:showAsAction="withText" />
+    <item
         android:id="@+id/action_custom_monitor"
         android:orderInCategory="99"
         android:title="@string/custom_monitor"

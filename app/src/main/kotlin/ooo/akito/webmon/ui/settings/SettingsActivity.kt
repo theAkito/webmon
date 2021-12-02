@@ -49,6 +49,7 @@ import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_SWIPE_REFRESH
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOR_ENABLE
 import ooo.akito.webmon.utils.Constants.WEBSITE_ENTRY_TAG_CLOUD_DATA
@@ -87,6 +88,7 @@ import ooo.akito.webmon.utils.nameBackupDataCasePascal
 import ooo.akito.webmon.utils.nameBackupSettingsCaseLower
 import ooo.akito.webmon.utils.nameBackupSettingsCasePascal
 import ooo.akito.webmon.utils.nameNoneCaseLower
+import ooo.akito.webmon.utils.replaceFabWithMenuEntryEnabled
 import ooo.akito.webmon.utils.swipeRefreshIsEnabled
 import ooo.akito.webmon.utils.workaroundRebirthMillis
 import java.io.File
@@ -424,6 +426,20 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     //endregion Advanced Setting: Toggle Log
+
+    //region Advanced Setting: Toggle Replace Floating Action Button with Menu Entry
+
+    activitySettingsBinding.toggleReplaceFabWithMenuEntry.isChecked = replaceFabWithMenuEntryEnabled
+    activitySettingsBinding.toggleReplaceFabWithMenuEntry.setOnCheckedChangeListener { _, isActivated ->
+      isActivated.let {
+        Log.warn("Replace Floating Action Button with Menu Entry switched to ${it}!")
+        customPrefs[SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY] = it
+        activitySettingsBinding.toggleReplaceFabWithMenuEntry.isChecked = it
+      }
+      restartApp()
+    }
+
+    //endregion Advanced Setting: Toggle Replace Floating Action Button with Menu Entry
 
     //region Advanced Setting: Export Backup of Data
 

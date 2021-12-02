@@ -27,12 +27,16 @@ object Constants {
   const val IS_ADDED_DEFAULT_DATA: String = "is_added_default_data"
   const val MONITORING_INTERVAL: String = "monitoring_interval"
   const val IS_AUTO_START_SHOWN : String = "is_auto_start_shown" /* Currently not in use. */
+  const val ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED: String = "oneshot_fab_default_position_is_saved"
+  const val ONESHOT_FAB_POSITION_X: String = "oneshot_fab_position_x"
+  const val ONESHOT_FAB_POSITION_Y: String = "oneshot_fab_position_y"
   const val NOTIFY_ONLY_SERVER_ISSUES : String = "notify_only_server_issues"
   const val SETTINGS_TOR_ENABLE : String = "settings_tor_enable"
   const val SETTINGS_AVAILABILITY_LAISSEZFAIRE: String = "settings_availability_laissezfaire"
   const val SETTINGS_TOGGLE_SWIPE_REFRESH: String = "settings_toggle_swipe_refresh"
   const val SETTINGS_TOGGLE_LOG: String = "settings_toggle_log"
   const val SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE: String = "settings_toggle_forced_background_service"
+  const val SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY: String = "settings_toggle_replace_fab_with_menu_entry"
 
   const val HIDE_IS_ONION_ADDRESS: String = "hide_is_onion_address"
   const val HIDE_CHECK_DNS_RECORD_A_AAAA: String = "hide_check_dns_record_a_aaaa"
