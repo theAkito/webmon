@@ -61,7 +61,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
               .with(binding.imgLogo.context)
               .load(ResourcesCompat.getDrawable(resources, R.drawable.ic_tor_onion, context.theme))
               .diskCacheStrategy(DiskCacheStrategy.NONE)
-              .skipMemoryCache( true )
+              .skipMemoryCache(true)
               .apply(RequestOptions.circleCropTransform())
               .into(binding.imgLogo)
           } catch (e: Exception) {
@@ -81,22 +81,40 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
           /** Just a placeholder styled star. */
           val iconUrlFallback = "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png"
           /** FOSS server fetching website icons. */
-          val iconUrlFetcher = "https://besticon-demo.herokuapp.com"
-          val iconUrlFull = "${iconUrlFetcher}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
-          try {
-            /**
-              https://stackoverflow.com/a/48152076/7061105
-              https://futurestud.io/tutorials/glide-caching-basics
-            */
-            Glide
-              .with(binding.imgLogo.context)
-              .load(iconUrlFull)
-              .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-              .skipMemoryCache( true )
-              .apply(RequestOptions.circleCropTransform())
-              .into(binding.imgLogo)
-          } catch (e: Exception) {
-            Log.warn(e.message ?: msgGlideLoadIconFailure)
+          val iconUrlFetcherList = listOf(
+            "https://besticon-demo.herokuapp.com",
+            "https://besticon.herokuapp.com/",
+            "https://besticons.herokuapp.com/",
+            "https://besticon-favicon.herokuapp.com/",
+            "https://find-favicon.herokuapp.com/",
+            "https://get-favicon.herokuapp.com/",
+            "https://favicon-finder.herokuapp.com/",
+            "https://favicon-getter.herokuapp.com/",
+            "https://myfavicon.herokuapp.com/",
+            "https://webmon-besticon.herokuapp.com/"
+          )
+          iconUrlFetcherList.forEach { url ->
+            try {
+              val iconUrlFull = "${url}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
+              try {
+                /**
+                  https://stackoverflow.com/a/48152076/7061105
+                  https://futurestud.io/tutorials/glide-caching-basics
+                */
+                Glide
+                  .with(binding.imgLogo.context)
+                  .load(iconUrlFull)
+                  .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                  .skipMemoryCache(true)
+                  .apply(RequestOptions.circleCropTransform())
+                  .into(binding.imgLogo)
+              } catch (e: Exception) {
+                Log.warn(e.message ?: msgGlideLoadIconFailure)
+                throw e
+              }
+            } catch (e: Exception) {
+              return@forEach
+            }
           }
         }
 
