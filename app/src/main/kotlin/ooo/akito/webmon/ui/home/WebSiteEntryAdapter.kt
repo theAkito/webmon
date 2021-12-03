@@ -93,27 +93,30 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
             "https://myfavicon.herokuapp.com/",
             "https://webmon-besticon.herokuapp.com/"
           )
-          iconUrlFetcherList.forEach { url ->
-            try {
-              val iconUrlFull = "${url}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
+          run LOOP_URL@{
+            iconUrlFetcherList.forEach { url ->
               try {
-                /**
-                  https://stackoverflow.com/a/48152076/7061105
-                  https://futurestud.io/tutorials/glide-caching-basics
-                */
-                Glide
-                  .with(binding.imgLogo.context)
-                  .load(iconUrlFull)
-                  .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                  .skipMemoryCache(true)
-                  .apply(RequestOptions.circleCropTransform())
-                  .into(binding.imgLogo)
+                val iconUrlFull = "${url}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
+                try {
+                  /**
+                    https://stackoverflow.com/a/48152076/7061105
+                    https://futurestud.io/tutorials/glide-caching-basics
+                  */
+                  Glide
+                    .with(binding.imgLogo.context)
+                    .load(iconUrlFull)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .skipMemoryCache(true)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(binding.imgLogo)
+                  return@LOOP_URL
+                } catch (e: Exception) {
+                  Log.warn(e.message ?: msgGlideLoadIconFailure)
+                  throw e
+                }
               } catch (e: Exception) {
-                Log.warn(e.message ?: msgGlideLoadIconFailure)
-                throw e
+                return@forEach
               }
-            } catch (e: Exception) {
-              return@forEach
             }
           }
         }
