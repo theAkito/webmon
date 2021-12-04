@@ -21,6 +21,7 @@ import ooo.akito.webmon.utils.Utils
 import ooo.akito.webmon.utils.Utils.currentDateTime
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import ooo.akito.webmon.utils.Utils.removeUrlProto
+import ooo.akito.webmon.utils.iconUrlFetcher
 import java.util.*
 
 
@@ -80,44 +81,32 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
           val iconSizeMinPerfectMax = "16..64..128"
           /** Just a placeholder styled star. */
           val iconUrlFallback = "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png"
-          /** FOSS server fetching website icons. */
-          val iconUrlFetcherList = listOf(
-            "https://besticon-demo.herokuapp.com",
-            "https://besticon.herokuapp.com/",
-            "https://besticons.herokuapp.com/",
-            "https://besticon-favicon.herokuapp.com/",
-            "https://find-favicon.herokuapp.com/",
-            "https://get-favicon.herokuapp.com/",
-            "https://favicon-finder.herokuapp.com/",
-            "https://favicon-getter.herokuapp.com/",
-            "https://myfavicon.herokuapp.com/",
-            "https://webmon-besticon.herokuapp.com/"
-          )
-          run LOOP_URL@{
-            iconUrlFetcherList.forEach { url ->
-              try {
-                val iconUrlFull = "${url}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
-                try {
-                  /**
-                    https://stackoverflow.com/a/48152076/7061105
-                    https://futurestud.io/tutorials/glide-caching-basics
-                  */
-                  Glide
-                    .with(binding.imgLogo.context)
-                    .load(iconUrlFull)
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .skipMemoryCache(true)
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(binding.imgLogo)
-                  return@LOOP_URL
-                } catch (e: Exception) {
-                  Log.warn(e.message ?: msgGlideLoadIconFailure)
-                  throw e
-                }
-              } catch (e: Exception) {
-                return@forEach
-              }
-            }
+          val iconUrlFull = "${iconUrlFetcher}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
+//          val glideListener = object : RequestListener<Drawable> {
+//            override fun onLoadFailed(e: GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<Drawable>?, isFirstResource: Boolean): Boolean {
+//              return true
+//            }
+//
+//            override fun onResourceReady(resource: Drawable?, model: Any?, target: com.bumptech.glide.request.target.Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+//              return true
+//            }
+//          }
+          try {
+            /**
+              https://stackoverflow.com/a/48152076/7061105
+              https://futurestud.io/tutorials/glide-caching-basics
+            */
+            Glide
+              .with(binding.imgLogo.context)
+              .load(iconUrlFull)
+//              .listener(glideListener)
+              .error(R.mipmap.placeholder_favicon)
+              .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+              .skipMemoryCache(true)
+              .apply(RequestOptions.circleCropTransform())
+              .into(binding.imgLogo)
+          } catch (e: Exception) {
+            Log.warn(e.message ?: msgGlideLoadIconFailure)
           }
         }
 

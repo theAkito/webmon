@@ -439,33 +439,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     binding.layout.btnStop.setOnClickListener { stopTask() }
 
-    // Setting up RecyclerView
-    val thisContext = this
-    webSiteEntryAdapter = WebSiteEntryAdapter(this)
-    binding.layout.recyclerView.apply {
-      layoutManager = LinearLayoutManager(thisContext)
-      adapter = webSiteEntryAdapter
-      addOnScrollListener(
-        object : RecyclerView.OnScrollListener() {
-          override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            if (replaceFabWithMenuEntryEnabled) { return }
-            if (dy > 0) {
-              binding.fabAdd.hide()
-              Log.info("Main FAB hidden.")
-            } else if (dy < 0) {
-              binding.fabAdd.show()
-              Log.info("Main FAB shown.")
-            }
-          }
-        }
-      )
-
-      // Setting up Drag & Drop Re-Order WebsiteEntry List
-      itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-      itemTouchHelper.attachToRecyclerView(this)
-    }
-
-
     // Setting up ViewModel and LiveData
     viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     viewModel.getWebSiteEntryList().observe(this, {
@@ -524,6 +497,43 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         }
       }
     })
+
+    //region Website Icons
+
+    /* TODO: Do not call on every create. Ideally, just single time per app (re-)start. */
+    viewModel.assignIconUrlFetcher()
+
+    //endregion Website Icons
+
+    //region RecyclerView
+
+    // Setting up RecyclerView
+    val thisContext = this
+    webSiteEntryAdapter = WebSiteEntryAdapter(this)
+    binding.layout.recyclerView.apply {
+      layoutManager = LinearLayoutManager(thisContext)
+      adapter = webSiteEntryAdapter
+      addOnScrollListener(
+        object : RecyclerView.OnScrollListener() {
+          override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            if (replaceFabWithMenuEntryEnabled) { return }
+            if (dy > 0) {
+              binding.fabAdd.hide()
+              Log.info("Main FAB hidden.")
+            } else if (dy < 0) {
+              binding.fabAdd.show()
+              Log.info("Main FAB shown.")
+            }
+          }
+        }
+      )
+
+      // Setting up Drag & Drop Re-Order WebsiteEntry List
+      itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+      itemTouchHelper.attachToRecyclerView(this)
+    }
+
+    //endregion RecyclerView
 
     //region TOR
 
