@@ -149,11 +149,6 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 
 
         this.setOnClickListener { listener.onRefreshClicked(webSiteEntry) }
-        this.setOnLongClickListener {
-          listener.onViewClicked(webSiteEntry, position)
-          notifyItemChanged(position)
-          true
-        }
       }
     }
   }
