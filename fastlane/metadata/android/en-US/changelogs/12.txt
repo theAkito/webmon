@@ -1,0 +1,9 @@
+- Fix: SwipeRefresh Toggle.
+- Fix: Re-Order Website Entries.
+- Fix: Floating Action Button disappearing after deleting Entry.
+- Improve: Website Favicon Retrieval Reliability & Efficiency.
+- Improve: Re-Vamp Debug Log.
+- Add: Advanced Setting: Floating Action Button as Menu Item.
+- Add: Advanced Setting: Long SwipeRefresh Trigger Distance.
+- Add: Android Permission Explanations.
+- Add: Troubleshooting Info: Replace Add Button with Menu Entry.

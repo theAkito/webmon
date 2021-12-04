@@ -1,11 +1,22 @@
+# 2.7.0 [Code 12] (2021/12/04)
+- Fix: SwipeRefresh Toggle.
+- Fix: Re-Order Website Entries.
+- Fix: Floating Action Button disappearing after deleting Entry.
+- Improve: Website Favicon Retrieval Reliability & Efficiency.
+- Improve: Re-Vamp Debug Log.
+- Add: Advanced Setting: Floating Action Button as Menu Item.
+- Add: Advanced Setting: Long SwipeRefresh Trigger Distance.
+- Add: Android Permission Explanations.
+- Add: Troubleshooting Info: Replace Add Button with Menu Entry.
+
 # 2.6.0 [Code 11] (2021/11/20)
 - Fix: Sharing Backups.
 - Fix: Search Filter not working reliably all the time.
+- Improve: Upgrade Project Icon.
 - Add: Fetching Website icons is back! This time with 100% FOSS tools.
 - Add: Force Background Service (optional). This way, the app never gets killed in the background.
 - Add: Show App Log for Debug purposes.
 - Add: Share App Log Dump.
-- Improve: Upgrade Project Icon.
 
 # 2.5.0 [Code 10] (2021/11/13)
 - Fix: Creating new Website Entry dispatches a "Website Unavailable" message.
