@@ -333,6 +333,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     locale = getCurrentLocale()
     defaultTimeFormat = locale.getDefaultDateTimeFormat()
     customRefreshInputBinding = CustomRefreshInputBinding.inflate(layoutInflater)
@@ -439,8 +440,45 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     binding.layout.btnStop.setOnClickListener { stopTask() }
 
+    //region Website Icons
+
+    /* TODO: Do not call on every create. Ideally, just single time per app (re-)start. */
+    viewModel.assignIconUrlFetcher()
+
+    //endregion Website Icons
+
+    //region RecyclerView
+
+    // Setting up RecyclerView
+    val thisContext = this
+    webSiteEntryAdapter = WebSiteEntryAdapter(this)
+    binding.layout.recyclerView.apply {
+      layoutManager = LinearLayoutManager(thisContext)
+      adapter = webSiteEntryAdapter
+      if (replaceFabWithMenuEntryEnabled.not()) {
+        addOnScrollListener(
+          object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+              if (dy > 0) {
+                binding.fabAdd.hide()
+                Log.info("Main FAB hidden.")
+              } else if (dy < 0) {
+                binding.fabAdd.show()
+                Log.info("Main FAB shown.")
+              }
+            }
+          }
+        )
+      }
+
+      // Setting up Drag & Drop Re-Order WebsiteEntry List
+      itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+      itemTouchHelper.attachToRecyclerView(this)
+    }
+
+    //endregion RecyclerView
+
     // Setting up ViewModel and LiveData
-    viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     viewModel.getWebSiteEntryList().observe(this, {
       Log.info("Observed Website Entry List Change.")
       /** https://stackoverflow.com/a/31486382/7061105 */
@@ -498,43 +536,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
       }
     })
 
-    //region Website Icons
-
-    /* TODO: Do not call on every create. Ideally, just single time per app (re-)start. */
-    viewModel.assignIconUrlFetcher()
-
-    //endregion Website Icons
-
-    //region RecyclerView
-
-    // Setting up RecyclerView
-    val thisContext = this
-    webSiteEntryAdapter = WebSiteEntryAdapter(this)
-    binding.layout.recyclerView.apply {
-      layoutManager = LinearLayoutManager(thisContext)
-      adapter = webSiteEntryAdapter
-      addOnScrollListener(
-        object : RecyclerView.OnScrollListener() {
-          override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            if (replaceFabWithMenuEntryEnabled) { return }
-            if (dy > 0) {
-              binding.fabAdd.hide()
-              Log.info("Main FAB hidden.")
-            } else if (dy < 0) {
-              binding.fabAdd.show()
-              Log.info("Main FAB shown.")
-            }
-          }
-        }
-      )
-
-      // Setting up Drag & Drop Re-Order WebsiteEntry List
-      itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-      itemTouchHelper.attachToRecyclerView(this)
-    }
-
-    //endregion RecyclerView
-
     //region TOR
 
     torIsEnabled = customPrefs.getBoolean(SETTINGS_TOR_ENABLE, false)
@@ -565,9 +566,9 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     swipeRefreshIsEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_SWIPE_REFRESH, true)
     binding.layout.swipeRefresh.isEnabled = swipeRefreshIsEnabled
-    binding.layout.swipeRefresh.setOnRefreshListener()
 
     if (swipeRefreshIsEnabled) {
+      binding.layout.swipeRefresh.setOnRefreshListener()
       Log.info("SwipeRefresh enabled.")
     } else {
       Log.info("SwipeRefresh disabled.")
