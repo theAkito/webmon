@@ -21,9 +21,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.model.WebSiteStatus
+import ooo.akito.webmon.data.repository.WebSiteEntryRepository
 import ooo.akito.webmon.ui.home.MainActivity
 import ooo.akito.webmon.utils.BackgroundCheckInterval.nameList
 import ooo.akito.webmon.utils.BackgroundCheckInterval.valueList
@@ -48,7 +51,9 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
+import ooo.akito.webmon.utils.Utils.removeUrlProto
 import ooo.akito.webmon.worker.WorkManagerScheduler
+import org.apache.hc.client5.http.classic.methods.HttpGet
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -190,6 +195,27 @@ object Utils {
     } catch (e: Exception) {
       Log.error(e.toString())
       Toast.makeText(context, context.getString(R.string.no_apps_found), Toast.LENGTH_LONG).show()
+    }
+  }
+
+  suspend fun retrieveIconUrlFetcher(): String? {
+    return withContext(Dispatchers.IO) {
+      iconUrlFetcherList.firstNotNullOfOrNull { url ->
+        val urlFull = buildDefaultIconUrlFull(url)
+        try {
+          WebSiteEntryRepository.http.execute(HttpGet(urlFull)).use {
+            val resp = it.entity.content.readBytes()
+            val respCode = it.code
+            if (respCode.toString().startsWith("20").not()) {
+              return@firstNotNullOfOrNull null
+            } else {
+              return@firstNotNullOfOrNull url
+            }
+          }
+        } catch (e: Exception) {
+          return@firstNotNullOfOrNull null
+        }
+      }
     }
   }
 
@@ -376,6 +402,27 @@ object Utils {
   }
 
   fun String?.asUri(): Uri? = tryOrNull { Uri.parse(this) }
+
+  fun buildIconUrlFull(
+    urlIcon: String, /* Where to get the icon from. */
+    urlTarget: String, /* Which website's icon to retrieve. */
+    urlIconFallback: String, /* Direct URL to fallback icon, in case no original icon was found. */
+    iconFormats: String, /* Allowed icon formats. */
+    iconSizes: String /* Allowed icon sizes. */
+  ): String {
+    return "${urlIcon}/icon?url=${urlTarget}&formats=${iconFormats}&size=${iconSizes}&fallback_icon_url=${urlIconFallback}"
+  }
+
+  fun buildDefaultIconUrlFull(urlIcon: String /* Where to get the icon from. */): String {
+    /* TODO: Fix dangling Strings. */
+    return buildIconUrlFull(
+      urlIcon,
+      defaultUrlNimHomepage,
+      "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png",
+      "gif,ico,jpg,png,svg",
+      "16..64..128"
+    )
+  }
 
   fun InputStream.readAllAsString(): String {
     /**

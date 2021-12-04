@@ -44,6 +44,7 @@ var logEnabled = false
 var replaceFabWithMenuEntryEnabled = false
 var isEntryCreated = false /** Do not observe and notify about "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
 var logContent = ""
+var iconUrlFetcher = "https://besticon.herokuapp.com/"
 
 var globalEntryTagsNames: List<String> = listOf(msgGenericDefault)
   set(value) {
@@ -56,3 +57,17 @@ val mapper: ObjectMapper = jacksonObjectMapper()
   .enable(SerializationFeature.INDENT_OUTPUT) /* Always pretty-print. */
 val mapperUgly: ObjectMapper = jacksonObjectMapper()
   .disable(SerializationFeature.INDENT_OUTPUT) /* Never pretty-print. */
+
+/** FOSS server fetching website icons. */
+var iconUrlFetcherList = listOf(
+  "https://besticon-demo.herokuapp.com",
+  "https://besticon.herokuapp.com/",
+  "https://besticons.herokuapp.com/",
+  "https://besticon-favicon.herokuapp.com/",
+  "https://find-favicon.herokuapp.com/",
+  "https://get-favicon.herokuapp.com/",
+  "https://favicon-finder.herokuapp.com/",
+  "https://favicon-getter.herokuapp.com/",
+  "https://myfavicon.herokuapp.com/",
+  "https://webmon-besticon.herokuapp.com/"
+)

@@ -11,6 +11,8 @@ import ooo.akito.webmon.data.model.WebSiteStatus
 import ooo.akito.webmon.data.repository.WebSiteEntryRepository
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
+import ooo.akito.webmon.utils.Utils.retrieveIconUrlFetcher
+import ooo.akito.webmon.utils.iconUrlFetcher
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -57,6 +59,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
   fun addDefaultData() {
     if (customPrefs.getBoolean(Constants.IS_ADDED_DEFAULT_DATA, true))
       repository.addDefaultData()
+  }
+
+  fun assignIconUrlFetcher() {
+    viewModelScope.launch {
+      retrieveIconUrlFetcher()?.let {
+        iconUrlFetcher = it
+      }
+    }
   }
 
 }

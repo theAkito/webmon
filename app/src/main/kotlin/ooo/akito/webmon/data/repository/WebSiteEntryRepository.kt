@@ -45,7 +45,7 @@ class WebSiteEntryRepository(context: Context) {
 
   companion object {
     private val dns = DNS()
-    private val http = HttpClients
+    val http = HttpClients
       .custom()
       .setRedirectStrategy(DefaultRedirectStrategy())
       .useSystemProperties()
