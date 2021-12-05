@@ -33,6 +33,7 @@ import ooo.akito.webmon.utils.Utils.removeTrailingSlashes
 import ooo.akito.webmon.utils.Utils.removeUrlProto
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.client5.http.impl.DefaultRedirectStrategy
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse
 import org.apache.hc.client5.http.impl.classic.HttpClients
 import org.apache.hc.core5.http.ConnectionClosedException
@@ -45,11 +46,12 @@ class WebSiteEntryRepository(context: Context) {
 
   companion object {
     private val dns = DNS()
-    val http = HttpClients
+    val http: CloseableHttpClient = HttpClients
       .custom()
       .setRedirectStrategy(DefaultRedirectStrategy())
       .useSystemProperties()
       .build()
+      ?: throw IllegalStateException("HTTP Client instantiated in WebSiteEntryRepository may not be null!")
   }
 
   private val webSiteEntryDao: WebSiteEntryDao? by lazy {

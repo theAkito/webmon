@@ -18,6 +18,7 @@ import ooo.akito.webmon.databinding.ItemWebsiteRowBinding
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGlideLoadIconFailure
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
+import ooo.akito.webmon.utils.Utils.buildIconUrlFull
 import ooo.akito.webmon.utils.Utils.currentDateTime
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import ooo.akito.webmon.utils.Utils.removeUrlProto
@@ -81,16 +82,13 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
           val iconSizeMinPerfectMax = "16..64..128"
           /** Just a placeholder styled star. */
           val iconUrlFallback = "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png"
-          val iconUrlFull = "${iconUrlFetcher}/icon?url=${webSiteEntry.url.removeUrlProto()}&formats=${iconFormats}&size=${iconSizeMinPerfectMax}&fallback_icon_url=${iconUrlFallback}"
-//          val glideListener = object : RequestListener<Drawable> {
-//            override fun onLoadFailed(e: GlideException?, model: Any?, target: com.bumptech.glide.request.target.Target<Drawable>?, isFirstResource: Boolean): Boolean {
-//              return true
-//            }
-//
-//            override fun onResourceReady(resource: Drawable?, model: Any?, target: com.bumptech.glide.request.target.Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-//              return true
-//            }
-//          }
+          val iconUrlFull = buildIconUrlFull(
+            iconUrlFetcher,
+            webSiteEntry.url.removeUrlProto(),
+            iconUrlFallback,
+            iconFormats,
+            iconSizeMinPerfectMax
+          )
           try {
             /**
               https://stackoverflow.com/a/48152076/7061105
@@ -99,7 +97,6 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
             Glide
               .with(binding.imgLogo.context)
               .load(iconUrlFull)
-//              .listener(glideListener)
               .error(R.mipmap.placeholder_favicon)
               .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
               .skipMemoryCache(true)

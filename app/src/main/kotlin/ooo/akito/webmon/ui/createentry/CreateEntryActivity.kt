@@ -69,7 +69,7 @@ class CreateEntryActivity : AppCompatActivity() {
       if (init) { /* Only going through `init` once, on opening the `CreateEntryActivity`. */
         /* Fill it only with custom tags, which are actually turned on for this WebsiteEntry. */
         /* Additionally, implicitly removes all orphaned custom tags, as only globally available tags will be taken. */
-        thisWebsiteEntryCustomTags = thisWebsiteEntryCustomTags.intersect(globalEntryTagsNames).toMutableList()
+        thisWebsiteEntryCustomTags = thisWebsiteEntryCustomTags.intersect(globalEntryTagsNames.toSet()).toMutableList()
         /* Initialising Chips in ChipGroup. The latter is statically there, but all Chips are generated dynamically. */
         checkedTagNameToIsChecked = globalEntryTagsNames.map { tagName ->
           val isTagChecked = thisWebsiteEntryCustomTags.contains(tagName)

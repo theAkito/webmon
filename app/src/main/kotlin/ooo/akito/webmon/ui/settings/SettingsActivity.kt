@@ -61,7 +61,6 @@ import ooo.akito.webmon.utils.Environment.getDefaultPathCacheBackup
 import ooo.akito.webmon.utils.Environment.getDefaultPathCacheLog
 import ooo.akito.webmon.utils.Environment.getNameFileBackup
 import ooo.akito.webmon.utils.Environment.getNameFileLog
-import ooo.akito.webmon.utils.ExceptionCompanion
 import ooo.akito.webmon.utils.ExceptionCompanion.msgBackupUriPathInvalid
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupSettings
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupWebsiteEntries
@@ -558,7 +557,7 @@ class SettingsActivity : AppCompatActivity() {
     //region Advanced Setting: Import Backup of Settings
 
     onRestoreSettingsResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-      fun logErr() = Log.error(ExceptionCompanion.msgInputStreamNullBackupInterrupted)
+      fun logErr() = Log.error(msgInputStreamNullBackupInterrupted)
       val resolver = this@SettingsActivity.contentResolver
       if (uri == null) {
         logErr()
@@ -578,7 +577,7 @@ class SettingsActivity : AppCompatActivity() {
       val providedSettings = try {
         mapper.readValue<BackupSettings>(rawContent)
       } catch (e: Exception) {
-        Log.error(ExceptionCompanion.msgFileContent + rawContent)
+        Log.error(msgFileContent + rawContent)
         warnOfBackupImportParsingFailure("Settings")
         return@registerForActivityResult
       }

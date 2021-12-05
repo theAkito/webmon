@@ -3,13 +3,10 @@ package ooo.akito.webmon.ui.home
 import android.app.Activity
 import android.app.Dialog
 import android.app.SearchManager
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
-import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.view.*
 import android.view.DragEvent.*
 import android.widget.TextView
@@ -21,8 +18,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.marginRight
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper

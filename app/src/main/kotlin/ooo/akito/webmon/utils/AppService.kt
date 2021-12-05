@@ -33,10 +33,6 @@ class AppService : Service() {
     return START_STICKY
   }
 
-  override fun onDestroy() {
-    super.onDestroy()
-  }
-
   private fun startPersistentService() {
     val notificationIntent = Intent(applicationContext, MainActivity::class.java)
     /**

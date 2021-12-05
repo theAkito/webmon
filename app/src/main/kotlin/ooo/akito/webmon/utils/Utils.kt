@@ -51,7 +51,6 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
-import ooo.akito.webmon.utils.Utils.removeUrlProto
 import ooo.akito.webmon.worker.WorkManagerScheduler
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import java.io.InputStream
@@ -127,7 +126,7 @@ object Utils {
     return false
   }
 
-  fun startWorkManager(context: Context, isForce : Boolean = false) {
+  private fun startWorkManager(context: Context, isForce : Boolean = false) {
     val isScheduled: Boolean? = customPrefs[IS_SCHEDULED, false]
     isScheduled?.let { scheduled ->
       if (!scheduled || isForce) {
@@ -413,7 +412,7 @@ object Utils {
     return "${urlIcon}/icon?url=${urlTarget}&formats=${iconFormats}&size=${iconSizes}&fallback_icon_url=${urlIconFallback}"
   }
 
-  fun buildDefaultIconUrlFull(urlIcon: String /* Where to get the icon from. */): String {
+  private fun buildDefaultIconUrlFull(urlIcon: String /* Where to get the icon from. */): String {
     /* TODO: Fix dangling Strings. */
     return buildIconUrlFull(
       urlIcon,
