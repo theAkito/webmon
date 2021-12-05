@@ -96,9 +96,9 @@ dependencies {
   implementation("androidx.fragment:fragment-ktx:$main_version")
 
   // Support Libraries & UI Components
-  implementation("androidx.appcompat:appcompat:1.3.1")
+  implementation("androidx.appcompat:appcompat:1.4.0")
   implementation("com.google.android.material:material:1.4.0")
-  implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+  implementation("androidx.constraintlayout:constraintlayout:2.1.2")
   implementation("com.android.support:drawerlayout:28.0.0")
 
   // Retrofit and Relevant Converters
@@ -128,7 +128,7 @@ dependencies {
   kapt("androidx.room:room-compiler:$room_version")
   implementation("androidx.room:room-ktx:$room_version")
 
-  implementation("androidx.work:work-runtime-ktx:2.7.0")
+  implementation("androidx.work:work-runtime-ktx:2.7.1")
 
   // Swipe Refresh
   implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
@@ -156,6 +156,6 @@ dependencies {
   //androidTestImplementation("androidx.test.ext:junit:1.1.3")
   androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
   /* https://stackoverflow.com/a/61586889/7061105 */
-  androidTestImplementation("androidx.work:work-testing:2.7.0")
+  androidTestImplementation("androidx.work:work-testing:2.7.1")
 
 }
