@@ -2,6 +2,10 @@
 
 Please, view the well formatted readme by opening this project's website. Thank you.
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/ooo.akito.webmon/)
+
 # License
 
 <img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg" width="100px"></img>
