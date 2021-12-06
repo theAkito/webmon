@@ -62,6 +62,7 @@ import ooo.akito.webmon.utils.Environment.getDefaultPathCacheLog
 import ooo.akito.webmon.utils.Environment.getNameFileBackup
 import ooo.akito.webmon.utils.Environment.getNameFileLog
 import ooo.akito.webmon.utils.ExceptionCompanion.msgBackupUriPathInvalid
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotGenerateBackupFileContent
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupSettings
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOutputStreamBackupWebsiteEntries
 import ooo.akito.webmon.utils.ExceptionCompanion.msgFileContent
@@ -210,14 +211,16 @@ class SettingsActivity : AppCompatActivity() {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
         Build.VERSION.SDK_INT <= Build.VERSION_CODES.P
       ) {
-        ActivityCompat.requestPermissions(this@SettingsActivity, arrayOf(permissionReadExternalStorage),
+        ActivityCompat.requestPermissions(
+          this@SettingsActivity,
+          arrayOf(permissionReadExternalStorage),
           requestCodeReadExternalStorage
         )
       } else {
         when (backupType.lowercase()) {
           nameBackupDataCaseLower -> onRestoreWebsiteEntriesResultLauncher.launch(fileTypeFilter)
           nameBackupSettingsCaseLower -> onRestoreSettingsResultLauncher.launch(fileTypeFilter)
-          else -> throw IllegalArgumentException("[SettingsActivity.generateBackupDataExportLauncher()] Cannot generate BackupFileContent!")
+          else -> throw IllegalArgumentException(msgCannotGenerateBackupFileContent)
         }
       }
     }
@@ -245,12 +248,11 @@ class SettingsActivity : AppCompatActivity() {
       val backupFileContent = when (backupType.lowercase()) {
         nameBackupDataCaseLower -> generateBackupWebsitesJString(backupFilePathRelative)
         nameBackupSettingsCaseLower -> backupSettingsManager.generateBackupFileContent(backupFilePathRelative)
-        else -> throw IllegalArgumentException("[SettingsActivity.generateBackupDataExportLauncher()] Cannot generate BackupFileContent!")
+        else -> throw IllegalArgumentException(msgCannotGenerateBackupFileContent)
       }
-      val resolver = this@SettingsActivity.contentResolver
 
       /** https://stackoverflow.com/a/64733499/7061105 */
-      val out = resolver.openOutputStream(uri) ?: throw IllegalAccessError(illegalAccessErrorMsg)
+      val out = this@SettingsActivity.contentResolver.openOutputStream(uri) ?: throw IllegalAccessError(illegalAccessErrorMsg)
       out.use { stream ->
         Log.info("Writing ${backupType} as Backup...")
         Log.info("${backupType}: " + backupFileContent)
@@ -343,6 +345,11 @@ class SettingsActivity : AppCompatActivity() {
     activitySettingsBinding.layoutSettingsAdvanced.visibility = View.GONE
 
     activitySettingsBinding.toggleSettingsAdvanced.setOnCheckedChangeListener { _, isActivated ->
+      if (isActivated) {
+        Log.info("Opened Advanced Settings section.")
+      } else {
+        Log.info("Closed Advanced Settings section.")
+      }
       slideLayoutSettingsAdvanced(isActivated)
     }
 
@@ -357,11 +364,14 @@ class SettingsActivity : AppCompatActivity() {
         setPositiveButton(
           R.string.text_delete_all_website_entries_are_you_sure_yes
         ) { _, _ ->
+          Log.warn("Confirmed to delete all Website Entries!")
           websites.forEach { website ->
             viewModel.deleteWebSiteEntry(website)
           }
         }
-        setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ -> }
+        setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ ->
+          Log.warn("Denied to delete all Website Entries!")
+        }
       }.create().show()
     }
 
@@ -376,12 +386,15 @@ class SettingsActivity : AppCompatActivity() {
         setPositiveButton(
           R.string.text_delete_all_website_entries_are_you_sure_yes
         ) { _, _ ->
+          Log.warn("Confirmed to delete all Website Entry Tags!")
           globalEntryTagsNames = listOf(msgGenericDefault)
           websites
             .cleanCustomTags()
             .forEach { viewModel.saveWebSiteEntry(it) }
         }
-        setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ -> }
+        setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ ->
+          Log.warn("Denied to delete all Website Entry Tags!")
+        }
       }.create().show()
     }
 
@@ -489,9 +502,8 @@ class SettingsActivity : AppCompatActivity() {
     onRestoreWebsiteEntriesResultLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { rawUri ->
       fun logErr() = Log.error(msgInputStreamNullBackupInterrupted)
       val uri = rawUri ?: return@registerForActivityResult
-      val resolver = this@SettingsActivity.contentResolver
       val input = try {
-        resolver.openInputStream(uri)
+        this@SettingsActivity.contentResolver.openInputStream(uri)
       } catch (e: Exception) {
         logErr()
         return@registerForActivityResult
@@ -606,6 +618,7 @@ class SettingsActivity : AppCompatActivity() {
 
     /** Share Backup Website Entries */
     activitySettingsBinding.btnBackupDataShare.setOnClickListener {
+      Log.info("Sharing Data Backup.")
       backupShareButtonAction(
         nameBackupDataCaseLower,
         generateBackupWebsitesJString(nameNoneCaseLower)
@@ -618,6 +631,7 @@ class SettingsActivity : AppCompatActivity() {
 
     /** Share Backup Settings */
     activitySettingsBinding.btnBackupSettingsShare.setOnClickListener {
+      Log.info("Sharing Settings Backup.")
       backupShareButtonAction(
         nameBackupSettingsCaseLower,
         backupSettingsManager.generateBackupFileContent(nameNoneCaseLower)
