@@ -76,6 +76,7 @@ import ooo.akito.webmon.utils.Utils.getMonitorTime
 import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.triggerRebirth
+import ooo.akito.webmon.utils.Utils.tryOrNull
 import ooo.akito.webmon.utils.defaultShareType
 import ooo.akito.webmon.utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.globalEntryTagsNames
@@ -160,33 +161,47 @@ class SettingsActivity : AppCompatActivity() {
   private fun shareButtonAction(
     resStringTitleShare: Int,
     fileName: String,
-    fileDir: File,
+    fileDirPathAbsolute: String,
     fileContent: String
-  ) {
-    val activity = this@SettingsActivity
-    val file = File(fileDir.absolutePath, fileName)
-    file.writeText(fileContent)
-    val uri = FileProvider.getUriForFile(activity, packageName, file)
-    val shareIntent = Intent().apply {
-      type = defaultShareType
-      action = Intent.ACTION_SEND
-      putExtra(Intent.EXTRA_STREAM, uri)
-      putExtra(Intent.EXTRA_TITLE, fileName)
-      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+  ): File? {
+    /**
+      Creates temporary file with name `fileName` in path `fileDirPathAbsolute`.
+      If this file already exists, it will be overwritten.
+      This file will be shared to an app of the user's choice.
+      The `fileDirPathAbsolute` should most likely correspond to this app's cache location.
+    */
+    return try {
+      val activity = this@SettingsActivity
+      val file = File(fileDirPathAbsolute, fileName).apply {
+        writeText(fileContent)
+      }
+      val uri = FileProvider.getUriForFile(activity, packageName, file)
+      val shareIntent = Intent().apply {
+        type = defaultShareType
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_STREAM, uri)
+        putExtra(Intent.EXTRA_TITLE, fileName)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      }
+      val destinations = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+      destinations.forEach { info ->
+        val packageName = info.packageName
+        activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      }
+      startActivity(Intent.createChooser(shareIntent, resources.getText(resStringTitleShare)))
+      file
+    } catch (e: Exception) {
+      Log.error("""Could not share file in "${fileDirPathAbsolute}" with  name "${fileName}"!""")
+      e.message?.let { Log.error(it) }
+      null
     }
-    val destinations = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
-    destinations.forEach { info ->
-      val packageName = info.packageName
-      activity.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-    startActivity(Intent.createChooser(shareIntent, resources.getText(resStringTitleShare)))
   }
 
   private fun logcatShareButtonSetOnClickListener() {
     shareButtonAction(
       R.string.title_share_logcat,
       getNameFileLog(),
-      getDefaultPathCacheLog(),
+      getDefaultPathCacheLog().absolutePath,
       logOS.readLogcat().toString(Charset.defaultCharset())
     )
   }
@@ -195,7 +210,7 @@ class SettingsActivity : AppCompatActivity() {
     shareButtonAction(
       R.string.title_share_backup,
       getNameFileBackup(backupType),
-      getDefaultPathCacheBackup(),
+      getDefaultPathCacheBackup().absolutePath,
       backupFileContent
     )
   }
