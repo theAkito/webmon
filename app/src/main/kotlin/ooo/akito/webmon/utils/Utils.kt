@@ -386,6 +386,8 @@ object Utils {
 
   fun List<WebSiteEntry>.cleanCustomTags(): List<WebSiteEntry> = this.map { it.customTags = listOf(); it }
 
+  fun Collection<WebSiteEntry>.sortedByItemPosition(): List<WebSiteEntry> = this.sortedBy { it.itemPosition }
+
   private fun appIsVisible(): Boolean = ooo.akito.webmon.Webmon.AppVisibility.appIsVisible
 
   fun String.removeTrailingSlashes(): String = this.replace(Regex("""[/]*$"""), "")

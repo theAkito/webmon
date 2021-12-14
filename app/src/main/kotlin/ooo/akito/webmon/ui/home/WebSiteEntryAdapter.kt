@@ -22,6 +22,7 @@ import ooo.akito.webmon.utils.Utils.buildIconUrlFull
 import ooo.akito.webmon.utils.Utils.currentDateTime
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import ooo.akito.webmon.utils.Utils.removeUrlProto
+import ooo.akito.webmon.utils.Utils.sortedByItemPosition
 import ooo.akito.webmon.utils.iconUrlFetcher
 import java.util.*
 
@@ -185,7 +186,9 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
 
       @SuppressLint("NotifyDataSetChanged")
       override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-        filteredList = (p1?.values as List<*>).filterIsInstance<WebSiteEntry>()
+        filteredList = (p1?.values as List<*>)
+          .filterIsInstance<WebSiteEntry>()
+          .sortedByItemPosition()
         notifyDataSetChanged()
       }
     }
@@ -195,9 +198,14 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
    * Activity uses this method to update todoList with the help of LiveData
    * */
   @SuppressLint("NotifyDataSetChanged")
-  fun setAllTodoItems(todoItems: List<WebSiteEntry>) {
-    mList = todoItems
-    filteredList = todoItems.sortedBy { it.itemPosition }
+  fun setAllTodoItems(todoItems: List<WebSiteEntry>?) {
+    todoItems?.let {
+      mList = it
+      filteredList = mList.sortedByItemPosition()
+    }
+    if (todoItems == null) {
+      filteredList = filteredList.sortedByItemPosition()
+    }
     notifyDataSetChanged()
   }
 

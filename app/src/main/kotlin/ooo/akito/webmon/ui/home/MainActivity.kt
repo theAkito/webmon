@@ -456,10 +456,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
               if (dy > 0) {
                 binding.fabAdd.hide()
-                Log.info("Main FAB hidden.")
               } else if (dy < 0) {
                 binding.fabAdd.show()
-                Log.info("Main FAB shown.")
               }
             }
           }
@@ -665,20 +663,26 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     menuInflater.inflate(R.menu.menu_main, menu)
     val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
     searchView = menu.findItem(R.id.action_search)?.actionView as SearchView
-    searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-    searchView.maxWidth = Integer.MAX_VALUE
-    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-      override fun onQueryTextSubmit(query: String?): Boolean {
-        webSiteEntryAdapter.filter.filter(query)
-        return false
-      }
+    searchView.apply {
+      setSearchableInfo(searchManager.getSearchableInfo(componentName))
+      maxWidth = Integer.MAX_VALUE
+      setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        override fun onQueryTextSubmit(query: String?): Boolean {
+          webSiteEntryAdapter.filter.filter(query)
+          return false
+        }
 
-      override fun onQueryTextChange(newText: String?): Boolean {
-        webSiteEntryAdapter.filter.filter(newText)
-        return false
-      }
+        override fun onQueryTextChange(newText: String?): Boolean {
+          webSiteEntryAdapter.filter.filter(newText)
+          return false
+        }
 
-    })
+      })
+      setOnCloseListener {
+        webSiteEntryAdapter.setAllTodoItems(null)
+        return@setOnCloseListener false
+      }
+    }
     val fabAddAsMenuItem = menu.findItem(R.id.action_add_entry)
     if (replaceFabWithMenuEntryEnabled) {
       fabAddAsMenuItem?.apply {
