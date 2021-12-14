@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
@@ -37,6 +38,7 @@ import ooo.akito.webmon.ui.debug.ActivityDebug
 import ooo.akito.webmon.ui.settings.SettingsActivity
 import ooo.akito.webmon.utils.*
 import ooo.akito.webmon.utils.AppService
+import ooo.akito.webmon.utils.Constants.IS_INIT
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_X
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_Y
@@ -448,6 +450,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     val thisContext = this
     webSiteEntryAdapter = WebSiteEntryAdapter(this)
     binding.layout.recyclerView.apply {
+      if (itemAnimator is SimpleItemAnimator) {
+        (itemAnimator as SimpleItemAnimator).apply {
+          supportsChangeAnimations = false
+          changeDuration = 0
+        }
+      }
       layoutManager = LinearLayoutManager(thisContext)
       adapter = webSiteEntryAdapter
       if (replaceFabWithMenuEntryEnabled.not()) {
@@ -470,17 +478,6 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
     //endregion RecyclerView
-
-    // Setting up ViewModel and LiveData
-    viewModel.getWebSiteEntryList().observe(this, {
-      Log.info("Observed Website Entry List Change.")
-      /** https://stackoverflow.com/a/31486382/7061105 */
-      if (this::searchView.isInitialized.not() || searchView.isIconified) {
-        Log.info("Observed Website Entry List Change and set all TODO Items.")
-        webSiteEntryAdapter.setAllTodoItems(it)
-      }
-      if (it.isEmpty()) { viewModel.addDefaultData() } // TODO: 2021/11/12 Does this need to be called on every observation? No.
-    })
 
     // Setting up Website Status Refresh on Swipe & Custom Monitoring
     viewModel.checkWebSiteStatus().observe(this, { status ->
@@ -517,6 +514,11 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
           viewMain.showSnackBar(getStringNotWorking(entryWithFailedConnection.url))
         }
       } else if (entriesWithFailedConnection.size > 1) {
+        /*
+          TODO: 2021/12/14
+            Filter running Website Entries, i.e. exclude paused entries,
+            so this branch does not get triggered, if only one running entry is unavailable.
+        */
         if (customMonitorEnabled) {
           showNotification(
             applicationContext,
@@ -527,6 +529,25 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
           viewMain.showSnackBar(msgWebsitesNotReachable)
         }
       }
+    })
+
+    // Setting up ViewModel and LiveData
+    viewModel.getWebSiteEntryList().observe(this, {
+      Log.info("Observed Website Entry List Change.")
+      /** https://stackoverflow.com/a/31486382/7061105 */
+      if ((this::searchView.isInitialized.not() || searchView.isIconified) && doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing.not()) {
+        Log.info("Set all TODO Items.")
+        webSiteEntryAdapter.setAllTodoItems(it)
+      } else if (customPrefs.getBoolean(IS_INIT, false)) {
+        /**
+          When starting up the application, no Website Entries are shown, if the RecyclerView is waiting for `checkWebSiteStatus()` to finish, before showing results.
+          Therefore, we need to ignore that restriction once at App Start, so the RecyclerView is filled with items, ASAP.
+        */
+        Log.info("Set all TODO Items on App Start.")
+        webSiteEntryAdapter.setAllTodoItems(it)
+        customPrefs[IS_INIT] = false
+      }
+      if (it.isEmpty()) { viewModel.addDefaultData() } // TODO: 2021/11/12 Does this need to be called on every observation? No.
     })
 
     //region TOR

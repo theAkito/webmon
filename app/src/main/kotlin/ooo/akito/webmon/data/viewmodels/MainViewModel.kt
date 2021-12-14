@@ -13,6 +13,7 @@ import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.Utils.retrieveIconUrlFetcher
 import ooo.akito.webmon.utils.iconUrlFetcher
+import ooo.akito.webmon.utils.doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -42,16 +43,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     return getWebSiteEntryList().value?.associateBy { it.url } ?: emptyMap()
   }
 
-  fun checkWebSiteStatus(): LiveData<List<WebSiteStatus>> {
+  fun checkWebSiteStatus(force: Boolean = false): LiveData<List<WebSiteStatus>> {
+    doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing = force.not()
     viewModelScope.launch {
       webSiteStatusList.value = repository.checkWebSiteStatus()
+      doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing = false
     }
     return webSiteStatusList
   }
 
-  fun getWebSiteStatus(webSiteEntry: WebSiteEntry): LiveData<WebSiteStatus> {
+  fun getWebSiteStatus(webSiteEntry: WebSiteEntry, force: Boolean = false): LiveData<WebSiteStatus> {
+    doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing = force.not()
     viewModelScope.launch {
       webSiteStatus.value = repository.getWebsiteStatus(webSiteEntry)
+      doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing = false
     }
     return webSiteStatus
   }

@@ -6,8 +6,12 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ProcessLifecycleOwner
+import ooo.akito.webmon.utils.Constants.IS_INIT
+import ooo.akito.webmon.utils.Constants.IS_SCHEDULED
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager
+import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
+import ooo.akito.webmon.utils.SharedPrefsManager.set
 
 class Webmon : Application(), LifecycleEventObserver, LifecycleOwner {
   /**
@@ -35,6 +39,8 @@ class Webmon : Application(), LifecycleEventObserver, LifecycleOwner {
     SharedPrefsManager.init(this)
     ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     lifecycleRegistry = LifecycleRegistry(this)
+    customPrefs[IS_INIT] = true
+    customPrefs[IS_SCHEDULED] = false
   }
 
   override fun getLifecycle(): Lifecycle {

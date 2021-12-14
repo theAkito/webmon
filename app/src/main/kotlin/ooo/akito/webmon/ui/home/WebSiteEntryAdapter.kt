@@ -9,6 +9,7 @@ import android.widget.PopupMenu
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -57,12 +58,21 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         binding.txtWebSite.text = webSiteEntry.name
         binding.txtUrl.text = webSiteEntry.url
 
+        // TODO: 2021/12/14 Merge both Glide usages into easy to use utility method.
         if (webSiteEntry.isOnionAddress) {
           try {
             /** https://github.com/FortAwesome/Font-Awesome/issues/5101#issuecomment-298361743 */
             Glide
               .with(binding.imgLogo.context)
               .load(ResourcesCompat.getDrawable(resources, R.drawable.ic_tor_onion, context.theme))
+              .dontAnimate()
+              .let { request ->
+                if (binding.imgLogo.drawable != null) {
+                  request.placeholder(binding.imgLogo.drawable.constantState?.newDrawable()?.mutate())
+                } else {
+                  request
+                }
+              }
               .diskCacheStrategy(DiskCacheStrategy.NONE)
               .skipMemoryCache(true)
               .apply(RequestOptions.circleCropTransform())
@@ -98,6 +108,14 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
             Glide
               .with(binding.imgLogo.context)
               .load(iconUrlFull)
+              .dontAnimate()
+              .let { request ->
+                if (binding.imgLogo.drawable != null) {
+                  request.placeholder(binding.imgLogo.drawable.constantState?.newDrawable()?.mutate())
+                } else {
+                  request
+                }
+              }
               .error(R.mipmap.placeholder_favicon)
               .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
               .skipMemoryCache(true)
@@ -198,7 +216,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
    * Activity uses this method to update todoList with the help of LiveData
    * */
   @SuppressLint("NotifyDataSetChanged")
-  fun setAllTodoItems(todoItems: List<WebSiteEntry>?) {
+  fun setAllTodoItems(todoItems: List<WebSiteEntry>?, publish: Boolean = true) {
     todoItems?.let {
       mList = it
       filteredList = mList.sortedByItemPosition()
@@ -206,7 +224,9 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
     if (todoItems == null) {
       filteredList = filteredList.sortedByItemPosition()
     }
-    notifyDataSetChanged()
+    if (publish) {
+      notifyDataSetChanged()
+    }
   }
 
   /**

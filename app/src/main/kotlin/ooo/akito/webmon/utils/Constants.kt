@@ -25,6 +25,7 @@ object Constants {
   const val NOTIFICATION_CHANNEL_DESCRIPTION = "Notification channel for monitoring web sites. In case of any site failed then showing notification."
 
   const val IS_ADDED_DEFAULT_DATA: String = "is_added_default_data"
+  const val IS_INIT: String = "is_init"
   const val MONITORING_INTERVAL: String = "monitoring_interval"
   const val IS_AUTO_START_SHOWN : String = "is_auto_start_shown" /* Currently not in use. */
   const val ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED: String = "oneshot_fab_default_position_is_saved"

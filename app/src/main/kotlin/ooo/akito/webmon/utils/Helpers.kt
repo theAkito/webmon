@@ -42,7 +42,13 @@ var swipeRefreshTriggerDistanceLongIsEnabled = false
 var forcedBackgroundServiceEnabled = false
 var logEnabled = false
 var replaceFabWithMenuEntryEnabled = false
-var isEntryCreated = false /** Do not observe and notify about "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
+/** Do not observe and notify about "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
+var isEntryCreated = false
+/**
+  Do not observe Website Entry changes, when Website Status is being refreshed.
+  If observed, `notifyDataSetChanged` is called `itemCount` times and Website Logos are flickering during the refresh process.
+*/
+var doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing = false
 var logContent = ""
 var iconUrlFetcher = "https://besticon.herokuapp.com/"
 
