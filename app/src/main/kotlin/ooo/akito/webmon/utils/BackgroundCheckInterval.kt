@@ -16,8 +16,12 @@ object BackgroundCheckInterval {
     60 * 4,
     60 * 5,
     60 * 6,
+    60 * 8,
+    60 * 10,
     60 * 12,
     60 * 24,
+    60 * 24 * 2,
+    60 * 24 * 3,
     60 * 24 * 7
   )
   val nameList = arrayOf(
@@ -25,14 +29,24 @@ object BackgroundCheckInterval {
     "Every ${valueList[1]} minutes",
     "Every ${valueList[2]} minutes",
     "Every ${valueList[3]} minutes",
-    "Every ${valueList[4]} minutes",
-    "Every ${valueList[5]} minutes",
-    "Every ${valueList[6]} minutes",
-    "Every ${valueList[7]} minutes",
-    "Every ${valueList[8]} minutes",
-    "Every ${valueList[9]} minutes",
-    "Every ${valueList[10]} minutes",
-    "Every ${valueList[11]} minutes",
+    "Every hour", /* 1h */
+    "Every ${valueList[5].toHours()} hours", /* 2h */
+    "Every ${valueList[6].toHours()} hours", /* 3h */
+    "Every ${valueList[7].toHours()} hours", /* 4h */
+    "Every ${valueList[8].toHours()} hours", /* 5h */
+    "Every ${valueList[9].toHours()} hours", /* 6h */
+    "Every ${valueList[10].toHours()} hours", /* 8h */
+    "Every ${valueList[11].toHours()} hours", /* 10h */
+    "Every ${valueList[12].toHours()} hours", /* 12h */
+    "Every day", /* 1d */
+    "Every second day", /* 2d */
+    "Every third day", /* 3d */
     "Weekly"
   )
+  private fun Int.toHours(): Int {
+    return this / 60
+  }
+  private fun Int.toHoursAndMinutes(): Pair<Int, Int> {
+    return this.toHours() to this % 60
+  }
 }
