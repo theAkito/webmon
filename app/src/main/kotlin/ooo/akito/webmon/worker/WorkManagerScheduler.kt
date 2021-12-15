@@ -30,8 +30,8 @@ object WorkManagerScheduler {
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
       TAG_WORK_MANAGER,
-      ExistingPeriodicWorkPolicy.REPLACE, refreshCpnWork
+      ExistingPeriodicWorkPolicy.REPLACE,
+      refreshCpnWork
     )
-
   }
 }

@@ -76,7 +76,6 @@ import ooo.akito.webmon.utils.Utils.getMonitorTime
 import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.triggerRebirth
-import ooo.akito.webmon.utils.Utils.tryOrNull
 import ooo.akito.webmon.utils.defaultShareType
 import ooo.akito.webmon.utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.globalEntryTagsNames

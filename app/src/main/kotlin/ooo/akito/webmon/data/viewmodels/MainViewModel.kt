@@ -12,8 +12,8 @@ import ooo.akito.webmon.data.repository.WebSiteEntryRepository
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.Utils.retrieveIconUrlFetcher
-import ooo.akito.webmon.utils.iconUrlFetcher
 import ooo.akito.webmon.utils.doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing
+import ooo.akito.webmon.utils.iconUrlFetcher
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
