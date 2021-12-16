@@ -33,7 +33,9 @@
         <service
             android:name=".utils.AppService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false"
+            android:excludeFromRecents="true"
+        />
 
         <activity
             android:name=".ui.debug.ActivityDebug"

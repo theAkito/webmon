@@ -62,11 +62,16 @@ class AppService : Service() {
       )
     } else {
       /** https://stackoverflow.com/a/34573169/7061105 */
+      val intentFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+      } else {
+        PendingIntent.FLAG_UPDATE_CURRENT
+      }
       val pendingIntent = PendingIntent.getActivity(
         this,
         0,
         notificationIntent,
-        0
+        intentFlags
       )
       startForeground(
         notifID,
