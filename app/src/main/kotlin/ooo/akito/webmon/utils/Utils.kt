@@ -38,6 +38,7 @@ import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_DESCRIPTION
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_ID
 import ooo.akito.webmon.utils.Constants.NOTIFICATION_CHANNEL_NAME
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
+import ooo.akito.webmon.utils.Constants.TAG_WORK_MANAGER
 import ooo.akito.webmon.utils.Environment.manufacturer
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
@@ -127,7 +128,7 @@ object Utils {
   }
 
   private fun startWorkManager(context: Context, isForce : Boolean = false) {
-    val isScheduled: Boolean? = customPrefs[IS_SCHEDULED, false]
+    val isScheduled: Boolean? = customPrefs[IS_SCHEDULED, false] /* TODO: Remove this option and check, since this is always forced, anyway.*/
     isScheduled?.let { scheduled ->
       if (!scheduled || isForce) {
         customPrefs[IS_SCHEDULED] = true
@@ -218,11 +219,11 @@ object Utils {
     }
   }
 
-  fun Context.safelyStartSyncWorker(force: Boolean = false) {
+  fun Context.safelyStartSyncWorker(force: Boolean = true) {
     /* Make sure SyncWorker is not run more than once, simultaneously. */
     val workManager = WorkManager.getInstance(this)
-    workManager.cancelUniqueWork(Constants.TAG_WORK_MANAGER)
-    workManager.cancelAllWorkByTag(Constants.TAG_WORK_MANAGER)
+    workManager.cancelUniqueWork(TAG_WORK_MANAGER)
+    workManager.cancelAllWorkByTag(TAG_WORK_MANAGER)
     startWorkManager(this, force)
   }
 
