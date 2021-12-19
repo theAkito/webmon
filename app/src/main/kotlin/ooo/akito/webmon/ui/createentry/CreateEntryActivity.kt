@@ -10,11 +10,13 @@ import android.view.ViewTreeObserver
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
 import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
+import ooo.akito.webmon.data.viewmodels.MainViewModel
 import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.ExceptionCompanion.msgNullNotNull
@@ -32,6 +34,8 @@ import java.util.*
 class CreateEntryActivity : AppCompatActivity() {
 
   var webSiteEntry: WebSiteEntry? = null
+  private var websites: List<WebSiteEntry> = listOf()
+  private lateinit var viewModel: MainViewModel
   private lateinit var activityCreateEntryBinding: ActivityCreateEntryBinding
   private var checkedTagNameToIsChecked: SortedMap<String, Boolean> = sortedMapOf()
   private lateinit var viewBtnSave: MaterialButton
@@ -45,6 +49,7 @@ class CreateEntryActivity : AppCompatActivity() {
   private fun showCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE }
   private fun showIsOnionAddress() { if (torIsEnabled) { activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE } }
   private fun showIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.VISIBLE }
+  private fun findWebsiteEntryWithExistingUrl(url: String): WebSiteEntry? = websites.firstOrNull { it.url == url }
   private fun updateWebsiteEntryCustomTags() {
     webSiteEntry?.customTags = thisWebsiteEntryCustomTags.distinct().sorted()
   }
@@ -152,6 +157,20 @@ class CreateEntryActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    // Setting up ViewModel and LiveData
+    viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+    with(viewModel) {
+      /*
+        This MUST NOT be in its own proc!
+        Gets also triggered, when using the UI for switching to MainActivity.
+      */
+      getWebSiteEntryList().observe(
+        this@CreateEntryActivity, { observedWebsites ->
+          websites = observedWebsites
+        }
+      )
+    }
+    var isEntryNew = false
     chipColourIdDefault = Chip(this).chipBackgroundColor //TODO: Get the default colour in a more efficient way.
     activityCreateEntryBinding = ActivityCreateEntryBinding.inflate(layoutInflater)
     setContentView(activityCreateEntryBinding.root)
@@ -163,7 +182,7 @@ class CreateEntryActivity : AppCompatActivity() {
       webSiteEntry = intent.getParcelableExtra(Constants.INTENT_OBJECT)
       when (webSiteEntry) {
         null -> {
-          //
+          isEntryNew = true
         }
         else -> {
           /*
@@ -175,6 +194,8 @@ class CreateEntryActivity : AppCompatActivity() {
           thisWebsiteEntryCustomTags = entry.customTags.toMutableList()
         }
       }
+    } else {
+      isEntryNew = true
     }
     viewBtnSave = activityCreateEntryBinding.btnSave
     fillTagCloud(init = true)
@@ -354,7 +375,27 @@ class CreateEntryActivity : AppCompatActivity() {
 
     //endregion Tag Cloud
 
-    activityCreateEntryBinding.btnSave.setOnClickListener { saveEntry() }
+    activityCreateEntryBinding.btnSave.setOnClickListener {
+      val websiteEntryWithExistingUrl = findWebsiteEntryWithExistingUrl(activityCreateEntryBinding.editUrl.text.toString())
+      val urlAlreadyExistsInAnotherWebsiteEntry = websiteEntryWithExistingUrl != null
+      if (isEntryNew && urlAlreadyExistsInAnotherWebsiteEntry) {
+        AlertDialog.Builder(this).apply {
+          setMessage("""The existing Website Entry with the name "${websiteEntryWithExistingUrl?.name}" already checks the URL you provided. """ + getString(R.string.text_add_duplicate_website_entry_url_are_you_sure))
+          setTitle(R.string.text_add_duplicate_website_entry_url)
+          setPositiveButton(
+            R.string.text_delete_all_website_entries_are_you_sure_yes
+          ) { _, _ ->
+            Log.warn("Confirmed to add Website Entry with duplicate URL!")
+            saveEntry()
+          }
+          setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ ->
+            Log.warn("Denied to add Website Entry with duplicate URL!")
+          }
+        }.create().show()
+      } else {
+        saveEntry()
+      }
+    }
 
     if (webSiteEntry != null) {
       /*
