@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -13,17 +14,22 @@ import androidx.core.app.NotificationCompat.CATEGORY_SERVICE
 import androidx.core.app.NotificationManagerCompat.IMPORTANCE_MIN
 import ooo.akito.webmon.ui.home.MainActivity
 import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
+import ooo.akito.webmon.utils.Utils.syncWorkerIsRunning
 
 
 class AppService : Service() {
+
+  inner class AppServiceBinder : Binder() { fun getService(): AppService = this@AppService }
 
   companion object {
     private const val notifID = 19
     private const val notifChannelID = "WebmonLogger"
   }
 
-  override fun onBind(intent: Intent): IBinder? {
-    return null
+  private val binder: IBinder = AppServiceBinder()
+
+  override fun onBind(intent: Intent): IBinder {
+    return binder
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -32,6 +38,8 @@ class AppService : Service() {
     startPersistentService()
     return START_STICKY
   }
+
+  fun workerIsRunning(): Boolean = syncWorkerIsRunning()
 
   private fun startPersistentService() {
     val notificationIntent = Intent(applicationContext, MainActivity::class.java)
