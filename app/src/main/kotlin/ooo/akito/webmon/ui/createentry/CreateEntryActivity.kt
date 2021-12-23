@@ -1,12 +1,9 @@
 package ooo.akito.webmon.ui.createentry
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.text.InputType
 import android.view.View
 import android.view.ViewTreeObserver
@@ -21,14 +18,15 @@ import ooo.akito.webmon.R
 import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.viewmodels.MainViewModel
 import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
-import ooo.akito.webmon.ui.createentry.CreateEntryActivity.PreferenceHelper.customPreference
-import ooo.akito.webmon.ui.createentry.CreateEntryActivity.PreferenceHelper.saveIsDNSChecked
-import ooo.akito.webmon.ui.createentry.CreateEntryActivity.PreferenceHelper.saveIsLaissezFaireChecked
-import ooo.akito.webmon.ui.createentry.CreateEntryActivity.PreferenceHelper.saveName
-import ooo.akito.webmon.ui.createentry.CreateEntryActivity.PreferenceHelper.saveURL
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.ExceptionCompanion.msgNullNotNull
 import ooo.akito.webmon.utils.Log
+import ooo.akito.webmon.utils.PreferenceHelper.customPreference
+import ooo.akito.webmon.utils.PreferenceHelper.saveIsDNSChecked
+import ooo.akito.webmon.utils.PreferenceHelper.saveIsLaissezFaireChecked
+import ooo.akito.webmon.utils.PreferenceHelper.saveIsOnionChecked
+import ooo.akito.webmon.utils.PreferenceHelper.saveName
+import ooo.akito.webmon.utils.PreferenceHelper.saveURL
 import ooo.akito.webmon.utils.Utils.showKeyboard
 import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.amountMaxCharsInNameTag
@@ -416,82 +414,35 @@ class CreateEntryActivity : AppCompatActivity() {
 
   val CUSTOM_PREF_NAME = "Entry_data"
 
-  object PreferenceHelper {
-
-    val NAME = "NAME"
-    val URL = "URL"
-    val isDNSChecked = "DNSCheck"
-    val isLaissezFaireChecked = "LaissezCheck"
-
-    fun defaultPreference(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    fun customPreference(context: Context, name: String): SharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE)
-
-    inline fun SharedPreferences.editMe(operation: (SharedPreferences.Editor) -> Unit) {
-      val editMe = edit()
-      operation(editMe)
-      editMe.apply()
-    }
-
-    var SharedPreferences.saveURL
-      get() = getString(URL, "")
-      set(value) {
-        editMe {
-          it.putString(URL, value)
-        }
-      }
-
-    var SharedPreferences.saveIsDNSChecked
-      get() = getBoolean(isDNSChecked, false)
-      set(value) {
-        editMe {
-          it.putBoolean(isDNSChecked, value)
-        }
-      }
-
-    var SharedPreferences.saveName
-      get() = getString(NAME, "")
-      set(value) {
-        editMe {
-          it.putString(NAME, value)
-        }
-      }
-
-    var SharedPreferences.saveIsLaissezFaireChecked
-      get() = getBoolean(isLaissezFaireChecked, false)
-      set(value) {
-        editMe {
-          it.putBoolean(isLaissezFaireChecked, value)
-        }
-      }
-  }
-
-  private var isSubmit_gen = false
+  private var isSubmit = false
 
   override fun onPause() {
     super.onPause()
-    val sp_gen = customPreference(this, CUSTOM_PREF_NAME)
-    if(isSubmit_gen){
-      sp_gen.saveName = ""
-      sp_gen.saveURL = ""
-      sp_gen.saveIsDNSChecked = false
-      sp_gen.saveIsLaissezFaireChecked = false
+    val sp = customPreference(this, CUSTOM_PREF_NAME)
+    if(isSubmit){
+      sp.saveName = ""
+      sp.saveURL = ""
+      sp.saveIsDNSChecked = false
+      sp.saveIsLaissezFaireChecked = false
+      sp.saveIsOnionChecked = false
     }else {
-      sp_gen.saveName = activityCreateEntryBinding.editName.text.toString()
-      sp_gen.saveURL = activityCreateEntryBinding.editUrl.text.toString()
-      sp_gen.saveIsDNSChecked = activityCreateEntryBinding.checkDNSRecords.isChecked
-      sp_gen.saveIsLaissezFaireChecked = activityCreateEntryBinding.isLaissezFaire.isChecked
+      sp.saveName = activityCreateEntryBinding.editName.text.toString()
+      sp.saveURL = activityCreateEntryBinding.editUrl.text.toString()
+      sp.saveIsDNSChecked = activityCreateEntryBinding.checkDNSRecords.isChecked
+      sp.saveIsLaissezFaireChecked = activityCreateEntryBinding.isLaissezFaire.isChecked
+      sp.saveIsOnionChecked = activityCreateEntryBinding.isOnionAddress.isChecked
     }
   }
 
   override fun onResume() {
     super.onResume()
-    val sp_gen = customPreference(this, CUSTOM_PREF_NAME)
-    activityCreateEntryBinding.editName.setText(sp_gen.saveName)
-    activityCreateEntryBinding.editUrl.setText(sp_gen.saveURL)
-    activityCreateEntryBinding.checkDNSRecords.setChecked(sp_gen.saveIsDNSChecked)
-    activityCreateEntryBinding.isLaissezFaire.setChecked(sp_gen.saveIsLaissezFaireChecked)
-    isSubmit_gen = false
+    val sp = customPreference(this, CUSTOM_PREF_NAME)
+    activityCreateEntryBinding.editName.setText(sp.saveName)
+    activityCreateEntryBinding.editUrl.setText(sp.saveURL)
+    activityCreateEntryBinding.checkDNSRecords.setChecked(sp.saveIsDNSChecked)
+    activityCreateEntryBinding.isLaissezFaire.setChecked(sp.saveIsLaissezFaireChecked)
+    activityCreateEntryBinding.isOnionAddress.setChecked(sp.saveIsOnionChecked)
+    isSubmit = false
   }
 
   private fun prePopulateUIwithData(previousVersionWebsiteEntry: WebSiteEntry) {
@@ -535,7 +486,7 @@ class CreateEntryActivity : AppCompatActivity() {
       val intent = Intent()
       intent.putExtra(Constants.INTENT_OBJECT, todo)
       setResult(RESULT_OK, intent)
-      isSubmit_gen = true
+      isSubmit = true
       if (doFinish) { finish() }
     }
   }
