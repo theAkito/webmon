@@ -52,6 +52,7 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
+import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.worker.WorkManagerScheduler
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import java.io.InputStream
@@ -219,11 +220,19 @@ object Utils {
     }
   }
 
-  fun Context.safelyStartSyncWorker(force: Boolean = true) {
-    /* Make sure SyncWorker is not run more than once, simultaneously. */
+  fun Context.syncWorkerIsRunning(): Boolean {
+    return WorkManager.getInstance(this).getWorkInfosByTag(TAG_WORK_MANAGER).isCancelled.not()
+  }
+
+  fun Context.forceStopSyncWorker() {
     val workManager = WorkManager.getInstance(this)
     workManager.cancelUniqueWork(TAG_WORK_MANAGER)
     workManager.cancelAllWorkByTag(TAG_WORK_MANAGER)
+  }
+
+  fun Context.safelyStartSyncWorker(force: Boolean = true) {
+    /* Make sure SyncWorker is not run more than once, simultaneously. */
+    forceStopSyncWorker()
     startWorkManager(this, force)
   }
 
