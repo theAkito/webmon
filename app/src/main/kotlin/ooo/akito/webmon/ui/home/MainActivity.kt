@@ -3,7 +3,10 @@ package ooo.akito.webmon.ui.home
 import android.app.Activity
 import android.app.Dialog
 import android.app.SearchManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.res.Configuration
 import android.os.*
 import android.text.TextUtils
@@ -42,6 +45,7 @@ import ooo.akito.webmon.utils.Constants.IS_INIT
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_X
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_Y
+import ooo.akito.webmon.utils.Constants.SERVICE_IS_RUNNING
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY
@@ -63,6 +67,7 @@ import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.asUri
+import ooo.akito.webmon.utils.Utils.forceStopSyncWorker
 import ooo.akito.webmon.utils.Utils.getStringNotWorking
 import ooo.akito.webmon.utils.Utils.joinToStringDescription
 import ooo.akito.webmon.utils.Utils.mayNotifyStatusFailure
@@ -108,6 +113,8 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
   private lateinit var onFabAddClickedResultLauncher: ActivityResultLauncher<Intent>
 
   private var handler = Handler(Looper.getMainLooper())
+
+  private lateinit var service: AppService
 
   private var runningCount = 0
   private var customMonitorData: CustomMonitorData = CustomMonitorData()
@@ -323,12 +330,27 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
   }
 
+  private fun setAppServiceIsRunning() {
+    val conn = object : ServiceConnection {
+      override fun onServiceConnected(p0: ComponentName?, providedService: IBinder?) {
+        val binder: AppService.AppServiceBinder = providedService as AppService.AppServiceBinder
+        service = binder.getService()
+        forcedBackgroundServiceRunning = service.workerIsRunning()
+      }
+      override fun onServiceDisconnected(p0: ComponentName?) {}
+    }
+    val intent = Intent(this, AppService::class.java)
+    bindService(intent, conn, Context.BIND_AUTO_CREATE)
+  }
+
   //endregion Custom Methods
 
   //region Overriden Methods
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    setAppServiceIsRunning()
 
     viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     locale = getCurrentLocale()
@@ -648,18 +670,39 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
 
     forcedBackgroundServiceEnabled = customPrefs.getBoolean(SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE, false)
 
-    if (forcedBackgroundServiceEnabled) {
-      Log.info("Foreground Service enabled.")
-      val serviceIntent = Intent(applicationContext, AppService::class.java)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        startForegroundService(serviceIntent)
-      } else {
-        startService(serviceIntent)
+    when (forcedBackgroundServiceEnabled) {
+      true -> {
+        Log.info("Foreground Service enabled.")
+        if (forcedBackgroundServiceRunning.not() || customPrefs[SERVICE_IS_RUNNING, false] == false) {
+          Log.info("Foreground Service is not running, but it is enabled.")
+          val serviceIntent = Intent(applicationContext, AppService::class.java)
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+          } else {
+            startService(serviceIntent)
+          }
+          customPrefs[SERVICE_IS_RUNNING] = true
+        } else {
+          Log.info("Foreground Service is running and it is enabled.")
+        }
+        forceStopSyncWorker()
       }
-    } else if (forcedBackgroundServiceEnabled.not()) {
-      Log.info("Foreground Service disabled.")
-      /* Make sure SyncWorker is not run more than once, simultaneously. */
-      safelyStartSyncWorker()
+      false -> {
+        Log.info("Foreground Service disabled.")
+        if (forcedBackgroundServiceRunning || customPrefs[SERVICE_IS_RUNNING, true] == true) {
+          Log.info("Foreground Service is running, but it is disabled.")
+          val serviceIntent = Intent(applicationContext, AppService::class.java)
+          /**
+            By default, Service is STICKY. That means, the stopped service will immediately restart.
+            Therefore, the user needs to explicitly "Force Stop" the app, to be able to stop the Forced Background Service.
+          */
+          applicationContext.stopService(serviceIntent)
+        } else {
+          Log.info("Foreground Service is not running and it is disabled.")
+        }
+        /* Make sure SyncWorker is not run more than once, simultaneously. */
+        safelyStartSyncWorker()
+      }
     }
 
     //endregion Forced Persistent Background Service

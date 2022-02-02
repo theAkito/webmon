@@ -83,6 +83,8 @@
     <string name="text_create_entry_tag_cloud_edit">Edit Tag</string>
     <string name="text_create_entry_tag_cloud_create">Create</string>
     <string name="text_backup_import_failure_confirmation">Okay</string>
+    <string name="text_toggle_service_force_disable_warning">Please, be aware, that the Forced Background Service is restarting whenever it is killed. That means, even if you disable the service in the app, the service will keep running, because the service is forced as much as possible to never get killed. After you disabled the service in the settings, as you just did now, you need to \"Force Stop\" the app in your Android system to actually kill the service. This is all needed due to how Android works. If Android would never kill important background apps, this wouldn\'t be needed.</string>
+    <string name="confirm_toggle_service_force_disable_warning">Yes, I understand.</string>
     <string name="title_toggle_refresh_on_swipe_down">Refresh on Swipe Down</string>
     <string name="backup_import">Import Backup</string>
     <string name="backup_export">Export Backup</string>
@@ -104,4 +106,5 @@
     <string name="title_toggle_service_force">Forced Background Service</string>
     <string name="title_toggle_log">Debug Log</string>
     <string name="title_toggle_swipe_refresh_trigger_distance_long">Refresh on Swipe Down with Longer Swipe Distance</string>
+    <string name="title_toggle_service_force_disable_warning">Stopping Forced Background Service</string>
 </resources>

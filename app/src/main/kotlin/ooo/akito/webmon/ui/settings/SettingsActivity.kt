@@ -459,8 +459,21 @@ class SettingsActivity : AppCompatActivity() {
         Log.warn("Forced Background Service switched to ${it}!")
         customPrefs[SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE] = it
         activitySettingsBinding.toggleServiceForce.isChecked = it
+        if (it.not()) {
+          AlertDialog.Builder(this).apply {
+            setMessage(R.string.text_toggle_service_force_disable_warning)
+            setTitle(R.string.title_toggle_service_force_disable_warning)
+            setPositiveButton(
+              R.string.confirm_toggle_service_force_disable_warning
+            ) { _, _ ->
+              Log.warn("Understood lecture about Forced Background Services!")
+              restartApp()
+            }
+          }.create().show()
+        } else {
+          restartApp()
+        }
       }
-      restartApp()
     }
 
     //endregion Advanced Setting: Toggle Forced Background Service
