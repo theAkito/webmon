@@ -6,7 +6,7 @@ Please, view the well formatted readme by opening this project's website. Thank 
 
 <img src="https://raw.githubusercontent.com/manimaran96/Spell4Wiki/master/files/assets/images/badges/gplv3.svg" width="100px"></img>
 
-Copyright (C) 2021  Akito <the@akito.ooo>
+Copyright © 2021-2022  Akito <the@akito.ooo>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
