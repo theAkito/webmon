@@ -21,6 +21,12 @@ import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.ExceptionCompanion.msgNullNotNull
 import ooo.akito.webmon.utils.Log
+import ooo.akito.webmon.utils.PreferenceHelper.customPreference
+import ooo.akito.webmon.utils.PreferenceHelper.saveIsDNSChecked
+import ooo.akito.webmon.utils.PreferenceHelper.saveIsLaissezFaireChecked
+import ooo.akito.webmon.utils.PreferenceHelper.saveIsOnionChecked
+import ooo.akito.webmon.utils.PreferenceHelper.saveName
+import ooo.akito.webmon.utils.PreferenceHelper.saveURL
 import ooo.akito.webmon.utils.Utils.showKeyboard
 import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.amountMaxCharsInNameTag
@@ -406,6 +412,39 @@ class CreateEntryActivity : AppCompatActivity() {
     }
   }
 
+  val CUSTOM_PREF_NAME = "Entry_data"
+
+  private var isSubmit = false
+
+  override fun onPause() {
+    super.onPause()
+    val sp = customPreference(this, CUSTOM_PREF_NAME)
+    if(isSubmit){
+      sp.saveName = ""
+      sp.saveURL = ""
+      sp.saveIsDNSChecked = false
+      sp.saveIsLaissezFaireChecked = false
+      sp.saveIsOnionChecked = false
+    }else {
+      sp.saveName = activityCreateEntryBinding.editName.text.toString()
+      sp.saveURL = activityCreateEntryBinding.editUrl.text.toString()
+      sp.saveIsDNSChecked = activityCreateEntryBinding.checkDNSRecords.isChecked
+      sp.saveIsLaissezFaireChecked = activityCreateEntryBinding.isLaissezFaire.isChecked
+      sp.saveIsOnionChecked = activityCreateEntryBinding.isOnionAddress.isChecked
+    }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    val sp = customPreference(this, CUSTOM_PREF_NAME)
+    activityCreateEntryBinding.editName.setText(sp.saveName)
+    activityCreateEntryBinding.editUrl.setText(sp.saveURL)
+    activityCreateEntryBinding.checkDNSRecords.setChecked(sp.saveIsDNSChecked)
+    activityCreateEntryBinding.isLaissezFaire.setChecked(sp.saveIsLaissezFaireChecked)
+    activityCreateEntryBinding.isOnionAddress.setChecked(sp.saveIsOnionChecked)
+    isSubmit = false
+  }
+
   private fun prePopulateUIwithData(previousVersionWebsiteEntry: WebSiteEntry) {
     /*
       After adding UI elements which directly correspond to an additional property in the `WebSiteEntry` data class,
@@ -447,6 +486,7 @@ class CreateEntryActivity : AppCompatActivity() {
       val intent = Intent()
       intent.putExtra(Constants.INTENT_OBJECT, todo)
       setResult(RESULT_OK, intent)
+      isSubmit = true
       if (doFinish) { finish() }
     }
   }
