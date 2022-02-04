@@ -1,10 +1,12 @@
 package ooo.akito.webmon.ui.createentry
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AlertDialog
@@ -21,14 +23,16 @@ import ooo.akito.webmon.databinding.ActivityCreateEntryBinding
 import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.ExceptionCompanion.msgNullNotNull
 import ooo.akito.webmon.utils.Log
-import ooo.akito.webmon.utils.PreferenceHelper.customPreference
-import ooo.akito.webmon.utils.PreferenceHelper.saveIsDNSChecked
-import ooo.akito.webmon.utils.PreferenceHelper.saveIsLaissezFaireChecked
-import ooo.akito.webmon.utils.PreferenceHelper.saveIsOnionChecked
-import ooo.akito.webmon.utils.PreferenceHelper.saveName
-import ooo.akito.webmon.utils.PreferenceHelper.saveURL
 import ooo.akito.webmon.utils.Utils.showKeyboard
 import ooo.akito.webmon.utils.Utils.showToast
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.getSaveEntryTags
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.remember
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsDNSChecked
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsLaissezFaireChecked
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsOnionChecked
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveName
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveURL
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.setSaveEntryTags
 import ooo.akito.webmon.utils.amountMaxCharsInNameTag
 import ooo.akito.webmon.utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.isEntryCreated
@@ -48,6 +52,8 @@ class CreateEntryActivity : AppCompatActivity() {
   private var chipColourIdDefault: ColorStateList? = null
   private var thisWebsiteEntryCustomTags: MutableList<String> = mutableListOf()
     set(value) { field = value.distinct().toMutableList() }
+  private val prefNameMemorisedWebsiteEntryData = "MemorisedWebsiteEntryData"
+  private var websiteEntryIsBeingSubmitted = false
 
   private fun hideCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE }
   private fun hideIsOnionAddress() { if (torIsEnabled) { activityCreateEntryBinding.isOnionAddress.visibility = View.GONE } }
@@ -133,6 +139,7 @@ class CreateEntryActivity : AppCompatActivity() {
               setBackgroundColour(providedIsChecked)
               if (isChecked) {
                 thisWebsiteEntryCustomTags.add(chipTextAsString)
+                thisWebsiteEntryCustomTags = thisWebsiteEntryCustomTags.distinct().toMutableList()
               } else {
                 thisWebsiteEntryCustomTags.remove(chipTextAsString)
               }
@@ -151,7 +158,13 @@ class CreateEntryActivity : AppCompatActivity() {
           /* If changed by un/checking in Cloud Tag Editor. */
           apply {
             val chipTextAsString = text.toString()
-            val isTagChecked = checkedTagNameToIsChecked[chipTextAsString] == true
+            val isTagChecked = checkedTagNameToIsChecked[chipTextAsString] == true || thisWebsiteEntryCustomTags.contains(chipTextAsString)
+            if (isChecked) {
+              thisWebsiteEntryCustomTags.add(chipTextAsString)
+              thisWebsiteEntryCustomTags = thisWebsiteEntryCustomTags.distinct().toMutableList()
+            } else {
+              thisWebsiteEntryCustomTags.remove(chipTextAsString)
+            }
             isChecked = isTagChecked
             setBackgroundColour(isTagChecked)
           }
@@ -285,13 +298,13 @@ class CreateEntryActivity : AppCompatActivity() {
         ) { _, itemPosition, isChecked ->
           val selectedItemName = sortedGlobalEntryTagsNames[itemPosition]
           fun setToChecked() { checkedTagNameToIsChecked[selectedItemName] = isChecked }
-          when {
-            isChecked -> {
+          when (isChecked) {
+             true -> {
               setToChecked()
               checkedTagNamesAfter += selectedItemName
               checkedTagNamesAfter.sort()
             }
-            isChecked.not() -> {
+            false -> {
               setToChecked()
               checkedTagNamesAfter -= selectedItemName
               checkedTagNamesAfter.sort()
@@ -412,37 +425,56 @@ class CreateEntryActivity : AppCompatActivity() {
     }
   }
 
-  val CUSTOM_PREF_NAME = "Entry_data"
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    return when (item.itemId) {
+      android.R.id.home -> {
+        alertUnsavedChanges()
+        super.onOptionsItemSelected(item)
+        true
+      }
+      else -> super.onOptionsItemSelected(item)
+    }
+  }
 
-  private var isSubmit = false
+  override fun onBackPressed() {
+    alertUnsavedChanges()
+  }
 
   override fun onPause() {
     super.onPause()
-    val sp = customPreference(this, CUSTOM_PREF_NAME)
-    if(isSubmit){
-      sp.saveName = ""
-      sp.saveURL = ""
-      sp.saveIsDNSChecked = false
-      sp.saveIsLaissezFaireChecked = false
-      sp.saveIsOnionChecked = false
-    }else {
-      sp.saveName = activityCreateEntryBinding.editName.text.toString()
-      sp.saveURL = activityCreateEntryBinding.editUrl.text.toString()
-      sp.saveIsDNSChecked = activityCreateEntryBinding.checkDNSRecords.isChecked
-      sp.saveIsLaissezFaireChecked = activityCreateEntryBinding.isLaissezFaire.isChecked
-      sp.saveIsOnionChecked = activityCreateEntryBinding.isOnionAddress.isChecked
+    val remember = remember(this, prefNameMemorisedWebsiteEntryData)
+    if(websiteEntryIsBeingSubmitted) {
+      remember.saveName = ""
+      remember.saveURL = ""
+      remember.saveIsDNSChecked = false
+      remember.saveIsLaissezFaireChecked = false
+      remember.saveIsOnionChecked = false
+      remember.setSaveEntryTags(mutableListOf())
+    } else {
+      remember.saveName = activityCreateEntryBinding.editName.text.toString()
+      remember.saveURL = activityCreateEntryBinding.editUrl.text.toString()
+      remember.saveIsDNSChecked = activityCreateEntryBinding.checkDNSRecords.isChecked
+      remember.saveIsLaissezFaireChecked = activityCreateEntryBinding.isLaissezFaire.isChecked
+      remember.saveIsOnionChecked = activityCreateEntryBinding.isOnionAddress.isChecked
+      remember.setSaveEntryTags(thisWebsiteEntryCustomTags)
     }
   }
 
   override fun onResume() {
     super.onResume()
-    val sp = customPreference(this, CUSTOM_PREF_NAME)
-    activityCreateEntryBinding.editName.setText(sp.saveName)
-    activityCreateEntryBinding.editUrl.setText(sp.saveURL)
-    activityCreateEntryBinding.checkDNSRecords.setChecked(sp.saveIsDNSChecked)
-    activityCreateEntryBinding.isLaissezFaire.setChecked(sp.saveIsLaissezFaireChecked)
-    activityCreateEntryBinding.isOnionAddress.setChecked(sp.saveIsOnionChecked)
-    isSubmit = false
+    if (webSiteEntry != null) { return }
+    val remember = remember(this, prefNameMemorisedWebsiteEntryData)
+    with (activityCreateEntryBinding) {
+      editName.setText(remember.saveName)
+      editUrl.setText(remember.saveURL)
+      checkDNSRecords.isChecked = remember.saveIsDNSChecked
+      isLaissezFaire.isChecked = remember.saveIsLaissezFaireChecked
+      isOnionAddress.isChecked = remember.saveIsOnionChecked
+      thisWebsiteEntryCustomTags = remember.getSaveEntryTags().toMutableList()
+    }
+    updateWebsiteEntryCustomTags()
+    fillTagCloud()
+    websiteEntryIsBeingSubmitted = false
   }
 
   private fun prePopulateUIwithData(previousVersionWebsiteEntry: WebSiteEntry) {
@@ -486,7 +518,7 @@ class CreateEntryActivity : AppCompatActivity() {
       val intent = Intent()
       intent.putExtra(Constants.INTENT_OBJECT, todo)
       setResult(RESULT_OK, intent)
-      isSubmit = true
+      websiteEntryIsBeingSubmitted = true
       if (doFinish) { finish() }
     }
   }
@@ -506,5 +538,58 @@ class CreateEntryActivity : AppCompatActivity() {
       return false
     }
     return true
+  }
+
+  private fun isWebsiteEntryTainted(): Boolean {
+    return when (webSiteEntry) {
+      null -> {
+        when {
+          activityCreateEntryBinding.editName.text?.isEmpty() == true ||
+          activityCreateEntryBinding.editUrl.text?.isEmpty() == true -> {
+            false
+          } else -> true
+        }
+      }
+      else -> {
+        with (webSiteEntry!!) {
+          when {
+            name == activityCreateEntryBinding.editName.text.toString() &&
+            url == activityCreateEntryBinding.editUrl.text.toString() &&
+            status == webSiteEntry?.status &&
+            updatedAt == webSiteEntry?.updatedAt &&
+            itemPosition == webSiteEntry?.itemPosition &&
+            dnsRecordsAAAAA == activityCreateEntryBinding.checkDNSRecords.isChecked &&
+            isOnionAddress == activityCreateEntryBinding.isOnionAddress.isChecked &&
+            isLaissezFaire == activityCreateEntryBinding.isLaissezFaire.isChecked &&
+            customTags == thisWebsiteEntryCustomTags -> {
+              false
+            }
+            else -> true
+          }
+        }
+      }
+    }
+  }
+
+  private fun Context.alertUnsavedChanges() {
+    if (isWebsiteEntryTainted().not()) {
+      websiteEntryIsBeingSubmitted = true
+      super.onBackPressed()
+      return
+    }
+    AlertDialog.Builder(this).apply {
+      setMessage("""Do you want to discard Website Entry data changes?""")
+      setTitle("""Unsaved Changes Detected""")
+      setPositiveButton(
+        R.string.text_delete_all_website_entries_are_you_sure_yes
+      ) { _, _ ->
+        Log.warn("Confirmed to discard Website Entry data changes!")
+        websiteEntryIsBeingSubmitted = true
+        super.onBackPressed()
+      }
+      setNegativeButton(R.string.text_delete_all_website_entries_are_you_sure_no) { _, _ ->
+        Log.warn("Denied to discard Website Entry data changes!")
+      }
+    }.create().show()
   }
 }

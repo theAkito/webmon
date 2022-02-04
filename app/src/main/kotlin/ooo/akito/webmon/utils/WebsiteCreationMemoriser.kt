@@ -3,20 +3,25 @@ package ooo.akito.webmon.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import java.util.*
 
-object PreferenceHelper {
+object WebsiteCreationMemoriser {
 
-  val NAME = "NAME"
-  val URL = "URL"
-  val isDNSChecked = "DNSCheck"
-  val isLaissezFaireChecked = "LaissezCheck"
-  val isOnionChecked = "OnionCheck"
+  const val name = "NAME"
+  const val url = "URL"
+  const val isDNSChecked = "DNSCheck"
+  const val isLaissezFaireChecked = "LaissezCheck"
+  const val isOnionChecked = "OnionCheck"
+  const val entryTags = "EntryTags"
 
   fun defaultPreference(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-  fun customPreference(context: Context, name: String): SharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE)
+  fun remember(context: Context, name: String): SharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE)
 
-  inline fun SharedPreferences.editMe(operation: (SharedPreferences.Editor) -> Unit) {
+  fun SharedPreferences.getSaveEntryTags(): List<String> = mapperUgly.readTree(saveEntryTags).asIterable().mapNotNull { it.asText() }.distinct()
+  fun SharedPreferences.setSaveEntryTags(tags: List<String>) { saveEntryTags = mapperUgly.writeValueAsString(tags) }
+
+  private inline fun SharedPreferences.editMe(operation: (SharedPreferences.Editor) -> Unit) {
     val editMe = edit()
     operation(editMe)
     editMe.apply()
@@ -31,10 +36,10 @@ object PreferenceHelper {
     }
 
   var SharedPreferences.saveURL
-    get() = getString(URL, "")
+    get() = getString(url, "")
     set(value) {
       editMe {
-        it.putString(URL, value)
+        it.putString(url, value)
       }
     }
 
@@ -47,10 +52,10 @@ object PreferenceHelper {
     }
 
   var SharedPreferences.saveName
-    get() = getString(NAME, "")
+    get() = getString(name, "")
     set(value) {
       editMe {
-        it.putString(NAME, value)
+        it.putString(name, value)
       }
     }
 
@@ -59,6 +64,14 @@ object PreferenceHelper {
     set(value) {
       editMe {
         it.putBoolean(isLaissezFaireChecked, value)
+      }
+    }
+
+  private var SharedPreferences.saveEntryTags
+    get() = getString(entryTags, "")
+    set(value) {
+      editMe {
+        it.putString(entryTags, value)
       }
     }
 }
