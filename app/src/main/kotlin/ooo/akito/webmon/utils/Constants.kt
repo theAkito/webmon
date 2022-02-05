@@ -40,6 +40,7 @@ object Constants {
   const val SETTINGS_TOGGLE_LOG: String = "settings_toggle_log"
   const val SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE: String = "settings_toggle_forced_background_service"
   const val SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY: String = "settings_toggle_replace_fab_with_menu_entry"
+  const val SETTINGS_TOGGLE_BACKUP_DATA_IMPORT_OVERWRITE_EXISTING: String = "settings_toggle_backup_data_import_overwrite_existing"
 
   const val HIDE_IS_ONION_ADDRESS: String = "hide_is_onion_address"
   const val HIDE_CHECK_DNS_RECORD_A_AAAA: String = "hide_check_dns_record_a_aaaa"

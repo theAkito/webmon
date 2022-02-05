@@ -43,6 +43,7 @@ var forcedBackgroundServiceEnabled = false
 var forcedBackgroundServiceRunning = false
 var logEnabled = false
 var replaceFabWithMenuEntryEnabled = false
+var backupDataImportOverwriteExisting = false
 /** Do not observe and notify about "unavailable" Website, just because it is freshly added and seems "unavailable", when it isn't. */
 var isEntryCreated = false
 /**

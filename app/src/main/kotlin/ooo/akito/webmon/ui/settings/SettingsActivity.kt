@@ -47,6 +47,7 @@ import ooo.akito.webmon.utils.Constants.IS_ADDED_DEFAULT_DATA
 import ooo.akito.webmon.utils.Constants.IS_SCHEDULED
 import ooo.akito.webmon.utils.Constants.MONITORING_INTERVAL
 import ooo.akito.webmon.utils.Constants.NOTIFY_ONLY_SERVER_ISSUES
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_BACKUP_DATA_IMPORT_OVERWRITE_EXISTING
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY
@@ -76,6 +77,7 @@ import ooo.akito.webmon.utils.Utils.getMonitorTime
 import ooo.akito.webmon.utils.Utils.isCustomRom
 import ooo.akito.webmon.utils.Utils.openAutoStartScreen
 import ooo.akito.webmon.utils.Utils.triggerRebirth
+import ooo.akito.webmon.utils.backupDataImportOverwriteExisting
 import ooo.akito.webmon.utils.defaultShareType
 import ooo.akito.webmon.utils.forcedBackgroundServiceEnabled
 import ooo.akito.webmon.utils.globalEntryTagsNames
@@ -444,6 +446,7 @@ class SettingsActivity : AppCompatActivity() {
       isActivated.let {
         Log.warn("SwipeRefresh Trigger Distance Long switched to ${it}!")
         customPrefs[SETTINGS_TOGGLE_SWIPE_REFRESH_TRIGGER_DISTANCE_LONG] = it
+        swipeRefreshTriggerDistanceLongIsEnabled = it
         activitySettingsBinding.toggleSwipeRefreshTriggerDistanceLong.isChecked = it
       }
       restartApp()
@@ -458,6 +461,7 @@ class SettingsActivity : AppCompatActivity() {
       isActivated.let {
         Log.warn("Forced Background Service switched to ${it}!")
         customPrefs[SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE] = it
+        forcedBackgroundServiceEnabled = it
         activitySettingsBinding.toggleServiceForce.isChecked = it
         if (it.not()) {
           AlertDialog.Builder(this).apply {
@@ -485,6 +489,7 @@ class SettingsActivity : AppCompatActivity() {
       isActivated.let {
         Log.warn("Log switched to ${it}!")
         customPrefs[SETTINGS_TOGGLE_LOG] = it
+        logEnabled = it
         activitySettingsBinding.toggleLog.isChecked = it
       }
       restartApp()
@@ -499,12 +504,28 @@ class SettingsActivity : AppCompatActivity() {
       isActivated.let {
         Log.warn("Replace Floating Action Button with Menu Entry switched to ${it}!")
         customPrefs[SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY] = it
+        replaceFabWithMenuEntryEnabled = it
         activitySettingsBinding.toggleReplaceFabWithMenuEntry.isChecked = it
       }
       restartApp()
     }
 
     //endregion Advanced Setting: Toggle Replace Floating Action Button with Menu Entry
+
+    //region Advanced Setting: Toggle Backup Data Import: Overwrite Existing Entries
+
+    activitySettingsBinding.toggleBackupDataImportOverwriteExisting.isChecked = backupDataImportOverwriteExisting
+    activitySettingsBinding.toggleBackupDataImportOverwriteExisting.setOnCheckedChangeListener { _, isActivated ->
+      isActivated.let {
+        Log.warn(""""Backup Data Import: Overwrite Existing Entries" switched to ${it}!""")
+        customPrefs[SETTINGS_TOGGLE_BACKUP_DATA_IMPORT_OVERWRITE_EXISTING] = it
+        backupDataImportOverwriteExisting = it
+        activitySettingsBinding.toggleBackupDataImportOverwriteExisting.isChecked = it
+      }
+      restartApp()
+    }
+
+    //endregion Advanced Setting: Toggle Backup Data Import: Overwrite Existing Entries
 
     //region Advanced Setting: Export Backup of Data
 
@@ -548,25 +569,71 @@ class SettingsActivity : AppCompatActivity() {
         return@registerForActivityResult
       }
       val providedWebsites = backupWebsites.entries
-      /**
-        Do not import Websites that are already available.
-        Filtered by Website URL.
-      */
-      val newWebsites = providedWebsites.filterNot { provided -> websites.any { it.url == provided.url } }
       Log.info("Restoring WebsiteEntry List from Backup...")
-      newWebsites.forEach { website ->
-        Log.info("New WebsiteEntry: " + website)
-        /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
-        /* WebsiteEntry Glue */
-        val cleanedWebsite = WebSiteEntry(
-          name = website.name,
-          url = website.url,
-          itemPosition = website.itemPosition,
-          isLaissezFaire = website.isLaissezFaire,
-          dnsRecordsAAAAA = website.dnsRecordsAAAAA,
-          isOnionAddress = website.isOnionAddress
-        )
-        viewModel.saveWebSiteEntry(cleanedWebsite)
+      if (backupDataImportOverwriteExisting) {
+        val (newExistingWebsites, newWebsites) = providedWebsites.partition { provided -> websites.any { it.name == provided.name } }
+        val existingWebsites = websites.filter { existing -> newExistingWebsites.any { it.name == existing.name } }
+        val nameToExistingWebsites = existingWebsites.associateBy { it.name }
+        newWebsites.forEach { website ->
+          Log.info("New WebsiteEntry: " + website)
+          /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
+          /* WebsiteEntry Glue */
+          val cleanedWebsite = WebSiteEntry(
+            name = website.name,
+            url = website.url,
+            itemPosition = website.itemPosition,
+            isLaissezFaire = website.isLaissezFaire,
+            dnsRecordsAAAAA = website.dnsRecordsAAAAA,
+            isOnionAddress = website.isOnionAddress,
+            customTags = website.customTags
+          )
+          viewModel.saveWebSiteEntry(cleanedWebsite)
+        }
+        newExistingWebsites.forEach { website ->
+          val existingWebsite = nameToExistingWebsites[website.name]
+          if (existingWebsite == null) {
+            Log.error("""Existing Website was matched, but is now not found. Skipping Import of Website: """ + website)
+            return@forEach
+          }
+          Log.info("Existing WebsiteEntry: " + existingWebsite)
+          Log.info("Imported version of existing WebsiteEntry: " + website)
+          /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
+          /* WebsiteEntry Glue */
+          val updatedExistingWebsite = existingWebsite.let {
+            WebSiteEntry(
+              id = it.id,
+              name = it.name,
+              url = website.url,
+              itemPosition = website.itemPosition,
+              isLaissezFaire = website.isLaissezFaire,
+              dnsRecordsAAAAA = website.dnsRecordsAAAAA,
+              isOnionAddress = website.isOnionAddress,
+              customTags = website.customTags
+            )
+          }
+          viewModel.saveWebSiteEntry(updatedExistingWebsite)
+        }
+      } else {
+        /**
+          Do not import Websites that are already available.
+          Filtered by Website URL.
+        */
+        val newWebsites = providedWebsites.filterNot { provided -> websites.any { it.name == provided.name } }
+        newWebsites.forEach { website ->
+          Log.info("New WebsiteEntry: " + website)
+          /* Avoids `UNIQUE constraint failed: web_site_entry.id (code 1555 SQLITE_CONSTRAINT_PRIMARYKEY)`. */
+          /* WebsiteEntry Glue */
+          val cleanedWebsite = WebSiteEntry(
+            name = website.name,
+            url = website.url,
+            itemPosition = website.itemPosition,
+            isLaissezFaire = website.isLaissezFaire,
+            dnsRecordsAAAAA = website.dnsRecordsAAAAA,
+            isOnionAddress = website.isOnionAddress,
+            customTags = website.customTags
+          )
+          viewModel.saveWebSiteEntry(cleanedWebsite)
+        }
       }
       Log.info("Finished restoring WebsiteEntry List from Backup!")
     }

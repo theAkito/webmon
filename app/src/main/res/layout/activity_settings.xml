@@ -157,6 +157,12 @@
                     android:layout_height="11dp" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/toggle_backup_data_import_overwrite_existing"
+                    android:layout_width="match_parent"
+                    android:layout_height="49dp"
+                    android:text="@string/title_toggle_backup_data_import_overwrite_existing" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/toggle_swipe_refresh"
                     android:layout_width="match_parent"
                     android:layout_height="49dp"

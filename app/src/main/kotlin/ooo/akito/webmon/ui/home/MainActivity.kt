@@ -46,6 +46,7 @@ import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_X
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_Y
 import ooo.akito.webmon.utils.Constants.SERVICE_IS_RUNNING
+import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_BACKUP_DATA_IMPORT_OVERWRITE_EXISTING
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_FORCED_BACKGROUND_SERVICE
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_LOG
 import ooo.akito.webmon.utils.Constants.SETTINGS_TOGGLE_REPLACE_FAB_WITH_MENU_ENTRY
@@ -706,6 +707,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     }
 
     //endregion Forced Persistent Background Service
+
+    //region Backup Data Import: Overwrite Existing Entries
+
+    backupDataImportOverwriteExisting = customPrefs.getBoolean(SETTINGS_TOGGLE_BACKUP_DATA_IMPORT_OVERWRITE_EXISTING, false)
+
+    //endregion Backup Data Import: Overwrite Existing Entries
 
   } /* END: onCreate */
 
