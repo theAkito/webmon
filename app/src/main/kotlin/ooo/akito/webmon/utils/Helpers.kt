@@ -16,6 +16,7 @@ const val msgGenericSuccess = "Success"
 const val msgGenericAvailable = "Available"
 const val msgGenericDismiss = "Dismiss"
 const val msgGenericDefault = "default"
+const val prefixHttps = "https://"
 const val workaroundRebirthMillis = 2000L
 const val amountMaxCharsInNameTag = 16
 const val swipeRefreshTriggerDistanceLong = 600

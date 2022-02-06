@@ -69,9 +69,17 @@ object ProxyProvider {
     val firstByte = inputStream.readByte()
     val secondByte = inputStream.readByte()
     if (firstByte != 0x00.toByte() || secondByte != 0x5a.toByte()) {
+      /**
+        Byte 	Meaning
+        0x5A 	Request granted
+        0x5B 	Request rejected or failed
+        0x5C 	Request failed because client is not running identd (or not reachable from server)
+        0x5D 	Request failed because client's identd could not confirm the user ID in the request
+        https://en.wikipedia.org/wiki/SOCKS
+      */
       socket.close()
       throw IOException(
-        "SOCKS4a connect failed, got $firstByte - $secondByte, but expected 0x00 - 0x5a: "
+        "SOCKS4a connect failed, got ${firstByte} - ${secondByte}, but expected 0x00 - 0x5a: "
             + "networkHost = $networkHost, networkPort = $networkPort, "
             + "socksHost = $socksHost, socksPort = $socksPort"
       )

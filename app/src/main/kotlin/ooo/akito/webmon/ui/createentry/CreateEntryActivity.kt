@@ -36,6 +36,7 @@ import ooo.akito.webmon.utils.WebsiteCreationMemoriser.setSaveEntryTags
 import ooo.akito.webmon.utils.amountMaxCharsInNameTag
 import ooo.akito.webmon.utils.globalEntryTagsNames
 import ooo.akito.webmon.utils.isEntryCreated
+import ooo.akito.webmon.utils.prefixHttps
 import ooo.akito.webmon.utils.torIsEnabled
 import ooo.akito.webmon.utils.totalAmountEntry
 import java.util.*
@@ -224,7 +225,7 @@ class CreateEntryActivity : AppCompatActivity() {
     if (activityCreateEntryBinding.editUrl.text?.isBlank() == true) {
       activityCreateEntryBinding.editUrl.text.let {
         it?.clear()
-        it?.append("https://")
+        it?.append(prefixHttps)
       }
     }
 
@@ -445,7 +446,7 @@ class CreateEntryActivity : AppCompatActivity() {
     val remember = remember(this, prefNameMemorisedWebsiteEntryData)
     if(websiteEntryIsBeingSubmitted) {
       remember.saveName = ""
-      remember.saveURL = ""
+      remember.saveURL = prefixHttps
       remember.saveIsDNSChecked = false
       remember.saveIsLaissezFaireChecked = false
       remember.saveIsOnionChecked = false
