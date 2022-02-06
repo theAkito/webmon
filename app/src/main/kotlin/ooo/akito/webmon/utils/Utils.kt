@@ -52,11 +52,11 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgTorIsNotInstalled
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
-import ooo.akito.webmon.utils.Utils.safelyStartSyncWorker
 import ooo.akito.webmon.worker.WorkManagerScheduler
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import java.io.InputStream
 import java.net.HttpURLConnection
+import java.net.URI
 import java.net.URL
 import java.nio.charset.Charset
 import java.text.SimpleDateFormat
@@ -403,6 +403,18 @@ object Utils {
   fun String.removeTrailingSlashes(): String = this.replace(Regex("""[/]*$"""), "")
   fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")
   fun String.addProtoHttp(): String = if (this.startsWith("http").not()) { "http://" + this } else { this }
+  fun String?.asUri(): Uri? = tryOrNull { Uri.parse(this) }
+  fun String.getPort(): Int? {
+    val port = asUri()?.port
+    if (port == -1) {
+      return null
+    }
+    return port
+  }
+  fun String.removePort(): URI? {
+    val providedUri = asUri() ?: return null
+    return URI(providedUri.scheme, providedUri.host, providedUri.path, providedUri.fragment)
+  }
 
   inline fun <T> tryOrNull(action: () -> T): T? {
     return try {
@@ -411,8 +423,6 @@ object Utils {
       null
     }
   }
-
-  fun String?.asUri(): Uri? = tryOrNull { Uri.parse(this) }
 
   fun buildIconUrlFull(
     urlIcon: String, /* Where to get the icon from. */
