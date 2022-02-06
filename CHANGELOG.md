@@ -1,3 +1,16 @@
+# 2.8.0 [Code 13] (2022/02/06)
+- Fix: Wrong WebsiteEntry order by itemPosition when exiting Main Search.
+- Fix: Interval chooser displaying interval options only in minutes.
+- Fix: Favicons blinking during Retrieval.
+- Fix: Data Backup Import not applying Tag updates.
+- Improve: Optionally let Data Backup Import force existing Website Entries to update accordingly.
+- Improve: Sync Worker reliability.
+- Improve: Re-Vamp Sync Worker Foreground Service.
+- Improve: Deal with Forced Background Service in a user-friendly way.
+- Improve: Warn user when attempting to add Website Entry with duplicate URL.
+- Improve: Avoid potential data loss when creating new Website Entry. Thank you, @Naitim!
+- Add: Custom Port Support for Onion Addresses.
+
 # 2.7.0 [Code 12] (2021/12/04)
 - Fix: SwipeRefresh Toggle.
 - Fix: Re-Order Website Entries.

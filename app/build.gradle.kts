@@ -28,8 +28,8 @@ android {
     applicationId = "ooo.akito.webmon"
     minSdk = 19
     targetSdk = defaultSdkVersion
-    versionCode = 12
-    versionName = "2.7.0"
+    versionCode = 13
+    versionName = "2.8.0"
 
     multiDexEnabled = true
 
