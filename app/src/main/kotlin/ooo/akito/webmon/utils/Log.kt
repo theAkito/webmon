@@ -16,4 +16,8 @@ object Log {
   fun info(msg : String) {
     Log.i(TAG_GLOBAL, msg)
   }
+
+  fun debug(msg : String) {
+    Log.d(TAG_GLOBAL, msg)
+  }
 }
