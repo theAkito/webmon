@@ -3,7 +3,6 @@ package ooo.akito.webmon.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import java.util.*
 
 object WebsiteCreationMemoriser {
 

@@ -18,7 +18,7 @@ import ooo.akito.webmon.databinding.ItemWebsiteRowBinding
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGlideLoadIconFailure
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils
-import ooo.akito.webmon.utils.Utils.buildIconUrlFull
+import ooo.akito.webmon.utils.Utils.buildDefaultIconUrlFull
 import ooo.akito.webmon.utils.Utils.currentDateTime
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import ooo.akito.webmon.utils.Utils.removeUrlProto
@@ -86,18 +86,9 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
             https://www.zemarch.com/cropped-favicon-png/
             https://github.com/FortAwesome/Font-Awesome/issues/5101#issuecomment-298361743
           */
-          /** Allowed icon formats. Currently, all formats are accepted. */
-          val iconFormats = "gif,ico,jpg,png,svg"
-          /** Minimum icon size .. Perfect icon size .. Maximum icon size */
-          val iconSizeMinPerfectMax = "16..64..128"
-          /** Just a placeholder styled star. */
-          val iconUrlFallback = "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png"
-          val iconUrlFull = buildIconUrlFull(
+          val iconUrlFull = buildDefaultIconUrlFull(
             iconUrlFetcher,
-            webSiteEntry.url.removeUrlProto(),
-            iconUrlFallback,
-            iconFormats,
-            iconSizeMinPerfectMax
+            webSiteEntry.url.removeUrlProto()
           )
           try {
             /**

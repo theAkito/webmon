@@ -434,14 +434,13 @@ object Utils {
     return "${urlIcon}/icon?url=${urlTarget}&formats=${iconFormats}&size=${iconSizes}&fallback_icon_url=${urlIconFallback}"
   }
 
-  private fun buildDefaultIconUrlFull(urlIcon: String /* Where to get the icon from. */): String {
-    /* TODO: Fix dangling Strings. */
+  fun buildDefaultIconUrlFull(urlIcon: String /* Favicon provider web service. */, url: String /* Which website the icon is from. */ = defaultUrlNimHomepage): String {
     return buildIconUrlFull(
       urlIcon,
-      defaultUrlNimHomepage,
-      "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png",
-      "gif,ico,jpg,png,svg",
-      "16..64..128"
+      url,
+      urlIconFallback,
+      urlIconFormats,
+      urlIconSizes
     )
   }
 

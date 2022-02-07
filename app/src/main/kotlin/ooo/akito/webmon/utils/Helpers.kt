@@ -20,6 +20,12 @@ const val prefixHttps = "https://"
 const val workaroundRebirthMillis = 2000L
 const val amountMaxCharsInNameTag = 16
 const val swipeRefreshTriggerDistanceLong = 600
+/** Just a placeholder styled star. */
+const val urlIconFallback = "https://www.zemarch.com/wp-content/uploads/2017/11/cropped-favicon.png"
+/** Allowed icon formats. Currently, all formats are accepted. */
+const val urlIconFormats = "gif,ico,jpg,png,svg"
+/** Minimum icon size .. Perfect icon size .. Maximum icon size */
+const val urlIconSizes = "16..64..128"
 
 val defaultTitleNimHomepage: String by lazy { "Nim Homepage" }
 val defaultUrlNimHomepage: String by lazy { "https://nim-lang.org/" }
