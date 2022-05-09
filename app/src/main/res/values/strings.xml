@@ -84,6 +84,7 @@
     <string name="text_create_entry_tag_cloud_create">Create</string>
     <string name="text_backup_import_failure_confirmation">Okay</string>
     <string name="text_toggle_service_force_disable_warning">Please, be aware, that the Forced Background Service is restarting whenever it is killed. That means, even if you disable the service in the app, the service will keep running, because the service is forced as much as possible to never get killed. After you disabled the service in the settings, as you just did now, you need to \"Force Stop\" the app in your Android system to actually kill the service. This is all needed due to how Android works. If Android would never kill important background apps, this wouldn\'t be needed.</string>
+    <string name="text_autostart_no_pacakge_found">This mobile is made by one of the manufacturers, for which the autostart feature is enabled. However, we could not find the expected package that allows setting that option. Most likely, the custom ROM this phone is running does not have this feature built in. The following phone manufacturers support an autostart option in their stock ROMs.</string>
     <string name="confirm_toggle_service_force_disable_warning">Yes, I understand.</string>
     <string name="title_toggle_refresh_on_swipe_down">Refresh on Swipe Down</string>
     <string name="backup_import">Import Backup</string>
@@ -108,4 +109,5 @@
     <string name="title_toggle_swipe_refresh_trigger_distance_long">Refresh on Swipe Down with Longer Swipe Distance</string>
     <string name="title_toggle_service_force_disable_warning">Stopping Forced Background Service</string>
     <string name="title_toggle_backup_data_import_overwrite_existing">Backup Data Import: Overwrite Existing Entries</string>
+    <string name="title_autostart_no_package_found">No package found!</string>
 </resources>
