@@ -86,3 +86,9 @@ var iconUrlFetcherList = listOf(
   "https://myfavicon.herokuapp.com/",
   "https://webmon-besticon.herokuapp.com/"
 )
+
+val manufacturersWithAutostartSupport = listOf(
+  "xiaomi",
+  "oppo",
+  "vivo"
+)
