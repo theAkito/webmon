@@ -154,7 +154,7 @@ object Utils {
     return "Checking ${refreshTime?.replaceFirst('E', 'e') ?: "every hour"}."
   }
 
-  fun isCustomRom(): Boolean = listOf("xiaomi", "oppo", "vivo").contains(manufacturer)
+  fun isCustomRom(): Boolean = manufacturersWithAutostartSupport.contains(manufacturer)
 
   fun openAutoStartScreen(context: Context) {
     /* Currently not in use. */
@@ -165,7 +165,20 @@ object Utils {
       "vivo" -> intent.component = ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")
     }
     val list = context.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-    if (list.size > 0) { context.startActivity(intent) }
+    if (list.size > 0) {
+      context.startActivity(intent)
+    } else {
+      /** AlertDialog: Inform about successless opening of ROM native package. */
+      AlertDialog.Builder(context).apply DIALOG_BUILDER_NO_PKG_FOUND@{
+        setTitle(R.string.title_autostart_no_package_found)
+        setPositiveButton(
+          R.string.confirm_toggle_service_force_disable_warning
+        ) { _, _ -> }
+        setMessage(context.getString(R.string.text_autostart_no_pacakge_found) + lineEnd.repeat(2) + manufacturersWithAutostartSupport.joinToString(lineEnd))
+      }.create().apply {
+        show()
+      }
+    }
   }
 
   fun showAutoStartEnableDialog(context: Context) {
