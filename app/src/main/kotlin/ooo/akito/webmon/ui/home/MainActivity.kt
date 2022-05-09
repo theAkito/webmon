@@ -503,7 +503,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
     //endregion RecyclerView
 
     // Setting up Website Status Refresh on Swipe & Custom Monitoring
-    viewModel.checkWebSiteStatus().observe(this, { status ->
+    viewModel.checkWebSiteStatus().observe(this) { status ->
       /*
         This block gets executed when Custom Monitor option is used,
         plus when pressing the Refresh option, manually.
@@ -552,10 +552,10 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
           viewMain.showSnackBar(msgWebsitesNotReachable)
         }
       }
-    })
+    }
 
     // Setting up ViewModel and LiveData
-    viewModel.getWebSiteEntryList().observe(this, {
+    viewModel.getWebSiteEntryList().observe(this) {
       Log.info("Observed Website Entry List Change.")
       /** https://stackoverflow.com/a/31486382/7061105 */
       if ((this::searchView.isInitialized.not() || searchView.isIconified) && doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing.not()) {
@@ -571,7 +571,7 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
         customPrefs[IS_INIT] = false
       }
       if (it.isEmpty()) { viewModel.addDefaultData() } // TODO: 2021/11/12 Does this need to be called on every observation? No.
-    })
+    }
 
     //region TOR
 
