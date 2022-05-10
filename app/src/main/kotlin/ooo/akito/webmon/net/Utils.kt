@@ -13,6 +13,8 @@ import ooo.akito.webmon.utils.Utils.tryOrNull
 import ooo.akito.webmon.utils.lineEnd
 import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.nio.charset.Charset
 
 
@@ -28,6 +30,8 @@ object Utils {
       connectivityManager.activeNetworkInfo?.isConnected ?: false
     }
   }
+
+  //region TOR / Onion
 
   fun onionConnectionIsSuccessful(onionUrl: String): Boolean {
     // Example Onion URI: "duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion"
@@ -93,4 +97,56 @@ object Utils {
     }
     return success
   }
+
+  //endregion TOR / Onion
+
+  //region TCP
+
+  private fun Socket.sendData(message: String) {
+    try {
+      val output = getOutputStream()
+      output.write(message.toByteArray())
+      output.flush()
+      Log.debug("Sent data to ${this} via TCP.")
+      tryOrNull{ output.close() }
+    } catch (e: Exception) {
+      Log.debug(e.stackTraceToString())
+    }
+  }
+
+  private fun Socket.receiveData() {
+    try {
+      val input = getInputStream()
+      val data = input.bufferedReader().use { it.readLine() }
+      Log.debug("Received data via TCP connection to ${this}: ${data}")
+      tryOrNull{ input.close() }
+    } catch (e: Exception) {
+      Log.debug(e.stackTraceToString())
+    }
+  }
+
+  fun tcpConnectionIsSuccessful(host: String, port: Int): Boolean {
+    val timeout = 20_000 //TODO: Make configurable.
+    val socket = Socket()
+    try {
+      socket.connect(InetSocketAddress(host, port), timeout)
+      with (socket) {
+        if (isConnected) {
+          Log.debug("Connection to ${socket} via TCP established.")
+        } else {
+          tryOrNull{ socket.close() }
+          return false
+        }
+      }
+    } catch (e: Exception) {
+      Log.error(e.stackTraceToString())
+      tryOrNull{ socket.close() }
+      return false
+    }
+    Log.warn("TCP Connection succeeded!")
+    tryOrNull{ socket.close() }
+    return true
+  }
+
+  //endregion TCP
 }
