@@ -22,5 +22,6 @@ allprojects {
   repositories {
     google()
     mavenCentral()
+    maven("https://maven.java.net/content/groups/public/")
   }
 }
