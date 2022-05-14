@@ -3,6 +3,8 @@ package ooo.akito.webmon.net
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
+import com.sun.mail.smtp.SMTPSSLTransport
+import com.sun.mail.smtp.SMTPTransport
 import ooo.akito.webmon.net.proxy.ProxyProvider
 import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.Utils.addProtoHttp
@@ -16,6 +18,10 @@ import java.io.PrintWriter
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.charset.Charset
+import java.util.*
+import javax.mail.MessagingException
+import javax.mail.Session
+import javax.mail.Transport
 
 
 object Utils {
@@ -149,4 +155,84 @@ object Utils {
   }
 
   //endregion TCP
+
+  //region SMTP
+
+  private fun Transport?.close() {
+    if (this != null) {
+      try {
+        close()
+      } catch (e: MessagingException) {
+        throw e
+      }
+    } else {
+      Log.debug("Transport is already non-existent.")
+    }
+  }
+
+  fun supportsExplicitTLS(smtpServerHost: String, smtpServerPort: Int, smtpUserName: String? = null, smtpUserAccessToken: String? = null, debug: Boolean = false): Boolean {
+    /**
+      Check if SMTP server supports STARTTLS.
+      Authentication is not necessarily mandatory.
+    */
+    var transport: Transport? = null
+    return try {
+      val props: Properties = System.getProperties()
+      props["mail.transport.protocol"] = "smtp"
+      props["mail.smtp.port"] = smtpServerPort
+      props["mail.smtp.ssl.enable"] = "false"
+      props["mail.smtp.starttls.enable"] = "false" // If true, automatically issues STARTTLS command, effectively starting the session. Since we only want to check, we do not want to start it, explicitly
+      val session: Session = Session.getInstance(props)
+      session.debug = debug
+      transport = session.transport
+      transport.connect(smtpServerHost, smtpServerPort, smtpUserName, smtpUserAccessToken)
+      if (transport is SMTPTransport) {
+        val smtpTransport = transport as SMTPTransport?
+        if (smtpTransport == null) {
+          Log.error("""Unable to cast Transport to SMTPTransport when checking if host "${smtpServerHost}" supports explicit TLS on port ${smtpServerPort}.""")
+          return false
+        }
+        smtpTransport.supportsExtension("STARTTLS")
+      } else false
+    } catch (e: java.lang.Exception) {
+      Log.error(e.stackTraceToString())
+      false
+    } finally {
+      transport.close()
+    }
+  }
+
+  fun supportsImplicitTLS(smtpServerHost: String, smtpServerPort: Int, smtpUserName: String? = null, smtpUserAccessToken: String? = null, debug: Boolean = false): Boolean {
+    /**
+      Check if SMTP server supports TLS (formerly SSL).
+      Authentication is not necessarily mandatory.
+    */
+    var transport: Transport? = null
+    return try {
+      val props: Properties = System.getProperties()
+      props["mail.transport.protocol"] = "smtp"
+      props["mail.smtp.port"] = smtpServerPort
+      props["mail.smtp.ssl.enable"] = "true"
+      props["mail.smtp.starttls.enable"] = "false"
+      val session: Session = Session.getInstance(props)
+      session.debug = debug
+      transport = session.transport
+      transport.connect(smtpServerHost, smtpServerPort, smtpUserName, smtpUserAccessToken)
+      if (transport is SMTPTransport  || transport is SMTPSSLTransport) {
+        val smtpTransport = when (transport) { // To keep the language server quiet...
+          is SMTPTransport -> transport
+          is SMTPSSLTransport -> transport
+          else -> throw Exception("Transport not detectable!")
+        }
+        smtpTransport.isSSL
+      } else false
+    } catch (e: java.lang.Exception) {
+      Log.error(e.stackTraceToString())
+      false
+    } finally {
+      transport.close()
+    }
+  }
+
+  //endregion SMTP
 }
