@@ -149,7 +149,6 @@ object Utils {
       tryOrNull{ socket.close() }
       return false
     }
-    Log.warn("TCP Connection succeeded!")
     tryOrNull{ socket.close() }
     return true
   }
@@ -222,7 +221,7 @@ object Utils {
         val smtpTransport = when (transport) { // To keep the language server quiet...
           is SMTPTransport -> transport
           is SMTPSSLTransport -> transport
-          else -> throw Exception("Transport not detectable!")
+          else -> throw Exception("""Transport for SMTP server host "${smtpServerHost}" with port ${smtpServerPort} not detectable!""")
         }
         smtpTransport.isSSL
       } else false
@@ -235,4 +234,49 @@ object Utils {
   }
 
   //endregion SMTP
+
+  //region IMAP
+
+  fun supportsCAPABILITY(host: String, port: Int): Boolean {
+    val imapCommandLineEnd = "\r\n"
+    val imapTag = "test "
+    val imapCommandSuccess = imapTag + "OK"
+    val capabilityCommand = imapTag + "CAPABILITY" + imapCommandLineEnd
+    val timeout = 20_000 //TODO: Make configurable.
+    val socket = Socket()
+    return try {
+      socket.connect(InetSocketAddress(host, port), timeout)
+      with (socket) {
+        if (isConnected) {
+          Log.debug("Connection to ${socket} via TCP established.")
+          val reader = socket.getInputStream().bufferedReader()
+          val writer = socket.getOutputStream().bufferedWriter()
+          reader.readLine()
+          with (writer) {
+            write(capabilityCommand)
+            flush()
+          }
+          val answerLine1 = reader.readLine()
+          val answerLine2 = reader.readLine()
+          Log.debug("Answer from IMAP to CAPABILITY command: " + lineEnd + answerLine1 + lineEnd + answerLine2)
+          val commandSucceeded = answerLine2.startsWith(imapCommandSuccess)
+          Log.info("""IMAP "CAPABILITY" command on host "${host}" with port ${port} succeeded: """ + commandSucceeded)
+          commandSucceeded
+        } else {
+          tryOrNull{ socket.close() }
+          false
+        }
+      }
+    } catch (e: Exception) {
+      Log.error(e.stackTraceToString())
+      tryOrNull{ socket.close() }
+      return false
+    } finally {
+      if (socket.isConnected) {
+        tryOrNull{ socket.close() }
+      }
+    }
+  }
+
+  //endregion IMAP
 }
