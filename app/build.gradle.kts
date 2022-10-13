@@ -13,7 +13,7 @@ plugins {
 object Metadata {
   const val kotlin_version = "1.5.31"
   const val ktx_version = "1.7.0"
-  const val defaultSdkVersion = 31
+  const val defaultSdkVersion = 33
   val java8 = JavaVersion.VERSION_1_8
 }
 
