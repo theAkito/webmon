@@ -97,9 +97,9 @@ dependencies {
   implementation("androidx.fragment:fragment-ktx:$main_version")
 
   // Support Libraries & UI Components
-  implementation("androidx.appcompat:appcompat:1.4.1")
-  implementation("com.google.android.material:material:1.5.0")
-  implementation("androidx.constraintlayout:constraintlayout:2.1.3")
+  implementation("androidx.appcompat:appcompat:1.5.1")
+  implementation("com.google.android.material:material:1.6.1")
+  implementation("androidx.constraintlayout:constraintlayout:2.1.4")
   implementation("com.android.support:drawerlayout:28.0.0")
 
   // Retrofit and Relevant Converters
@@ -139,9 +139,9 @@ dependencies {
 
   // JSON
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
-  implementation("com.fasterxml.jackson.core:jackson-core:2.13")
-  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+  implementation("com.fasterxml.jackson.core:jackson-core:2.13.4")
+  implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.4")
 
   /**
     Apache Commons
