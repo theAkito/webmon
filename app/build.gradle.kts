@@ -80,6 +80,7 @@ android {
       )
     )
   }
+  namespace = "ooo.akito.webmon"
 }
 
 dependencies {
