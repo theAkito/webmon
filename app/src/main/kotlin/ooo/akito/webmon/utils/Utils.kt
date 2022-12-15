@@ -413,12 +413,13 @@ object Utils {
 
   private fun appIsVisible(): Boolean = ooo.akito.webmon.Webmon.AppVisibility.appIsVisible
 
-  fun String.removeTrailingSlashes(): String = this.replace(Regex("""[/]*$"""), "")
-  fun String.removeUrlProto(): String = this.replace(Regex("""^http[s]?://"""), "")
-  fun String.addProtoHttp(): String = if (this.startsWith("http").not()) { "http://" + this } else { this }
+  fun String.removeTrailingSlashes(): String = replace(Regex("""[/]*$"""), "")
+  fun String.removeUrlProto(): String = replace(Regex("""^http[s]?://"""), "")
+  fun String.addProtoHttp(): String = if (startsWith("http").not()) { "http://" + this } else { this }
   fun String?.asUri(): Uri? = tryOrNull { Uri.parse(this) }
+  fun String.getHost(): String? = addProtoHttp().asUri()?.host
   fun String.getPort(): Int? {
-    val port = asUri()?.port
+    val port =  addProtoHttp().asUri()?.port
     if (port == -1) {
       return null
     }
