@@ -8,10 +8,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.Configuration
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.PersistableBundle
+import android.os.StrictMode
 import android.text.TextUtils
-import android.view.*
-import android.view.DragEvent.*
+import android.view.DragEvent.ACTION_DRAG_ENDED
+import android.view.DragEvent.ACTION_DRAG_LOCATION
+import android.view.DragEvent.ACTION_DRAG_STARTED
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,8 +50,8 @@ import ooo.akito.webmon.net.Utils.isConnected
 import ooo.akito.webmon.ui.createentry.CreateEntryActivity
 import ooo.akito.webmon.ui.debug.ActivityDebug
 import ooo.akito.webmon.ui.settings.SettingsActivity
-import ooo.akito.webmon.utils.*
 import ooo.akito.webmon.utils.AppService
+import ooo.akito.webmon.utils.Constants
 import ooo.akito.webmon.utils.Constants.IS_INIT
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_DEFAULT_POSITION_IS_SAVED
 import ooo.akito.webmon.utils.Constants.ONESHOT_FAB_POSITION_X
@@ -64,6 +75,7 @@ import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotOpenOnionInBrowser
 import ooo.akito.webmon.utils.ExceptionCompanion.msgInternetUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.msgUriProvidedIsNull
 import ooo.akito.webmon.utils.ExceptionCompanion.msgWebsitesNotReachable
+import ooo.akito.webmon.utils.Log
 import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.get
 import ooo.akito.webmon.utils.SharedPrefsManager.set
@@ -79,8 +91,26 @@ import ooo.akito.webmon.utils.Utils.showNotification
 import ooo.akito.webmon.utils.Utils.showSnackBar
 import ooo.akito.webmon.utils.Utils.showSnackbarNotImplemented
 import ooo.akito.webmon.utils.Utils.showToast
+import ooo.akito.webmon.utils.backupDataImportOverwriteExisting
+import ooo.akito.webmon.utils.doNotObserveWebsiteEntryChangesBecauseRecyclerViewIsRefreshing
+import ooo.akito.webmon.utils.forcedBackgroundServiceEnabled
+import ooo.akito.webmon.utils.forcedBackgroundServiceRunning
+import ooo.akito.webmon.utils.globalEntryTagsNames
+import ooo.akito.webmon.utils.isEntryCreated
+import ooo.akito.webmon.utils.lineEnd
+import ooo.akito.webmon.utils.logContent
+import ooo.akito.webmon.utils.logDivider
+import ooo.akito.webmon.utils.logEnabled
+import ooo.akito.webmon.utils.mapperUgly
+import ooo.akito.webmon.utils.nameAppCaseLower
+import ooo.akito.webmon.utils.replaceFabWithMenuEntryEnabled
+import ooo.akito.webmon.utils.swipeRefreshIsEnabled
+import ooo.akito.webmon.utils.swipeRefreshTriggerDistanceLong
+import ooo.akito.webmon.utils.swipeRefreshTriggerDistanceLongIsEnabled
+import ooo.akito.webmon.utils.torAppIsAvailable
+import ooo.akito.webmon.utils.torIsEnabled
+import ooo.akito.webmon.utils.totalAmountEntry
 import java.lang.ref.WeakReference
-import java.util.*
 import kotlin.properties.Delegates
 
 
@@ -634,12 +664,12 @@ class MainActivity : AppCompatActivity(), WebSiteEntryAdapter.WebSiteEntryEvents
               editableText.insert(
                 0,
                 rawMsg +
-                  lineEnd +
-                  logDivider +
-                  lineEnd
+                lineEnd +
+                logDivider +
+                lineEnd
               )
             }
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
         val updatedLogContent = if (logIsReversed) {
           rawMsg +
           lineEnd +

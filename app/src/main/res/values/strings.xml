@@ -65,6 +65,9 @@
     <string name="settings_tor">Tor Settings</string>
     <string name="title_toggle_tor">TOR / Onion Support (Requires running Orbot!)</string>
     <string name="is_onion_address">Is TOR .onion Address</string>
+    <string name="is_tcp_address">Is TCP Address</string>
+    <string name="is_smtp_address">Is SMTP Address</string>
+    <string name="is_imap_address">Is IMAP Address</string>
     <string name="is_laissez_faire">Is fine with HTTP Codes 201, 202, 204, 401, 403</string>
     <string name="settings_advanced">Advanced Settings</string>
     <string name="text_advanced_settings_show">Show Advanced Settings</string>

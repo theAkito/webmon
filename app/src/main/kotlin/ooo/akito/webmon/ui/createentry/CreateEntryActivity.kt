@@ -28,8 +28,11 @@ import ooo.akito.webmon.utils.Utils.showToast
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.getSaveEntryTags
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.remember
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsDNSChecked
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsImapChecked
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsLaissezFaireChecked
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsOnionChecked
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsSmtpChecked
+import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveIsTcpChecked
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveName
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.saveURL
 import ooo.akito.webmon.utils.WebsiteCreationMemoriser.setSaveEntryTags
@@ -58,9 +61,15 @@ class CreateEntryActivity : AppCompatActivity() {
 
   private fun hideCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.GONE }
   private fun hideIsOnionAddress() { if (torIsEnabled) { activityCreateEntryBinding.isOnionAddress.visibility = View.GONE } }
+  private fun hideIsTcpAddress() { activityCreateEntryBinding.isTcpAddress.visibility = View.GONE }
+  private fun hideIsSmtpAddress() { activityCreateEntryBinding.isSmtpAddress.visibility = View.GONE }
+  private fun hideIsImapAddress() { activityCreateEntryBinding.isImapAddress.visibility = View.GONE }
   private fun hideIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.GONE }
   private fun showCheckDNSRecords() { activityCreateEntryBinding.checkDNSRecords.visibility = View.VISIBLE }
   private fun showIsOnionAddress() { if (torIsEnabled) { activityCreateEntryBinding.isOnionAddress.visibility = View.VISIBLE } }
+  private fun showIsTcpAddress() { activityCreateEntryBinding.isTcpAddress.visibility = View.VISIBLE }
+  private fun showIsSmtpAddress() { activityCreateEntryBinding.isSmtpAddress.visibility = View.VISIBLE }
+  private fun showIsImapAddress() { activityCreateEntryBinding.isImapAddress.visibility = View.VISIBLE }
   private fun showIsLaissezFaire() { activityCreateEntryBinding.isLaissezFaire.visibility = View.VISIBLE }
   private fun findWebsiteEntryWithExistingUrl(url: String): WebSiteEntry? = websites.firstOrNull { it.url == url }
   private fun updateWebsiteEntryCustomTags() {
@@ -184,11 +193,9 @@ class CreateEntryActivity : AppCompatActivity() {
         This MUST NOT be in its own proc!
         Gets also triggered, when using the UI for switching to MainActivity.
       */
-      getWebSiteEntryList().observe(
-        this@CreateEntryActivity, { observedWebsites ->
-          websites = observedWebsites
-        }
-      )
+      getWebSiteEntryList().observe(this@CreateEntryActivity) { observedWebsites ->
+        websites = observedWebsites
+      }
     }
     var isEntryNew = false
     chipColourIdDefault = Chip(this).chipBackgroundColor //TODO: Get the default colour in a more efficient way.
@@ -246,11 +253,38 @@ class CreateEntryActivity : AppCompatActivity() {
       showCheckDNSRecords()
     }
 
-    if (activityCreateEntryBinding.checkDNSRecords.isChecked) {
-      hideIsOnionAddress()
-    } else if (activityCreateEntryBinding.isOnionAddress.isChecked) {
-      hideCheckDNSRecords()
-      hideIsLaissezFaire()
+    with (activityCreateEntryBinding) {
+      when {
+        checkDNSRecords.isChecked -> {
+          hideIsOnionAddress()
+        }
+        isOnionAddress.isChecked -> {
+          hideCheckDNSRecords()
+          hideIsLaissezFaire()
+        }
+        isTcpAddress.isChecked -> {
+          hideCheckDNSRecords()
+          hideIsLaissezFaire()
+          hideIsOnionAddress()
+          hideIsSmtpAddress()
+          hideIsImapAddress()
+        }
+        isSmtpAddress.isChecked -> {
+          hideCheckDNSRecords()
+          hideIsLaissezFaire()
+          hideIsOnionAddress()
+          hideIsTcpAddress()
+          hideIsImapAddress()
+        }
+        isImapAddress.isChecked -> {
+          hideCheckDNSRecords()
+          hideIsLaissezFaire()
+          hideIsOnionAddress()
+          hideIsTcpAddress()
+          hideIsSmtpAddress()
+        }
+        else -> {}
+      }
     }
 
     activityCreateEntryBinding.isOnionAddress.setOnCheckedChangeListener { _, isChecked ->
@@ -260,6 +294,54 @@ class CreateEntryActivity : AppCompatActivity() {
       } else {
         showCheckDNSRecords()
         showIsLaissezFaire()
+      }
+    }
+
+    activityCreateEntryBinding.isTcpAddress.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked) {
+        hideCheckDNSRecords()
+        hideIsLaissezFaire()
+        hideIsOnionAddress()
+        hideIsSmtpAddress()
+        hideIsImapAddress()
+      } else {
+        showCheckDNSRecords()
+        showIsLaissezFaire()
+        showIsOnionAddress()
+        showIsSmtpAddress()
+        showIsImapAddress()
+      }
+    }
+
+    activityCreateEntryBinding.isSmtpAddress.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked) {
+        hideCheckDNSRecords()
+        hideIsLaissezFaire()
+        hideIsOnionAddress()
+        hideIsTcpAddress()
+        hideIsImapAddress()
+      } else {
+        showCheckDNSRecords()
+        showIsLaissezFaire()
+        showIsOnionAddress()
+        showIsTcpAddress()
+        showIsImapAddress()
+      }
+    }
+
+    activityCreateEntryBinding.isImapAddress.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked) {
+        hideCheckDNSRecords()
+        hideIsLaissezFaire()
+        hideIsOnionAddress()
+        hideIsTcpAddress()
+        hideIsSmtpAddress()
+      } else {
+        showCheckDNSRecords()
+        showIsLaissezFaire()
+        showIsOnionAddress()
+        showIsTcpAddress()
+        showIsSmtpAddress()
       }
     }
 
@@ -450,6 +532,9 @@ class CreateEntryActivity : AppCompatActivity() {
       remember.saveIsDNSChecked = false
       remember.saveIsLaissezFaireChecked = false
       remember.saveIsOnionChecked = false
+      remember.saveIsOnionChecked = false
+      remember.saveIsOnionChecked = false
+      remember.saveIsOnionChecked = false
       remember.setSaveEntryTags(mutableListOf())
     } else {
       remember.saveName = activityCreateEntryBinding.editName.text.toString()
@@ -457,6 +542,9 @@ class CreateEntryActivity : AppCompatActivity() {
       remember.saveIsDNSChecked = activityCreateEntryBinding.checkDNSRecords.isChecked
       remember.saveIsLaissezFaireChecked = activityCreateEntryBinding.isLaissezFaire.isChecked
       remember.saveIsOnionChecked = activityCreateEntryBinding.isOnionAddress.isChecked
+      remember.saveIsTcpChecked = activityCreateEntryBinding.isTcpAddress.isChecked
+      remember.saveIsSmtpChecked = activityCreateEntryBinding.isSmtpAddress.isChecked
+      remember.saveIsImapChecked = activityCreateEntryBinding.isImapAddress.isChecked
       remember.setSaveEntryTags(thisWebsiteEntryCustomTags)
     }
   }
@@ -471,6 +559,9 @@ class CreateEntryActivity : AppCompatActivity() {
       checkDNSRecords.isChecked = remember.saveIsDNSChecked
       isLaissezFaire.isChecked = remember.saveIsLaissezFaireChecked
       isOnionAddress.isChecked = remember.saveIsOnionChecked
+      isTcpAddress.isChecked = remember.saveIsTcpChecked
+      isSmtpAddress.isChecked = remember.saveIsSmtpChecked
+      isImapAddress.isChecked = remember.saveIsImapChecked
       thisWebsiteEntryCustomTags = remember.getSaveEntryTags().toMutableList()
     }
     updateWebsiteEntryCustomTags()
@@ -484,12 +575,18 @@ class CreateEntryActivity : AppCompatActivity() {
       CTRL+SHIFT+F for "WebsiteEntry Glue" and update the `WebSiteEntry` initialisations accordingly.
     */
     val isOnion = previousVersionWebsiteEntry.isOnionAddress
+    val isTCP = previousVersionWebsiteEntry.isTcpAddress
+    val isSMTP = previousVersionWebsiteEntry.isSmtpAddress
+    val isIMAP = previousVersionWebsiteEntry.isImapAddress
     fun Boolean.ifNotOnion(): Boolean = if (isOnion) { false } else { this }
     activityCreateEntryBinding.editName.setText(previousVersionWebsiteEntry.name)
     activityCreateEntryBinding.editUrl.setText(previousVersionWebsiteEntry.url)
     activityCreateEntryBinding.isLaissezFaire.isChecked = previousVersionWebsiteEntry.isLaissezFaire.ifNotOnion()
     activityCreateEntryBinding.checkDNSRecords.isChecked = previousVersionWebsiteEntry.dnsRecordsAAAAA.ifNotOnion()
     activityCreateEntryBinding.isOnionAddress.isChecked = isOnion /* No `if` check, because it would cause more harm to reset it, than to leave it be. */
+    activityCreateEntryBinding.isTcpAddress.isChecked = isTCP
+    activityCreateEntryBinding.isSmtpAddress.isChecked = isSMTP
+    activityCreateEntryBinding.isImapAddress.isChecked = isIMAP
     activityCreateEntryBinding.btnSave.text = getString(R.string.update)
 
   }
@@ -512,6 +609,9 @@ class CreateEntryActivity : AppCompatActivity() {
         itemPosition = if (webSiteEntry != null) { webSiteEntry?.itemPosition } else { totalAmountEntry },
         dnsRecordsAAAAA = activityCreateEntryBinding.checkDNSRecords.isChecked,
         isOnionAddress = activityCreateEntryBinding.isOnionAddress.isChecked,
+        isTcpAddress = activityCreateEntryBinding.isTcpAddress.isChecked,
+        isSmtpAddress = activityCreateEntryBinding.isSmtpAddress.isChecked,
+        isImapAddress = activityCreateEntryBinding.isImapAddress.isChecked,
         isLaissezFaire = activityCreateEntryBinding.isLaissezFaire.isChecked,
         customTags = thisWebsiteEntryCustomTags
       )
@@ -561,6 +661,9 @@ class CreateEntryActivity : AppCompatActivity() {
             itemPosition == webSiteEntry?.itemPosition &&
             dnsRecordsAAAAA == activityCreateEntryBinding.checkDNSRecords.isChecked &&
             isOnionAddress == activityCreateEntryBinding.isOnionAddress.isChecked &&
+            isTcpAddress == activityCreateEntryBinding.isTcpAddress.isChecked &&
+            isSmtpAddress == activityCreateEntryBinding.isSmtpAddress.isChecked &&
+            isImapAddress == activityCreateEntryBinding.isImapAddress.isChecked &&
             isLaissezFaire == activityCreateEntryBinding.isLaissezFaire.isChecked &&
             customTags == thisWebsiteEntryCustomTags -> {
               false

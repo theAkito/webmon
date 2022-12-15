@@ -94,6 +94,24 @@
                 android:layout_height="48dp"
                 android:text="@string/is_onion_address" />
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/isTcpAddress"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/is_tcp_address" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/isSmtpAddress"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/is_smtp_address" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/isImapAddress"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="@string/is_imap_address" />
+
             <RelativeLayout
                 android:id="@+id/layout_tag_cloud"
                 android:layout_width="match_parent"
