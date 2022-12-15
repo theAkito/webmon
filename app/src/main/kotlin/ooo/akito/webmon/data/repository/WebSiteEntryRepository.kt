@@ -11,13 +11,22 @@ import ooo.akito.webmon.data.db.WebSiteEntry
 import ooo.akito.webmon.data.db.WebSiteEntryDao
 import ooo.akito.webmon.data.model.WebSiteStatus
 import ooo.akito.webmon.net.Utils.onionConnectionIsSuccessful
+import ooo.akito.webmon.net.Utils.supportsCAPABILITY
+import ooo.akito.webmon.net.Utils.supportsExplicitTLS
+import ooo.akito.webmon.net.Utils.supportsImplicitTLS
+import ooo.akito.webmon.net.Utils.tcpConnectionIsSuccessful
 import ooo.akito.webmon.net.dns.DNS
 import ooo.akito.webmon.utils.*
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeGenericFail
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorAppUnavailable
 import ooo.akito.webmon.utils.ExceptionCompanion.connCodeTorConnFailed
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToIMAP
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToSMTP
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTCP
 import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotConnectToTor
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotExtractHostFromUrl
+import ooo.akito.webmon.utils.ExceptionCompanion.msgCannotExtractPortFromUrl
 import ooo.akito.webmon.utils.ExceptionCompanion.msgDnsOnlyNXDOMAIN
 import ooo.akito.webmon.utils.ExceptionCompanion.msgDnsRootDomain
 import ooo.akito.webmon.utils.ExceptionCompanion.msgGenericFailure
@@ -28,6 +37,8 @@ import ooo.akito.webmon.utils.SharedPrefsManager.customPrefs
 import ooo.akito.webmon.utils.SharedPrefsManager.set
 import ooo.akito.webmon.utils.Utils.addProtoHttp
 import ooo.akito.webmon.utils.Utils.currentDateTime
+import ooo.akito.webmon.utils.Utils.getHost
+import ooo.akito.webmon.utils.Utils.getPort
 import ooo.akito.webmon.utils.Utils.isStatusAcceptable
 import ooo.akito.webmon.utils.Utils.removeTrailingSlashes
 import ooo.akito.webmon.utils.Utils.removeUrlProto
@@ -73,7 +84,10 @@ class WebSiteEntryRepository(context: Context) {
           itemPosition = 0,
           isLaissezFaire = false,
           dnsRecordsAAAAA = false,
-          isOnionAddress = false
+          isOnionAddress = false,
+          isTcpAddress = false,
+          isSmtpAddress = false,
+          isImapAddress = false /* DATABASE_MIGRATION: Add new columns, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
         )
       )
       webSiteEntryDao?.saveWebSiteEntry(
@@ -84,7 +98,10 @@ class WebSiteEntryRepository(context: Context) {
           itemPosition = 1,
           isLaissezFaire = false,
           dnsRecordsAAAAA = false,
-          isOnionAddress = false
+          isOnionAddress = false,
+          isTcpAddress = false,
+          isSmtpAddress = false,
+          isImapAddress = false /* DATABASE_MIGRATION: Add new columns, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
         )
       )
       customPrefs[Constants.IS_ADDED_DEFAULT_DATA] = false
@@ -168,7 +185,44 @@ class WebSiteEntryRepository(context: Context) {
               else -> msgGenericFailure
             }
           }
-        } else {
+        } else if (website.isTcpAddress) {
+          val host = rawUrl.getHost() ?: throw IllegalStateException(msgCannotExtractHostFromUrl)
+          val port = rawUrl.getPort() ?: throw IllegalStateException(msgCannotExtractPortFromUrl)
+          connSuccess = try { tcpConnectionIsSuccessful(host, port) } catch (e: Exception) { e.message?.let { Log.warn(it) }; false }
+          status = when {
+            connSuccess -> HttpURLConnection.HTTP_OK
+            else -> connCodeGenericFail
+          }
+          msg = when {
+            connSuccess -> msgGenericSuccess
+            else -> msgCannotConnectToTCP
+          }
+        } else if (website.isSmtpAddress) {
+          val host = rawUrl.getHost() ?: throw IllegalStateException(msgCannotExtractHostFromUrl)
+          val port = rawUrl.getPort() ?: throw IllegalStateException(msgCannotExtractPortFromUrl)
+          //TODO: Make configurable, which one to prefer?
+          val supportsImplicit = try { supportsImplicitTLS(host, port) } catch (e: Exception) { e.message?.let { Log.warn(it) }; false }
+          val supportsExplicit = try { supportsExplicitTLS(host, port) } catch (e: Exception) { e.message?.let { Log.warn(it) }; false }
+          connSuccess = supportsImplicit || supportsExplicit
+          msg = when {
+            supportsImplicit && supportsExplicit -> msgBothTlsSuccess
+            supportsImplicit -> msgImplicitTlsSuccess
+            supportsExplicit -> msgExplicitTlsSuccess
+            else -> msgCannotConnectToSMTP
+          }
+        } else if (website.isImapAddress) {
+          val host = rawUrl.getHost() ?: throw IllegalStateException(msgCannotExtractHostFromUrl)
+          val port = rawUrl.getPort() ?: throw IllegalStateException(msgCannotExtractPortFromUrl)
+          connSuccess = try { supportsCAPABILITY(host, port) } catch (e: Exception) { e.message?.let { Log.warn(it) }; false }
+          status = when {
+            connSuccess -> HttpURLConnection.HTTP_OK
+            else -> connCodeGenericFail
+          }
+          msg = when {
+            connSuccess -> msgGenericSuccess
+            else -> msgCannotConnectToIMAP
+          }
+        } else {  /* DATABASE_MIGRATION: Add new checks, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
           val checkRecordsAAAAA = website.dnsRecordsAAAAA
           val ipAddresses = if (checkRecordsAAAAA) {
             handleDnsRecordRetrieval(rawUrl.removeUrlProto().removeTrailingSlashes())
