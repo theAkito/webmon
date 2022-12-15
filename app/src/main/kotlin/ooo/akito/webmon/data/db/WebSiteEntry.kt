@@ -10,6 +10,12 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "web_site_entry")
 @Parcelize
 data class WebSiteEntry(
+  /**
+    CTRL+Shift+F for "DATABASE_MIGRATION:" to find
+    what else is needed to be adjusted,
+    once this data class changes.
+  */
+  /* TODO: Check out how to change column order, without changing field order in data class. */
   @PrimaryKey(autoGenerate = true)
   val id: Long? = null,
   @ColumnInfo(name = "name")
@@ -31,5 +37,11 @@ data class WebSiteEntry(
   @ColumnInfo(name = "is_onion_address", defaultValue = false.toString())
   var isOnionAddress: Boolean = false,
   @ColumnInfo(name = "customTags", defaultValue = "")
-  var customTags: List<String> = listOf()
+  var customTags: List<String> = listOf(),
+  @ColumnInfo(name = "is_tcp_address", defaultValue = false.toString())
+  var isTcpAddress: Boolean = false,
+  @ColumnInfo(name = "is_smtp_address", defaultValue = false.toString())
+  var isSmtpAddress: Boolean = false,
+  @ColumnInfo(name = "is_imap_address", defaultValue = false.toString())
+  var isImapAddress: Boolean = false
 ) : Parcelable

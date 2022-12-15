@@ -10,15 +10,16 @@ import androidx.room.TypeConverters
 
 @Database(
   entities = [WebSiteEntry::class],
-  version = 6,
+  version = 7, /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
   exportSchema = true,
   autoMigrations = [
-    AutoMigration (from = 1, to = 6),
-    AutoMigration (from = 2, to = 6),
-    AutoMigration (from = 3, to = 6),
-    AutoMigration (from = 4, to = 6),
-    AutoMigration (from = 5, to = 6)
-//    AutoMigration (from = 6, to = 7)
+    AutoMigration (from = 1, to = 7), /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
+    AutoMigration (from = 2, to = 7), /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
+    AutoMigration (from = 3, to = 7), /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
+    AutoMigration (from = 4, to = 7), /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
+    AutoMigration (from = 5, to = 7), /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
+    AutoMigration (from = 6, to = 7), /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
+    //AutoMigration (from = 7, to = 8) /* DATABASE_MIGRATION: Change me to the newest version, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
   ]
 )
 @TypeConverters(DatabaseTypeConvertorList::class)
