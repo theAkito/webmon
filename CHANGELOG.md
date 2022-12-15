@@ -1,3 +1,8 @@
+# 2.9.0 [Code 14] (2022/12/15)
+- Fix: Autostart unclear, whether it works.
+- Improve: Various internal improvements.
+- Add: Support TCP, SMTP & IMAP Addresses.
+
 # 2.8.0 [Code 13] (2022/02/06)
 - Fix: Wrong WebsiteEntry order by itemPosition when exiting Main Search.
 - Fix: Interval chooser displaying interval options only in minutes.

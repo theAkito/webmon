@@ -1,0 +1,3 @@
+- Fix: Autostart unclear, whether it works.
+- Improve: Various internal improvements.
+- Add: Support TCP, SMTP & IMAP Addresses.
