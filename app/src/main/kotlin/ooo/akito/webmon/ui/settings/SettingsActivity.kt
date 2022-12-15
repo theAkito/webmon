@@ -585,7 +585,10 @@ class SettingsActivity : AppCompatActivity() {
             isLaissezFaire = website.isLaissezFaire,
             dnsRecordsAAAAA = website.dnsRecordsAAAAA,
             isOnionAddress = website.isOnionAddress,
-            customTags = website.customTags
+            isTcpAddress = website.isTcpAddress,
+            isSmtpAddress = website.isSmtpAddress,
+            isImapAddress = website.isImapAddress,
+            customTags = website.customTags /* DATABASE_MIGRATION: Add new columns, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
           )
           viewModel.saveWebSiteEntry(cleanedWebsite)
         }
@@ -608,7 +611,10 @@ class SettingsActivity : AppCompatActivity() {
               isLaissezFaire = website.isLaissezFaire,
               dnsRecordsAAAAA = website.dnsRecordsAAAAA,
               isOnionAddress = website.isOnionAddress,
-              customTags = website.customTags
+              isTcpAddress = website.isTcpAddress,
+              isSmtpAddress = website.isSmtpAddress,
+              isImapAddress = website.isImapAddress,
+              customTags = website.customTags /* DATABASE_MIGRATION: Add new columns, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
             )
           }
           viewModel.saveWebSiteEntry(updatedExistingWebsite)
@@ -630,7 +636,10 @@ class SettingsActivity : AppCompatActivity() {
             isLaissezFaire = website.isLaissezFaire,
             dnsRecordsAAAAA = website.dnsRecordsAAAAA,
             isOnionAddress = website.isOnionAddress,
-            customTags = website.customTags
+            isTcpAddress = website.isTcpAddress,
+            isSmtpAddress = website.isSmtpAddress,
+            isImapAddress = website.isImapAddress,
+            customTags = website.customTags /* DATABASE_MIGRATION: Add new columns, when `ooo.akito.webmon.data.db.WebSiteEntry` changes. */
           )
           viewModel.saveWebSiteEntry(cleanedWebsite)
         }
