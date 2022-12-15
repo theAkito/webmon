@@ -11,6 +11,9 @@ object WebsiteCreationMemoriser {
   const val isDNSChecked = "DNSCheck"
   const val isLaissezFaireChecked = "LaissezCheck"
   const val isOnionChecked = "OnionCheck"
+  const val isTcpChecked = "TcpCheck"
+  const val isSmtpChecked = "SmtpCheck"
+  const val isImapChecked = "ImapCheck"
   const val entryTags = "EntryTags"
 
   fun defaultPreference(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -31,6 +34,30 @@ object WebsiteCreationMemoriser {
     set(value) {
       editMe {
         it.putBoolean(isOnionChecked, value)
+      }
+    }
+
+  var SharedPreferences.saveIsTcpChecked
+    get() = getBoolean(isTcpChecked, false)
+    set(value) {
+      editMe {
+        it.putBoolean(isTcpChecked, value)
+      }
+    }
+
+  var SharedPreferences.saveIsSmtpChecked
+    get() = getBoolean(isSmtpChecked, false)
+    set(value) {
+      editMe {
+        it.putBoolean(isSmtpChecked, value)
+      }
+    }
+
+  var SharedPreferences.saveIsImapChecked
+    get() = getBoolean(isImapChecked, false)
+    set(value) {
+      editMe {
+        it.putBoolean(isImapChecked, value)
       }
     }
 
