@@ -16,7 +16,7 @@ object Environment {
   lateinit var defaultTimeFormat: SimpleDateFormat
 
   /* Using Date, because ZonedDateTime and LocalDateTime require at least Android O. */
-  fun Context.getCurrentLocale(): Locale = ConfigurationCompat.getLocales(resources.configuration).get(0)
+  fun Context.getCurrentLocale(): Locale = ConfigurationCompat.getLocales(resources.configuration).get(0) ?: Locale.ENGLISH
   fun Locale.getDefaultDateTimeFormat(): SimpleDateFormat = SimpleDateFormat("""yyyy-MM-dd'T'HH-mm-ss""", this)
   fun getDefaultDateTimeString(): String = defaultTimeFormat.format(Date())
   fun Context.getDefaultPathCacheBackup(): File = File(cacheDir, "backups").apply { tryOrNull { mkdir() } }

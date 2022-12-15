@@ -88,6 +88,24 @@ object ExceptionCompanion {
   val msgMiniNXDOMAIN: String by lazy {
     "NX_DOMAIN"
   }
+  val msgCannotExtractHostOrPortFromUrl: String by lazy {
+    """Could not extract Host or Port from URL!"""
+  }
+  val msgCannotExtractHostFromUrl: String by lazy {
+    """Unable to extract Host from URL!"""
+  }
+  val msgCannotExtractPortFromUrl: String by lazy {
+    """Unable to extract Port from URL!"""
+  }
+  val msgCannotConnectToTCP: String by lazy {
+    "Cannot connect to TCP server!"
+  }
+  val msgCannotConnectToSMTP: String by lazy {
+    "Cannot connect to SMTP server!"
+  }
+  val msgCannotConnectToIMAP: String by lazy {
+    "Cannot connect to IMAP server!"
+  }
   val msgWebsiteEntriesUnavailable: String by lazy {
     "WebsiteEntries must be available!"
   }
