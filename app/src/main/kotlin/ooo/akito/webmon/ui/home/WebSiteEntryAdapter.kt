@@ -58,12 +58,16 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         binding.txtUrl.text = webSiteEntry.url
 
         // TODO: 2021/12/14 Merge both Glide usages into easy to use utility method.
-        if (webSiteEntry.isOnionAddress) {
+        if (webSiteEntry.isOnionAddress || webSiteEntry.isTcpAddress || webSiteEntry.isSmtpAddress || webSiteEntry.isImapAddress) {
+          val icon = when {
+            webSiteEntry.isOnionAddress -> ResourcesCompat.getDrawable(resources, R.drawable.ic_tor_onion, context.theme)
+            else -> ResourcesCompat.getDrawable(resources, R.mipmap.placeholder_favicon, context.theme)
+          }
           try {
             /** https://github.com/FortAwesome/Font-Awesome/issues/5101#issuecomment-298361743 */
             Glide
               .with(binding.imgLogo.context)
-              .load(ResourcesCompat.getDrawable(resources, R.drawable.ic_tor_onion, context.theme))
+              .load(icon)
               .dontAnimate()
               .let { request ->
                 if (binding.imgLogo.drawable != null) {
@@ -117,7 +121,7 @@ class WebSiteEntryAdapter(todoEvents: WebSiteEntryEvents) : RecyclerView.Adapter
         }
 
 
-        binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry)}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.txtStatus.text = HtmlCompat.fromHtml("<b>Status :</b> ${webSiteEntry.status ?: "000"} - ${Utils.getStatusMessage(webSiteEntry) /* TODO: Get actual status message. */}<br><b>Last Update :</b> ${webSiteEntry.updatedAt ?: currentDateTime()}", HtmlCompat.FROM_HTML_MODE_LEGACY)
         binding.imgIndicator.setImageResource(if(webSiteEntry.isStatusAcceptable().not()) R.drawable.ic_alert else R.drawable.ic_success)
         binding.btnPause.setImageResource(if(webSiteEntry.isPaused) R.drawable.ic_play else R.drawable.ic_pause)
 
