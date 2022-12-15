@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.net.SocketTimeoutException
 import java.nio.charset.Charset
 import java.util.*
 import javax.mail.MessagingException
@@ -144,6 +145,10 @@ object Utils {
           return false
         }
       }
+    } catch (exSocketTimeoutException: SocketTimeoutException) {
+      Log.warn("Failed to connect to host ${host} on port ${port}!")
+      tryOrNull{ socket.close() }
+      return false
     } catch (e: Exception) {
       Log.error(e.stackTraceToString())
       tryOrNull{ socket.close() }
@@ -221,7 +226,10 @@ object Utils {
         val smtpTransport = when (transport) { // To keep the language server quiet...
           is SMTPTransport -> transport
           is SMTPSSLTransport -> transport
-          else -> throw Exception("""Transport for SMTP server host "${smtpServerHost}" with port ${smtpServerPort} not detectable!""")
+          else -> {
+            Log.error("""Transport for SMTP server host "${smtpServerHost}" with port ${smtpServerPort} not detectable!""")
+            return false
+          }
         }
         smtpTransport.isSSL
       } else false
